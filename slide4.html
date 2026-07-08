@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>Research Purpose - Chest X-ray Report Refinement System</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 1280px;
+      height: 720px;
+      overflow: hidden;
+      background: #050d1a;
+      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+      color: #e2e8f0;
+    }
+
+    .slide {
+      width: 1280px;
+      height: 720px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+    }
+
+    .bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(21,40,64,0.22) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(21,40,64,0.22) 1px, transparent 1px);
+      background-size: 64px 64px;
+      pointer-events: none;
+    }
+
+    /* ── Header ── */
+    .header {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid #0d1f38;
+      z-index: 1;
+    }
+
+    .h-title {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: #60a5fa;
+    }
+
+    /* ── Content area ── */
+    .content {
+      position: absolute;
+      top: 58px; left: 0; right: 0; bottom: 0;
+      display: flex;
+      justify-content: center;
+      gap: 0;
+    }
+
+    /* ── Left: objectives ── */
+    .left-col {
+      width: 820px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 24px 40px;
+      gap: 28px;
+    }
+
+    .col-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #3b82f6;
+      margin-bottom: 4px;
+    }
+
+    .obj {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      opacity: 0;
+    }
+
+    .obj.active {
+      animation: a-in 0.5s ease forwards;
+    }
+
+    .obj-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background: rgba(59,130,246,0.12);
+      border: 1px solid rgba(59,130,246,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #3b82f6;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .obj-body { display: flex; flex-direction: column; gap: 5px; }
+
+    .obj-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #cbd5e1;
+      line-height: 1.3;
+    }
+
+    .obj-desc {
+      font-size: 0.88rem;
+      color: #94a3b8;
+      line-height: 1.55;
+    }
+
+    @keyframes a-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    /* ── Responsive scaling: fit fixed-size canvas to any viewport ── */
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #slideContainer { flex-shrink: 0; }
+  </style>
+</head>
+<body>
+<div class="slide" id="slideContainer">
+
+  <div class="bg-grid"></div>
+
+  <div class="header">
+    <span class="h-title">Research Purpose</span>
+  </div>
+
+  <div class="content">
+
+    <!-- Left: 4 objectives -->
+    <div class="left-col">
+      <div class="col-label">Research Objectives</div>
+
+      <div class="obj o1">
+        <div class="obj-num">1</div>
+        <div class="obj-body">
+          <span class="obj-title">Integrated Report Generation &amp; Refinement Pipeline</span>
+          <span class="obj-desc">MedGemma as the base VLM with modular design — any medical VLM supporting report generation and visual QA can be plugged in.</span>
+        </div>
+      </div>
+
+      <div class="obj o2">
+        <div class="obj-num">2</div>
+        <div class="obj-body">
+          <span class="obj-title">Radiology Association Graph Construction</span>
+          <span class="obj-desc">Build a compact clinical graph from RadGraph via node merging, relation abstraction, and structure compression for dense semantic representation.</span>
+        </div>
+      </div>
+
+      <div class="obj o3">
+        <div class="obj-num">3</div>
+        <div class="obj-body">
+          <span class="obj-title">Graph Retrieval Module for Clinical Associations</span>
+          <span class="obj-desc">Retrieve key nodes and latent clinical relations from the graph; compare different retrieval strategies on clinical reasoning depth.</span>
+        </div>
+      </div>
+
+      <div class="obj o4">
+        <div class="obj-num">4</div>
+        <div class="obj-body">
+          <span class="obj-title">LLM-based Clinical QA &amp; Report Refinement</span>
+          <span class="obj-desc">Convert retrieved associations to clinical questions → interactive confirmation with MedGemma → LLM integrates answers into the final refined report.</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+
+</div>
+
+<script type="module">
+  import { initSlideController } from './tool/slide-controller.js';
+  import './tool/slide-scale.js';
+
+  const steps = [
+    ['.o1'],
+    ['.o2'],
+    ['.o3'],
+    ['.o4'],
+  ];
+
+  function updateSlide(step) {
+    steps.flat().forEach(sel => {
+      document.querySelectorAll(sel).forEach(el => el.classList.remove('active'));
+    });
+    for (let i = 0; i < step; i++) {
+      if (steps[i]) {
+        steps[i].forEach(sel => {
+          document.querySelectorAll(sel).forEach(el => el.classList.add('active'));
+        });
+      }
+    }
+  }
+
+  initSlideController({
+    maxSteps: steps.length,
+    nextSlideUrl: 'slide5.html',
+    prevSlideUrl: 'slide3.html',
+    onUpdate: updateSlide
+  });
+</script>
+</body>
+</html>

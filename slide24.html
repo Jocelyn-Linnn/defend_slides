@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>Metrics - Chest X-ray Report Refinement System</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 1280px; height: 720px; overflow: hidden;
+      background: #050d1a;
+      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+      color: #e2e8f0;
+    }
+
+    .slide { width: 1280px; height: 720px; position: relative; display: flex; flex-direction: column; cursor: pointer; }
+
+    .bg-grid {
+      position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(21,40,64,0.22) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(21,40,64,0.22) 1px, transparent 1px);
+      background-size: 64px 64px; pointer-events: none;
+    }
+
+    .header { position: absolute; top: 0; left: 0; right: 0; height: 58px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #0d1f38; z-index: 1; }
+    .h-title { font-size: 1rem; font-weight: 700; letter-spacing: 0.35em; text-transform: uppercase; color: #60a5fa; }
+
+    /* ── Three-column layout ── */
+    .content {
+      position: absolute; top: 58px; left: 0; right: 0; bottom: 0;
+      display: flex; gap: 0;
+    }
+
+    .metric-col {
+      flex: 1; display: flex; flex-direction: column; justify-content: center;
+      padding: 22px 28px 22px 28px;
+      gap: 12px;
+      opacity: 0;
+      border-right: 1px solid #0a1828;
+    }
+    .metric-col:first-child { padding-left: 60px; }
+    .metric-col:last-child  { padding-right: 56px; border-right: none; }
+    .metric-col.active { animation: a-in 0.55s ease forwards; }
+
+    /* ── Metric header ── */
+    .mc-head { display: flex; flex-direction: column; gap: 6px; padding-bottom: 12px; border-bottom: 1px solid #0d1f38; }
+    .mc-tag {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 0.58rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+    }
+    .mc-tag-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .dot-blue   { background: #3b82f6; }
+    .dot-purple { background: #8b5cf6; }
+    .dot-green  { background: #10b981; }
+    .col-tag-blue   { color: #60a5fa; }
+    .col-tag-purple { color: #a78bfa; }
+    .col-tag-green  { color: #34d399; }
+
+    .mc-name { font-size: 1.05rem; font-weight: 700; color: #cbd5e1; line-height: 1.25; }
+    .mc-full { font-size: 0.65rem; color: #2c4a6e; font-weight: 500; margin-top: 1px; line-height: 1.4; }
+
+    /* ── Sub-scores ── */
+    .mc-scores { display: flex; gap: 6px; flex-wrap: wrap; }
+    .score-pill {
+      font-size: 0.57rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 3px 9px; border-radius: 4px;
+    }
+    .sp-blue   { background: rgba(59,130,246,0.1); color: #60a5fa; border: 1px solid rgba(59,130,246,0.18); }
+    .sp-purple { background: rgba(139,92,246,0.1); color: #a78bfa; border: 1px solid rgba(139,92,246,0.18); }
+    .sp-green  { background: rgba(16,185,129,0.1); color: #34d399; border: 1px solid rgba(16,185,129,0.18); }
+
+    /* ── Body bullets ── */
+    .mc-body { display: flex; flex-direction: column; gap: 8px; }
+
+    .mc-section { display: flex; flex-direction: column; gap: 4px; }
+    .mc-sec-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #1a3356; margin-bottom: 1px; }
+
+    .bl { display: flex; align-items: flex-start; gap: 7px; }
+    .bdot { width: 4px; height: 4px; border-radius: 50%; flex-shrink: 0; margin-top: 7px; }
+    .bd-blue   { background: #1a3356; }
+    .bd-purple { background: #3b1f6e; }
+    .bd-green  { background: #0c4a3a; }
+    .bl-text { font-size: 0.7rem; color: #475569; line-height: 1.55; }
+    .bl-text b { color: #94a3b8; }
+
+    /* ── Reason box ── */
+    .mc-reasons { display: flex; flex-direction: column; gap: 5px; }
+    .reason-item { display: flex; align-items: flex-start; gap: 8px; }
+    .r-num {
+      width: 16px; height: 16px; border-radius: 4px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.6rem; font-weight: 800; margin-top: 1px;
+    }
+    .rn-blue   { background: rgba(59,130,246,0.12); color: #60a5fa; }
+    .rn-purple { background: rgba(139,92,246,0.12); color: #a78bfa; }
+    .rn-green  { background: rgba(16,185,129,0.12); color: #34d399; }
+    .r-text { font-size: 0.7rem; color: #475569; line-height: 1.5; }
+    .r-text b { color: #94a3b8; }
+
+    /* ── Highlight note ── */
+    .mc-note {
+      display: flex; align-items: flex-start; gap: 8px; padding: 8px 11px;
+      border-radius: 6px; margin-top: 2px;
+    }
+    .note-blue   { background: rgba(59,130,246,0.06); border: 1px solid rgba(59,130,246,0.12); }
+    .note-purple { background: rgba(139,92,246,0.06); border: 1px solid rgba(139,92,246,0.12); }
+    .note-green  { background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.12); }
+    .note-text { font-size: 0.67rem; color: #64748b; line-height: 1.5; }
+    .note-text b { color: #94a3b8; }
+    .note-text em { font-style: normal; }
+
+    @keyframes a-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    /* ── Responsive scaling: fit fixed-size canvas to any viewport ── */
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #slideContainer { flex-shrink: 0; }
+  </style>
+</head>
+<body>
+<div class="slide" id="slideContainer">
+
+  <div class="bg-grid"></div>
+  <div class="header"><span class="h-title">Evaluation Metrics</span></div>
+
+  <div class="content">
+
+    <!-- Column 1: RadGraph F1 -->
+    <div class="metric-col m1">
+      <div class="mc-head">
+        <div class="mc-tag col-tag-blue"><div class="mc-tag-dot dot-blue"></div>Entity &amp; Relation</div>
+        <div class="mc-name">RadGraph F1</div>
+        <div class="mc-full">Structured graph overlap between<br>generated &amp; reference report</div>
+      </div>
+
+      <div class="mc-scores">
+        <span class="score-pill sp-blue">Simple F1 — entities only</span>
+        <span class="score-pill sp-blue">Partial F1 — entity + direction</span>
+        <span class="score-pill sp-blue">Complete F1 — full match</span>
+      </div>
+
+      <div class="mc-body">
+        <div class="mc-sec-label">Why we use it</div>
+        <div class="mc-reasons">
+          <div class="reason-item">
+            <div class="r-num rn-blue">1</div>
+            <span class="r-text">High correlation with radiologist judgment — evaluates <b>clinical entity accuracy</b>, not just word overlap</span>
+          </div>
+          <div class="reason-item">
+            <div class="r-num rn-blue">2</div>
+            <span class="r-text"><b>MedGemma Technical Report</b> uses RadGraph F1 as its primary CXR metric → direct baseline comparison</span>
+          </div>
+          <div class="reason-item">
+            <div class="r-num rn-blue">3</div>
+            <span class="r-text">Pipeline Step 2 uses RadGraph extraction → evaluating with same schema ensures <b>methodological consistency</b></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mc-note note-blue">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <span class="note-text">Primary metric reported: <b>Partial F1</b></span>
+      </div>
+    </div>
+
+    <!-- Column 2: CheXBert F1 -->
+    <div class="metric-col m2">
+      <div class="mc-head">
+        <div class="mc-tag col-tag-purple"><div class="mc-tag-dot dot-purple"></div>Disease Classification</div>
+        <div class="mc-name">CheXBert F1</div>
+        <div class="mc-full">BERT-based classifier for 14 chest<br>disease labels per report</div>
+      </div>
+
+      <div class="mc-scores">
+        <span class="score-pill sp-purple">Macro F1 — equal weight per class</span>
+        <span class="score-pill sp-purple">Micro F1 — sample-weighted</span>
+      </div>
+
+      <div class="mc-body">
+        <div class="mc-sec-label">14 Label Categories</div>
+        <div class="bl" style="margin-bottom:4px">
+          <div class="bdot bd-purple"></div>
+          <span class="bl-text" style="font-size:0.65rem">No Finding, Enlarged Cardiomediastinum, Cardiomegaly, Lung Opacity, Lung Lesion, Edema, Consolidation, Pneumonia, Atelectasis, Pneumothorax, Pleural Effusion, Pleural Other, Fracture, Support Devices</span>
+        </div>
+
+        <div class="mc-sec-label">Why we use it</div>
+        <div class="mc-reasons">
+          <div class="reason-item">
+            <div class="r-num rn-purple">1</div>
+            <span class="r-text"><b>RaDialog, RadVLM, MedGemma</b> all report CheXBert Macro F1 → enables direct paper comparison</span>
+          </div>
+          <div class="reason-item">
+            <div class="r-num rn-purple">2</div>
+            <span class="r-text">Macro F1 gives <b>equal weight</b> to rare classes (Pneumothorax, Fracture) and frequent ones — clinically appropriate</span>
+          </div>
+          <div class="reason-item">
+            <div class="r-num rn-purple">3</div>
+            <span class="r-text">Micro F1 provides <b>dataset-level</b> view; complements Macro with global performance signal</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Column 3: GREEN -->
+    <div class="metric-col m3">
+      <div class="mc-head">
+        <div class="mc-tag col-tag-green"><div class="mc-tag-dot dot-green"></div>LLM-as-Judge</div>
+        <div class="mc-name">GREEN</div>
+        <div class="mc-full">Generative Radiology Report<br>Evaluation &amp; Error Notation</div>
+      </div>
+
+      <div class="mc-scores">
+        <span class="score-pill sp-green">False Positives</span>
+        <span class="score-pill sp-green">False Negatives</span>
+        <span class="score-pill sp-green">Location / Severity Errors</span>
+      </div>
+
+      <div class="mc-body">
+        <div class="mc-section">
+          <div class="bl">
+            <div class="bdot bd-green"></div>
+            <span class="bl-text">LLM-based judge identifies &amp; classifies <b>clinically significant errors</b> in free-text reports</span>
+          </div>
+          <div class="bl">
+            <div class="bdot bd-green"></div>
+            <span class="bl-text">Outputs structured error counts + weighted score</span>
+          </div>
+        </div>
+
+        <div class="mc-sec-label">Why we use it</div>
+        <div class="mc-reasons">
+          <div class="reason-item">
+            <div class="r-num rn-green">1</div>
+            <span class="r-text">Spearman correlation with radiologists: <b>0.63</b> vs. RadGraph F1's 0.47 — captures semantic errors that graph extraction misses</span>
+          </div>
+          <div class="reason-item">
+            <div class="r-num rn-green">2</div>
+            <span class="r-text">Final report generated by <b>GPT-4o</b> — LLM-based evaluation aligns with the output modality</span>
+          </div>
+          <div class="reason-item">
+            <div class="r-num rn-green">3</div>
+            <span class="r-text">Covers RadGraph's blind spots: <b>fluency, reasoning plausibility</b>, and span-detection errors</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mc-note note-green">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        <span class="note-text">Semantic complement to RadGraph F1</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+  import { initSlideController } from './tool/slide-controller.js';
+  import './tool/slide-scale.js';
+
+  const steps = [['.m1'], ['.m2'], ['.m3']];
+
+  function updateSlide(step) {
+    steps.flat().forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.remove('active')));
+    for (let i = 0; i < step; i++) {
+      if (steps[i]) steps[i].forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.add('active')));
+    }
+  }
+
+  initSlideController({
+    maxSteps: steps.length,
+    nextSlideUrl: 'slide25.html',
+    prevSlideUrl: 'slide23.html',
+    onUpdate: updateSlide
+  });
+</script>
+</body>
+</html>
