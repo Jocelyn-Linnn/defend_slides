@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>Table of Contents - Chest X-ray Report Refinement System</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 1280px;
+      height: 720px;
+      overflow: hidden;
+      background: #050d1a;
+      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+      color: #e2e8f0;
+    }
+
+    .slide {
+      width: 1280px;
+      height: 720px;
+      position: relative;
+      display: flex;
+      cursor: pointer;
+    }
+
+    /* ── Background grid ── */
+    .bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(21,40,64,0.22) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(21,40,64,0.22) 1px, transparent 1px);
+      background-size: 64px 64px;
+      pointer-events: none;
+    }
+
+    /* ── Header ── */
+    .header {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid #0d1f38;
+    }
+
+    .h-title {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: #60a5fa;
+      opacity: 0;
+      animation: a-fade 0.7s ease 0.1s forwards;
+    }
+
+    /* ── Center divider ── */
+    .divider {
+      position: absolute;
+      left: 640px;
+      top: 68px;
+      bottom: 28px;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent 0%, #152840 15%, #152840 85%, transparent 100%);
+    }
+
+    /* ── Panels ── */
+    .panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 88px 72px 40px;
+      gap: 32px;
+    }
+
+    /* ── TOC items ── */
+    .toc-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 22px;
+    }
+
+    .item-num {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #0e2847;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      min-width: 54px;
+      text-align: right;
+      padding-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .item-body {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding-top: 2px;
+    }
+
+    .item-title {
+      font-size: 1.18rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      letter-spacing: 0.03em;
+      line-height: 1.2;
+    }
+
+    .item-sub {
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: #2563a8;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .item-sub::before {
+      content: '';
+      display: inline-block;
+      width: 14px;
+      height: 1px;
+      background: #1a3356;
+      flex-shrink: 0;
+    }
+
+    /* ── Animations ── */
+    @keyframes a-fade {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Responsive scaling: fit fixed-size canvas to any viewport ── */
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #slideContainer { flex-shrink: 0; }
+      /* ── Gallery nav button (global) ── */
+    .gallery-nav-btn {
+      position: absolute; top: 14px; right: 14px; z-index: 30;
+      width: 30px; height: 30px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.09);
+      color: #60a5fa; text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    }
+    .gallery-nav-btn:hover {
+      background: rgba(96,165,250,0.14); border-color: rgba(96,165,250,0.35);
+      transform: scale(1.06);
+    }
+  </style>
+</head>
+<body>
+<div class="slide" id="slideContainer">
+  <a class="gallery-nav-btn" href="all_slides.html" title="All Slides" onclick="event.stopPropagation()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+  </a>
+
+
+  <div class="bg-grid"></div>
+
+  <div class="header">
+    <span class="h-title">Table of Contents</span>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Left panel: items 01–03 -->
+  <div class="panel">
+    <div class="toc-item i1">
+      <span class="item-num">01</span>
+      <div class="item-body">
+        <span class="item-title">Motivation</span>
+      </div>
+    </div>
+
+    <div class="toc-item i2">
+      <span class="item-num">02</span>
+      <div class="item-body">
+        <span class="item-title">Prior Work</span>
+      </div>
+    </div>
+
+    <div class="toc-item i3">
+      <span class="item-num">03</span>
+      <div class="item-body">
+        <span class="item-title">Methodology</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right panel: items 04–06 -->
+  <div class="panel">
+    <div class="toc-item i4">
+      <span class="item-num">04</span>
+      <div class="item-body">
+        <span class="item-title">Experiment</span>
+        <span class="item-sub">Result</span>
+      </div>
+    </div>
+
+    <div class="toc-item i5">
+      <span class="item-num">05</span>
+      <div class="item-body">
+        <span class="item-title">Discussion</span>
+      </div>
+    </div>
+
+    <div class="toc-item i6">
+      <span class="item-num">06</span>
+      <div class="item-body">
+        <span class="item-title">Contribution</span>
+        <span class="item-sub">Conclusion</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script type="module">
+  import { initSlideController } from './tool/slide-controller.js';
+  import './tool/slide-scale.js';
+
+  initSlideController({
+    maxSteps: 0,
+    nextSlideUrl: 'motivation_1.html',
+    prevSlideUrl: 'cover.html',
+    onUpdate: () => {}
+  });
+</script>
+</body>
+</html>

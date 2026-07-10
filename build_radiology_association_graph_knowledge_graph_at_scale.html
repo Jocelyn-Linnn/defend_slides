@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Build Radiology Association Graph - Graph at Scale · Slide 9</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 1280px; height: 720px; overflow: hidden;
+      background: #050d1a;
+      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+      color: #e2e8f0;
+    }
+    .slide { width: 1280px; height: 720px; position: relative; display: flex; cursor: pointer; }
+
+    .header {
+      position: absolute; top: 0; left: 0; right: 0; height: 64px;
+      display: flex; align-items: center; justify-content: center;
+      border-bottom: 1px solid #0d1f38;
+    }
+    .h-title {
+      font-size: 1rem; font-weight: 700; letter-spacing: 0.35em; text-transform: uppercase;
+      color: #60a5fa; opacity: 0; animation: a-fade-in 0.7s ease 0.1s forwards;
+    }
+
+    .divider {
+      position: absolute; left: 420px; top: 80px; bottom: 40px; width: 1px;
+      background: linear-gradient(to bottom, transparent 0%, #152840 15%, #152840 85%, transparent 100%);
+    }
+
+    .panel-left {
+      width: 420px; display: flex; flex-direction: column;
+      align-items: flex-start; justify-content: center;
+      padding: 80px 32px 40px;
+    }
+
+    .intro-label {
+      font-size: 0.68rem; color: #334155; letter-spacing: 0.12em; text-transform: uppercase;
+      margin-bottom: 24px;
+      opacity: 0; animation: a-fade-in 0.6s ease 0.3s forwards;
+    }
+
+    .stat-card {
+      width: 340px; border-radius: 14px; padding: 16px 22px;
+      display: flex; align-items: center; gap: 18px;
+      margin-bottom: 16px;
+      opacity: 0; transform: translateX(-16px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .stat-card.visible { opacity: 1; transform: translateX(0); }
+
+    .stat-number {
+      font-size: 2.1rem; font-weight: 800; line-height: 1; margin-bottom: 4px;
+    }
+    .stat-label {
+      font-size: 0.68rem; color: #475569; letter-spacing: 0.09em; text-transform: uppercase;
+    }
+
+    .panel-right {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      padding-top: 64px;
+    }
+    .right-svg {
+      opacity: 0; transform: scale(0.85);
+      animation: a-zoom 0.9s cubic-bezier(.16,1,.3,1) 0.4s forwards;
+    }
+
+    @keyframes a-fade-in { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes a-zoom    { from { opacity:0; transform:scale(0.85); } to { opacity:1; transform:scale(1); } }
+    /* ── Responsive scaling: fit fixed-size canvas to any viewport ── */
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #slideContainer { flex-shrink: 0; }
+      /* ── Gallery nav button (global) ── */
+    .gallery-nav-btn {
+      position: absolute; top: 14px; right: 14px; z-index: 30;
+      width: 30px; height: 30px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.09);
+      color: #60a5fa; text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    }
+    .gallery-nav-btn:hover {
+      background: rgba(96,165,250,0.14); border-color: rgba(96,165,250,0.35);
+      transform: scale(1.06);
+    }
+  </style>
+</head>
+<body>
+<div class="slide" id="slideContainer">
+  <a class="gallery-nav-btn" href="all_slides.html" title="All Slides" onclick="event.stopPropagation()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+  </a>
+
+
+  <div class="header">
+    <span class="h-title">Build Radiology Association Graph - Knowledge Graph at Scale</span>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- LEFT: stat cards -->
+  <div class="panel-left">
+    <div class="intro-label">After processing Slides 1 – 8</div>
+
+    <div class="stat-card" id="card1" style="background:rgba(245,158,11,0.07);border:1.5px solid rgba(245,158,11,0.38);">
+      <svg width="38" height="24" viewBox="0 0 38 24" fill="none" style="flex-shrink:0">
+        <rect x="1" y="1" width="36" height="22" rx="11" fill="#1e1b12" stroke="#f59e0b" stroke-width="1.5"/>
+        <text x="19" y="15" fill="#fbbf24" font-size="7.5" font-weight="700" text-anchor="middle" letter-spacing="0.04em">SUPER</text>
+      </svg>
+      <div>
+        <div class="stat-number" style="color:#f59e0b;">63,488</div>
+        <div class="stat-label">Supernode 節點</div>
+      </div>
+    </div>
+
+    <div class="stat-card" id="card2" style="background:rgba(20,184,166,0.07);border:1.5px solid rgba(20,184,166,0.38);">
+      <svg width="38" height="24" viewBox="0 0 38 24" fill="none" style="flex-shrink:0">
+        <defs>
+          <marker id="ic-sug" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,1 L5,3 L0,5 Z" fill="#2dd4bf"/>
+          </marker>
+        </defs>
+        <line x1="2" y1="12" x2="32" y2="12" stroke="#2dd4bf" stroke-width="2" marker-end="url(#ic-sug)"/>
+      </svg>
+      <div>
+        <div class="stat-number" style="color:#2dd4bf;">99,796</div>
+        <div class="stat-label">SUGGESTIVE_OF 關係</div>
+      </div>
+    </div>
+
+    <div class="stat-card" id="card3" style="background:rgba(148,163,184,0.06);border:1.5px solid rgba(148,163,184,0.28);">
+      <svg width="38" height="24" viewBox="0 0 38 24" fill="none" style="flex-shrink:0">
+        <defs>
+          <marker id="ic-part" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,1 L5,3 L0,5 Z" fill="#94a3b8"/>
+          </marker>
+        </defs>
+        <line x1="2" y1="12" x2="32" y2="12" stroke="#94a3b8" stroke-width="1.8" stroke-dasharray="4 3" marker-end="url(#ic-part)"/>
+      </svg>
+      <div>
+        <div class="stat-number" style="color:#94a3b8;">310,408</div>
+        <div class="stat-label">PART_OF 關係</div>
+      </div>
+    </div>
+
+    <div class="stat-card" id="card4" style="background:rgba(192,132,252,0.07);border:1.5px solid rgba(192,132,252,0.38);">
+      <svg width="38" height="24" viewBox="0 0 38 24" fill="none" style="flex-shrink:0">
+        <circle cx="19" cy="12" r="10" fill="#130d26" stroke="#c084fc" stroke-width="1.5"/>
+        <text x="19" y="16" fill="#c084fc" font-size="7.5" font-weight="700" text-anchor="middle">ENT</text>
+      </svg>
+      <div>
+        <div class="stat-number" style="color:#c084fc;">20,401</div>
+        <div class="stat-label">Component 節點</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: dense network graph (real DB data) -->
+  <div class="panel-right">
+    <svg width="840" height="630" viewBox="0 0 840 630" fill="none" class="right-svg">
+      <defs>
+        <radialGradient id="fog-tl" cx="0" cy="0" r="300" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#050d1a" stop-opacity="0.88"/>
+          <stop offset="100%" stop-color="#050d1a" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="fog-tr" cx="840" cy="0" r="300" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#050d1a" stop-opacity="0.88"/>
+          <stop offset="100%" stop-color="#050d1a" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="fog-bl" cx="0" cy="630" r="300" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#050d1a" stop-opacity="0.88"/>
+          <stop offset="100%" stop-color="#050d1a" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="fog-br" cx="840" cy="630" r="300" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#050d1a" stop-opacity="0.88"/>
+          <stop offset="100%" stop-color="#050d1a" stop-opacity="0"/>
+        </radialGradient>
+        <marker id="arr-part" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+          <path d="M0,1.2 L6,3.5 L0,5.8 Z" fill="#94a3b8" opacity="0.65"/>
+        </marker>
+        <marker id="arr-sug" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+          <path d="M0,1.5 L9,5 L0,8.5 Z" fill="#2dd4bf" opacity="0.9"/>
+        </marker>
+      </defs>
+
+      <!-- ── Real data from compact-graph-filtered (Neo4j) ──
+           9 Supernodes, 7 SUGGESTIVE_OF edges, component nodes via PART_OF
+           Hub: "low lung volume" (out_deg=343)
+           Chain: low lung volume → bibasilar atelectasis → early pneumonia
+           Hub2: "retrocardiac opacity" (out_deg=266)
+      -->
+
+      <!-- LAYER 1: background scatter dots (scale hint) -->
+      <circle cx="42"  cy="28"  r="2.5" fill="#1e3a5f" opacity="0.28"/>
+      <circle cx="128" cy="16"  r="2"   fill="#2d1b69" opacity="0.22"/>
+      <circle cx="218" cy="38"  r="3"   fill="#1e3a5f" opacity="0.18"/>
+      <circle cx="308" cy="14"  r="2"   fill="#0d3d38" opacity="0.28"/>
+      <circle cx="398" cy="27"  r="2.5" fill="#2d1b69" opacity="0.22"/>
+      <circle cx="488" cy="11"  r="2"   fill="#1e3a5f" opacity="0.18"/>
+      <circle cx="578" cy="33"  r="3"   fill="#0d3d38" opacity="0.28"/>
+      <circle cx="668" cy="19"  r="2"   fill="#2d1b69" opacity="0.22"/>
+      <circle cx="758" cy="43"  r="2.5" fill="#1e3a5f" opacity="0.18"/>
+      <circle cx="818" cy="16"  r="2"   fill="#0d3d38" opacity="0.28"/>
+      <circle cx="22"  cy="118" r="3"   fill="#2d1b69" opacity="0.22"/>
+      <circle cx="88"  cy="142" r="2"   fill="#1e3a5f" opacity="0.28"/>
+      <circle cx="263" cy="128" r="2.5" fill="#0d3d38" opacity="0.18"/>
+      <circle cx="353" cy="108" r="2"   fill="#1e3a5f" opacity="0.22"/>
+      <circle cx="558" cy="122" r="3"   fill="#2d1b69" opacity="0.28"/>
+      <circle cx="683" cy="148" r="2"   fill="#0d3d38" opacity="0.18"/>
+      <circle cx="808" cy="132" r="2.5" fill="#1e3a5f" opacity="0.22"/>
+      <circle cx="838" cy="88"  r="2"   fill="#2d1b69" opacity="0.28"/>
+      <circle cx="14"  cy="228" r="2.5" fill="#0d3d38" opacity="0.18"/>
+      <circle cx="73"  cy="258" r="2"   fill="#1e3a5f" opacity="0.28"/>
+      <circle cx="338" cy="198" r="3"   fill="#2d1b69" opacity="0.22"/>
+      <circle cx="418" cy="212" r="2"   fill="#0d3d38" opacity="0.18"/>
+      <circle cx="618" cy="238" r="2.5" fill="#1e3a5f" opacity="0.28"/>
+      <circle cx="828" cy="248" r="2"   fill="#2d1b69" opacity="0.22"/>
+      <circle cx="33"  cy="338" r="3"   fill="#1e3a5f" opacity="0.18"/>
+      <circle cx="238" cy="318" r="2"   fill="#0d3d38" opacity="0.28"/>
+      <circle cx="443" cy="352" r="2.5" fill="#2d1b69" opacity="0.22"/>
+      <circle cx="588" cy="328" r="2"   fill="#1e3a5f" opacity="0.18"/>
+      <circle cx="718" cy="342" r="3"   fill="#0d3d38" opacity="0.28"/>
+      <circle cx="808" cy="358" r="2"   fill="#2d1b69" opacity="0.22"/>
+      <circle cx="18"  cy="428" r="2.5" fill="#1e3a5f" opacity="0.28"/>
+      <circle cx="163" cy="412" r="2"   fill="#2d1b69" opacity="0.18"/>
+      <circle cx="308" cy="438" r="3"   fill="#0d3d38" opacity="0.22"/>
+      <circle cx="488" cy="418" r="2"   fill="#1e3a5f" opacity="0.28"/>
+      <circle cx="658" cy="432" r="2.5" fill="#2d1b69" opacity="0.18"/>
+      <circle cx="833" cy="422" r="2"   fill="#0d3d38" opacity="0.28"/>
+      <circle cx="58"  cy="528" r="3"   fill="#1e3a5f" opacity="0.22"/>
+      <circle cx="188" cy="552" r="2"   fill="#2d1b69" opacity="0.28"/>
+      <circle cx="348" cy="538" r="2.5" fill="#0d3d38" opacity="0.18"/>
+      <circle cx="508" cy="568" r="2"   fill="#1e3a5f" opacity="0.22"/>
+      <circle cx="698" cy="552" r="3"   fill="#2d1b69" opacity="0.28"/>
+      <circle cx="818" cy="542" r="2"   fill="#0d3d38" opacity="0.18"/>
+      <circle cx="98"  cy="608" r="2.5" fill="#1e3a5f" opacity="0.22"/>
+      <circle cx="248" cy="622" r="2"   fill="#2d1b69" opacity="0.28"/>
+      <circle cx="428" cy="612" r="3"   fill="#0d3d38" opacity="0.18"/>
+      <circle cx="608" cy="626" r="2"   fill="#1e3a5f" opacity="0.22"/>
+      <circle cx="758" cy="614" r="2.5" fill="#2d1b69" opacity="0.28"/>
+      <circle cx="153" cy="492" r="2"   fill="#1e3a5f" opacity="0.18"/>
+      <circle cx="473" cy="508" r="2.5" fill="#0d3d38" opacity="0.22"/>
+      <circle cx="728" cy="488" r="2"   fill="#2d1b69" opacity="0.28"/>
+      <circle cx="378" cy="388" r="3"   fill="#1e3a5f" opacity="0.18"/>
+      <circle cx="258" cy="492" r="2"   fill="#0d3d38" opacity="0.22"/>
+      <circle cx="543" cy="448" r="2.5" fill="#2d1b69" opacity="0.18"/>
+      <circle cx="693" cy="192" r="2"   fill="#1e3a5f" opacity="0.28"/>
+      <circle cx="173" cy="172" r="3"   fill="#0d3d38" opacity="0.22"/>
+      <circle cx="828" cy="188" r="2"   fill="#2d1b69" opacity="0.18"/>
+      <circle cx="53"  cy="368" r="2.5" fill="#1e3a5f" opacity="0.22"/>
+      <circle cx="748" cy="468" r="2"   fill="#0d3d38" opacity="0.28"/>
+      <circle cx="283" cy="568" r="2.5" fill="#2d1b69" opacity="0.18"/>
+
+      <!-- LAYER 2: PART_OF edges — component → Supernode (dashed white) -->
+      <!-- SN1 "low lung volume" cluster -->
+      <line x1="278" y1="172" x2="290" y2="124" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="4 3" stroke-opacity="0.35" marker-end="url(#arr-part)"/>
+      <line x1="354" y1="181" x2="348" y2="124" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="4 3" stroke-opacity="0.35" marker-end="url(#arr-part)"/>
+      <line x1="422" y1="167" x2="408" y2="124" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="4 3" stroke-opacity="0.35" marker-end="url(#arr-part)"/>
+      <!-- SN2 "bibasilar atelectasis" cluster -->
+      <line x1="96"  y1="366" x2="110" y2="324" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="4 3" stroke-opacity="0.35" marker-end="url(#arr-part)"/>
+      <line x1="162" y1="378" x2="162" y2="324" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="4 3" stroke-opacity="0.35" marker-end="url(#arr-part)"/>
+      <line x1="225" y1="360" x2="208" y2="324" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="4 3" stroke-opacity="0.35" marker-end="url(#arr-part)"/>
+      <!-- SN3 "bronchovascular marking" cluster -->
+      <line x1="560" y1="167" x2="572" y2="124" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="4 3" stroke-opacity="0.35" marker-end="url(#arr-part)"/>
+      <line x1="626" y1="176" x2="624" y2="124" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="4 3" stroke-opacity="0.35" marker-end="url(#arr-part)"/>
+      <line x1="690" y1="162" x2="674" y2="124" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="4 3" stroke-opacity="0.35" marker-end="url(#arr-part)"/>
+      <!-- SN4 "poor inspiration" cluster -->
+      <line x1="342" y1="363" x2="364" y2="324" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="4 3" stroke-opacity="0.35" marker-end="url(#arr-part)"/>
+      <line x1="399" y1="372" x2="397" y2="324" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="4 3" stroke-opacity="0.35" marker-end="url(#arr-part)"/>
+      <!-- SN5 "bronchovascular crowd" cluster (partially OOB) -->
+      <line x1="48"  y1="169" x2="55"  y2="124" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="4 3" stroke-opacity="0.35" marker-end="url(#arr-part)"/>
+      <line x1="108" y1="163" x2="116" y2="124" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="4 3" stroke-opacity="0.35" marker-end="url(#arr-part)"/>
+      <!-- SN6 "retrocardiac opacity" cluster -->
+      <line x1="590" y1="363" x2="606" y2="324" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="4 3" stroke-opacity="0.35" marker-end="url(#arr-part)"/>
+      <line x1="650" y1="373" x2="650" y2="324" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="4 3" stroke-opacity="0.35" marker-end="url(#arr-part)"/>
+      <line x1="708" y1="357" x2="696" y2="324" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="4 3" stroke-opacity="0.35" marker-end="url(#arr-part)"/>
+      <!-- SN7 "early pneumonia" cluster -->
+      <line x1="90"  y1="549" x2="100" y2="514" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="4 3" stroke-opacity="0.35" marker-end="url(#arr-part)"/>
+      <line x1="150" y1="560" x2="150" y2="514" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="4 3" stroke-opacity="0.35" marker-end="url(#arr-part)"/>
+      <line x1="208" y1="544" x2="196" y2="514" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="4 3" stroke-opacity="0.35" marker-end="url(#arr-part)"/>
+      <!-- SN8 "hiatal hernia" cluster -->
+      <line x1="374" y1="569" x2="390" y2="534" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="4 3" stroke-opacity="0.35" marker-end="url(#arr-part)"/>
+      <line x1="434" y1="578" x2="430" y2="534" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="4 3" stroke-opacity="0.35" marker-end="url(#arr-part)"/>
+      <!-- SN9 "vol loss pneumonia" cluster (partially OOB) -->
+      <line x1="704" y1="553" x2="718" y2="519" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="4 3" stroke-opacity="0.35" marker-end="url(#arr-part)"/>
+      <line x1="762" y1="562" x2="762" y2="519" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="4 3" stroke-opacity="0.35" marker-end="url(#arr-part)"/>
+      <line x1="818" y1="547" x2="800" y2="516" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="4 3" stroke-opacity="0.35" marker-end="url(#arr-part)"/>
+
+      <!-- LAYER 3: SUGGESTIVE_OF edges — Supernode → Supernode (teal solid) -->
+      <!-- SN1(338,100) → SN5(68,100)  low lung volume → bronchovascular crowd  w=0.709 -->
+      <line x1="251" y1="98"  x2="155" y2="100" stroke="#2dd4bf" stroke-width="2.2" stroke-opacity="0.82" marker-end="url(#arr-sug)"/>
+      <!-- SN1(338,100) → SN3(622,100)  low lung volume → bronchovascular marking  w=0.480 -->
+      <line x1="425" y1="98"  x2="535" y2="100" stroke="#2dd4bf" stroke-width="2.2" stroke-opacity="0.82" marker-end="url(#arr-sug)"/>
+      <!-- SN1(338,100) → SN2(162,300)  low lung volume → bibasilar atelectasis  w=0.459 -->
+      <line x1="272" y1="122" x2="178" y2="276" stroke="#2dd4bf" stroke-width="2.2" stroke-opacity="0.82" marker-end="url(#arr-sug)"/>
+      <!-- SN1(338,100) → SN4(395,300)  low lung volume → poor inspiration  w=0.464 -->
+      <line x1="358" y1="124" x2="390" y2="276" stroke="#2dd4bf" stroke-width="2.2" stroke-opacity="0.82" marker-end="url(#arr-sug)"/>
+      <!-- SN2(162,300) → SN7(148,490)  bibasilar atelectasis → early pneumonia  w=0.700 -->
+      <line x1="162" y1="324" x2="150" y2="466" stroke="#2dd4bf" stroke-width="2.2" stroke-opacity="0.82" marker-end="url(#arr-sug)"/>
+      <!-- SN6(648,300) → SN8(428,510)  retrocardiac opacity → hiatal hernia  w=0.393 -->
+      <line x1="600" y1="322" x2="464" y2="486" stroke="#2dd4bf" stroke-width="2"   stroke-opacity="0.72" marker-end="url(#arr-sug)"/>
+      <!-- SN6(648,300) → SN9(762,495)  retrocardiac opacity → vol loss pneumonia  w=0.400 -->
+      <line x1="706" y1="318" x2="760" y2="471" stroke="#2dd4bf" stroke-width="2"   stroke-opacity="0.72" marker-end="url(#arr-sug)"/>
+
+      <!-- LAYER 4: Component nodes (PART_OF to Supernodes) -->
+
+      <!-- SN1 "low lung volume" cluster — comps: low[OBS-DP-M], low[OBS-U-E], low[ANAT-E] -->
+      <circle cx="278" cy="190" r="20" fill="#0c1f3e" stroke="#3b82f6" stroke-width="1.8"/>
+      <text x="278" y="188" fill="#93c5fd" font-size="9"   font-weight="700" text-anchor="middle">low</text>
+      <text x="278" y="200" fill="#2563eb" font-size="6.5" font-weight="600" text-anchor="middle">OBS-DP-M</text>
+
+      <circle cx="355" cy="200" r="20" fill="#0c1f3e" stroke="#3b82f6" stroke-width="1.8"/>
+      <text x="355" y="198" fill="#93c5fd" font-size="9"   font-weight="700" text-anchor="middle">low</text>
+      <text x="355" y="210" fill="#2563eb" font-size="6.5" font-weight="600" text-anchor="middle">OBS-U-E</text>
+
+      <circle cx="435" cy="185" r="20" fill="#130d26" stroke="#8b5cf6" stroke-width="1.8"/>
+      <text x="435" y="183" fill="#c4b5fd" font-size="9"   font-weight="700" text-anchor="middle">low</text>
+      <text x="435" y="195" fill="#7c3aed" font-size="6.5" font-weight="600" text-anchor="middle">ANAT-E</text>
+
+      <!-- SN2 "bibasilar atelectasis" cluster — comps: atelectasis[OBS-U-E], atelectasis[OBS-DP-E], bibasilar[ANAT-E] -->
+      <circle cx="95"  cy="384" r="20" fill="#0c1f3e" stroke="#3b82f6" stroke-width="1.8"/>
+      <text x="95"  y="382" fill="#93c5fd" font-size="7.5" font-weight="700" text-anchor="middle">atelectasis</text>
+      <text x="95"  y="394" fill="#2563eb" font-size="6.5" font-weight="600" text-anchor="middle">OBS-U-E</text>
+
+      <circle cx="162" cy="396" r="20" fill="#0c1f3e" stroke="#3b82f6" stroke-width="1.8"/>
+      <text x="162" y="394" fill="#93c5fd" font-size="7.5" font-weight="700" text-anchor="middle">atelectasis</text>
+      <text x="162" y="406" fill="#2563eb" font-size="6.5" font-weight="600" text-anchor="middle">OBS-DP-E</text>
+
+      <circle cx="228" cy="376" r="20" fill="#130d26" stroke="#8b5cf6" stroke-width="1.8"/>
+      <text x="228" y="374" fill="#c4b5fd" font-size="9"   font-weight="700" text-anchor="middle">bibasilar</text>
+      <text x="228" y="386" fill="#7c3aed" font-size="6.5" font-weight="600" text-anchor="middle">ANAT-E</text>
+
+      <!-- SN3 "bronchovascular marking" cluster — comps: marking[OBS-DP-M], marking[OBS-U-E], bronchovascular[ANAT-E] -->
+      <circle cx="558" cy="185" r="20" fill="#0c1f3e" stroke="#3b82f6" stroke-width="1.8"/>
+      <text x="558" y="183" fill="#93c5fd" font-size="9"   font-weight="700" text-anchor="middle">marking</text>
+      <text x="558" y="195" fill="#2563eb" font-size="6.5" font-weight="600" text-anchor="middle">OBS-DP-M</text>
+
+      <circle cx="628" cy="195" r="20" fill="#0c1f3e" stroke="#3b82f6" stroke-width="1.8"/>
+      <text x="628" y="193" fill="#93c5fd" font-size="9"   font-weight="700" text-anchor="middle">marking</text>
+      <text x="628" y="205" fill="#2563eb" font-size="6.5" font-weight="600" text-anchor="middle">OBS-U-E</text>
+
+      <circle cx="700" cy="180" r="20" fill="#130d26" stroke="#8b5cf6" stroke-width="1.8"/>
+      <text x="700" y="178" fill="#c4b5fd" font-size="7"   font-weight="700" text-anchor="middle">broncho-</text>
+      <text x="700" y="188" fill="#c4b5fd" font-size="7"   font-weight="700" text-anchor="middle">vascular</text>
+      <text x="700" y="198" fill="#7c3aed" font-size="6.5" font-weight="600" text-anchor="middle">ANAT-E</text>
+
+      <!-- SN4 "poor inspiration" cluster — comps: inspiration[OBS-DP-E], poor[OBS-U-M] -->
+      <circle cx="338" cy="380" r="20" fill="#0c1f3e" stroke="#3b82f6" stroke-width="1.8"/>
+      <text x="338" y="378" fill="#93c5fd" font-size="8"   font-weight="700" text-anchor="middle">inspiration</text>
+      <text x="338" y="390" fill="#2563eb" font-size="6.5" font-weight="600" text-anchor="middle">OBS-DP-E</text>
+
+      <circle cx="400" cy="390" r="20" fill="#0c1f3e" stroke="#3b82f6" stroke-width="1.8"/>
+      <text x="400" y="388" fill="#93c5fd" font-size="9"   font-weight="700" text-anchor="middle">poor</text>
+      <text x="400" y="400" fill="#2563eb" font-size="6.5" font-weight="600" text-anchor="middle">OBS-U-M</text>
+
+      <!-- SN5 "bronchovascular crowd" cluster (partially OOB left) — comps: bronchovascular[ANAT-E], crowd[OBS-DP-E] -->
+      <circle cx="44"  cy="186" r="20" fill="#130d26" stroke="#8b5cf6" stroke-width="1.8"/>
+      <text x="44"  y="184" fill="#c4b5fd" font-size="7"   font-weight="700" text-anchor="middle">broncho-</text>
+      <text x="44"  y="194" fill="#c4b5fd" font-size="7"   font-weight="700" text-anchor="middle">vascular</text>
+      <text x="44"  y="204" fill="#7c3aed" font-size="6.5" font-weight="600" text-anchor="middle">ANAT-E</text>
+
+      <circle cx="118" cy="180" r="20" fill="#0c1f3e" stroke="#3b82f6" stroke-width="1.8"/>
+      <text x="118" y="178" fill="#93c5fd" font-size="9"   font-weight="700" text-anchor="middle">crowd</text>
+      <text x="118" y="190" fill="#2563eb" font-size="6.5" font-weight="600" text-anchor="middle">OBS-DP-E</text>
+
+      <!-- SN6 "retrocardiac opacity" cluster — comps: retrocardiac[ANAT-E], opacity[OBS-U-E], opacity[OBS-DP-E] -->
+      <circle cx="586" cy="380" r="20" fill="#130d26" stroke="#8b5cf6" stroke-width="1.8"/>
+      <text x="586" y="378" fill="#c4b5fd" font-size="7.5" font-weight="700" text-anchor="middle">retrocardiac</text>
+      <text x="586" y="390" fill="#7c3aed" font-size="6.5" font-weight="600" text-anchor="middle">ANAT-E</text>
+
+      <circle cx="650" cy="392" r="20" fill="#0c1f3e" stroke="#3b82f6" stroke-width="1.8"/>
+      <text x="650" y="390" fill="#93c5fd" font-size="9"   font-weight="700" text-anchor="middle">opacity</text>
+      <text x="650" y="402" fill="#2563eb" font-size="6.5" font-weight="600" text-anchor="middle">OBS-U-E</text>
+
+      <circle cx="720" cy="375" r="20" fill="#0c1f3e" stroke="#3b82f6" stroke-width="1.8"/>
+      <text x="720" y="373" fill="#93c5fd" font-size="9"   font-weight="700" text-anchor="middle">opacity</text>
+      <text x="720" y="385" fill="#2563eb" font-size="6.5" font-weight="600" text-anchor="middle">OBS-DP-E</text>
+
+      <!-- SN7 "early pneumonia" cluster — comps: pneumonia[OBS-U-E], left[ANAT-M], early[OBS-U-M] -->
+      <circle cx="86"  cy="568" r="20" fill="#0c1f3e" stroke="#3b82f6" stroke-width="1.8"/>
+      <text x="86"  y="566" fill="#93c5fd" font-size="8"   font-weight="700" text-anchor="middle">pneumonia</text>
+      <text x="86"  y="578" fill="#2563eb" font-size="6.5" font-weight="600" text-anchor="middle">OBS-U-E</text>
+
+      <circle cx="150" cy="580" r="20" fill="#130d26" stroke="#8b5cf6" stroke-width="1.8"/>
+      <text x="150" y="578" fill="#c4b5fd" font-size="9"   font-weight="700" text-anchor="middle">left</text>
+      <text x="150" y="590" fill="#7c3aed" font-size="6.5" font-weight="600" text-anchor="middle">ANAT-M</text>
+
+      <circle cx="214" cy="562" r="20" fill="#0c1f3e" stroke="#3b82f6" stroke-width="1.8"/>
+      <text x="214" y="560" fill="#93c5fd" font-size="9"   font-weight="700" text-anchor="middle">early</text>
+      <text x="214" y="572" fill="#2563eb" font-size="6.5" font-weight="600" text-anchor="middle">OBS-U-M</text>
+
+      <!-- SN8 "hiatal hernia" cluster — comps: hiatal[ANAT-E], hernia[OBS-U-E] -->
+      <circle cx="370" cy="587" r="20" fill="#130d26" stroke="#8b5cf6" stroke-width="1.8"/>
+      <text x="370" y="585" fill="#c4b5fd" font-size="9"   font-weight="700" text-anchor="middle">hiatal</text>
+      <text x="370" y="597" fill="#7c3aed" font-size="6.5" font-weight="600" text-anchor="middle">ANAT-E</text>
+
+      <circle cx="436" cy="597" r="20" fill="#0c1f3e" stroke="#3b82f6" stroke-width="1.8"/>
+      <text x="436" y="595" fill="#93c5fd" font-size="9"   font-weight="700" text-anchor="middle">hernia</text>
+      <text x="436" y="607" fill="#2563eb" font-size="6.5" font-weight="600" text-anchor="middle">OBS-U-E</text>
+
+      <!-- SN9 "vol loss pneumonia" cluster (partially OOB right) — comps: volume[ANAT-M], loss[OBS-U-E], low[ANAT-M] -->
+      <circle cx="700" cy="572" r="20" fill="#130d26" stroke="#8b5cf6" stroke-width="1.8"/>
+      <text x="700" y="570" fill="#c4b5fd" font-size="9"   font-weight="700" text-anchor="middle">volume</text>
+      <text x="700" y="582" fill="#7c3aed" font-size="6.5" font-weight="600" text-anchor="middle">ANAT-M</text>
+
+      <circle cx="762" cy="582" r="20" fill="#0c1f3e" stroke="#3b82f6" stroke-width="1.8"/>
+      <text x="762" y="580" fill="#93c5fd" font-size="9"   font-weight="700" text-anchor="middle">loss</text>
+      <text x="762" y="592" fill="#2563eb" font-size="6.5" font-weight="600" text-anchor="middle">OBS-U-E</text>
+
+      <circle cx="822" cy="564" r="20" fill="#130d26" stroke="#8b5cf6" stroke-width="1.8"/>
+      <text x="822" y="562" fill="#c4b5fd" font-size="9"   font-weight="700" text-anchor="middle">low</text>
+      <text x="822" y="574" fill="#7c3aed" font-size="6.5" font-weight="600" text-anchor="middle">ANAT-M</text>
+
+      <!-- LAYER 5: Supernodes (pill shapes — real DB labels) -->
+      <!-- Pill spec: width=174, height=48, rx=24  →  rect.x=cx-87, rect.y=cy-24 -->
+
+      <!-- SN1: amber  "low lung volume"  cx=338, cy=100  — hub (out_deg=343) -->
+      <rect x="251" y="76"  width="174" height="48" rx="24" fill="#1e1b12" stroke="#f59e0b" stroke-width="2.2"/>
+      <text x="338" y="99"  fill="#fbbf24" font-size="12.5" font-weight="700" text-anchor="middle">low lung volume</text>
+      <text x="338" y="114" fill="#d97706" font-size="7.5"  font-weight="800" text-anchor="middle" letter-spacing="0.08em">SUPERNODE</text>
+
+      <!-- SN2: teal  "bibasilar atelectasis"  cx=162, cy=300 -->
+      <rect x="75"  y="276" width="174" height="48" rx="24" fill="#0d1c1a" stroke="#14b8a6" stroke-width="2"/>
+      <text x="162" y="299" fill="#2dd4bf" font-size="11.5" font-weight="700" text-anchor="middle">bibasilar atelectasis</text>
+      <text x="162" y="314" fill="#0d9488" font-size="7.5"  font-weight="800" text-anchor="middle" letter-spacing="0.08em">SUPERNODE</text>
+
+      <!-- SN3: amber  "bronchovascular marking"  cx=622, cy=100 -->
+      <rect x="535" y="76"  width="174" height="48" rx="24" fill="#1e1b12" stroke="#f59e0b" stroke-width="2"/>
+      <text x="622" y="99"  fill="#fbbf24" font-size="10.5" font-weight="700" text-anchor="middle">bronchovascular marking</text>
+      <text x="622" y="114" fill="#d97706" font-size="7.5"  font-weight="800" text-anchor="middle" letter-spacing="0.08em">SUPERNODE</text>
+
+      <!-- SN4: teal  "poor inspiration"  cx=395, cy=300 -->
+      <rect x="308" y="276" width="174" height="48" rx="24" fill="#0d1c1a" stroke="#14b8a6" stroke-width="2"/>
+      <text x="395" y="299" fill="#2dd4bf" font-size="12.5" font-weight="700" text-anchor="middle">poor inspiration</text>
+      <text x="395" y="314" fill="#0d9488" font-size="7.5"  font-weight="800" text-anchor="middle" letter-spacing="0.08em">SUPERNODE</text>
+
+      <!-- SN5: teal  "bronchovascular crowd"  cx=68, cy=100  (left OOB) -->
+      <rect x="-19" y="76"  width="174" height="48" rx="24" fill="#0d1c1a" stroke="#14b8a6" stroke-width="2"/>
+      <text x="68"  y="99"  fill="#2dd4bf" font-size="10.5" font-weight="700" text-anchor="middle">bronchovascular crowd</text>
+      <text x="68"  y="114" fill="#0d9488" font-size="7.5"  font-weight="800" text-anchor="middle" letter-spacing="0.08em">SUPERNODE</text>
+
+      <!-- SN6: amber  "retrocardiac opacity"  cx=648, cy=300 -->
+      <rect x="561" y="276" width="174" height="48" rx="24" fill="#1e1b12" stroke="#f59e0b" stroke-width="2"/>
+      <text x="648" y="299" fill="#fbbf24" font-size="11.5" font-weight="700" text-anchor="middle">retrocardiac opacity</text>
+      <text x="648" y="314" fill="#d97706" font-size="7.5"  font-weight="800" text-anchor="middle" letter-spacing="0.08em">SUPERNODE</text>
+
+      <!-- SN7: teal  "early pneumonia / left low lung"  cx=148, cy=490 -->
+      <rect x="61"  y="466" width="174" height="48" rx="24" fill="#0d1c1a" stroke="#14b8a6" stroke-width="2"/>
+      <text x="148" y="487" fill="#2dd4bf" font-size="11"   font-weight="700" text-anchor="middle">early pneumonia</text>
+      <text x="148" y="500" fill="#2dd4bf" font-size="10"   font-weight="700" text-anchor="middle">left low lung</text>
+      <text x="148" y="513" fill="#0d9488" font-size="7"    font-weight="800" text-anchor="middle" letter-spacing="0.08em">SUPERNODE</text>
+
+      <!-- SN8: amber  "hiatal hernia"  cx=428, cy=510 -->
+      <rect x="341" y="486" width="174" height="48" rx="24" fill="#1e1b12" stroke="#f59e0b" stroke-width="2"/>
+      <text x="428" y="509" fill="#fbbf24" font-size="12.5" font-weight="700" text-anchor="middle">hiatal hernia</text>
+      <text x="428" y="524" fill="#d97706" font-size="7.5"  font-weight="800" text-anchor="middle" letter-spacing="0.08em">SUPERNODE</text>
+
+      <!-- SN9: teal  "vol loss / lobe pneumonia"  cx=762, cy=495  (right OOB) -->
+      <rect x="675" y="471" width="174" height="48" rx="24" fill="#0d1c1a" stroke="#14b8a6" stroke-width="2"/>
+      <text x="762" y="491" fill="#2dd4bf" font-size="11"   font-weight="700" text-anchor="middle">vol loss lobe</text>
+      <text x="762" y="505" fill="#2dd4bf" font-size="10"   font-weight="700" text-anchor="middle">pneumonia</text>
+      <text x="762" y="518" fill="#0d9488" font-size="7"    font-weight="800" text-anchor="middle" letter-spacing="0.08em">SUPERNODE</text>
+
+      <!-- LAYER 6: fog overlays (on top of everything) -->
+      <rect x="0" y="0" width="840" height="630" fill="url(#fog-tl)"/>
+      <rect x="0" y="0" width="840" height="630" fill="url(#fog-tr)"/>
+      <rect x="0" y="0" width="840" height="630" fill="url(#fog-bl)"/>
+      <rect x="0" y="0" width="840" height="630" fill="url(#fog-br)"/>
+
+    </svg>
+  </div>
+
+</div>
+
+<script type="module">
+  import { initSlideController } from './tool/slide-controller.js';
+  import './tool/slide-scale.js';
+
+  function updateSlide(step) {
+    if (step >= 1) {
+      document.querySelectorAll('.stat-card').forEach((card, i) => {
+        setTimeout(() => card.classList.add('visible'), i * 160);
+      });
+    }
+  }
+
+  initSlideController({
+    maxSteps: 1,
+    nextSlideUrl: 'retrieve_preprocess.html',
+    prevSlideUrl: 'build_radiology_association_graph_question_generation.html',
+    onUpdate: updateSlide
+  });
+</script>
+</body>
+</html>

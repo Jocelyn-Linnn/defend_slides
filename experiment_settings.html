@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>Experiment Settings - Chest X-ray Report Refinement System</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 1280px; height: 720px; overflow: hidden;
+      background: #050d1a;
+      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+      color: #e2e8f0;
+    }
+
+    .slide { width: 1280px; height: 720px; position: relative; display: flex; flex-direction: column; cursor: pointer; }
+
+    .bg-grid {
+      position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(21,40,64,0.22) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(21,40,64,0.22) 1px, transparent 1px);
+      background-size: 64px 64px; pointer-events: none;
+    }
+
+    .header { position: absolute; top: 0; left: 0; right: 0; height: 58px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #0d1f38; z-index: 1; }
+    .h-title { font-size: 1rem; font-weight: 700; letter-spacing: 0.35em; text-transform: uppercase; color: #60a5fa; }
+
+    .content { position: absolute; top: 58px; left: 0; right: 0; bottom: 0; display: flex; }
+
+    /* ── Right: Table ── */
+    .right-col { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 28px 64px; gap: 0; }
+
+    .table-wrap { width: 100%; max-width: 1080px; margin: 0 auto; }
+
+    table { width: 100%; border-collapse: collapse; }
+
+    /* Header row */
+    thead tr { border-bottom: 1px solid #152840; }
+    thead th {
+      padding: 14px 20px; text-align: left;
+      font-size: 0.82rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+      color: #2563a8;
+    }
+    thead th:first-child { padding-left: 22px; }
+
+    /* Data rows */
+    tbody tr {
+      border-bottom: 1px solid #0a1828;
+      opacity: 0;
+    }
+    tbody tr.active { animation: a-row 0.45s ease forwards; }
+
+    tbody td {
+      padding: 20px 20px; vertical-align: middle;
+    }
+    tbody td:first-child { padding-left: 22px; }
+
+    /* Version cell */
+    .ver-cell { display: flex; align-items: center; gap: 12px; }
+    .ver-badge {
+      font-size: 1.05rem; font-weight: 800; min-width: 70px;
+      padding: 6px 16px; border-radius: 7px; text-align: center;
+      letter-spacing: 0.04em;
+    }
+    .vb-gray   { background: rgba(100,116,139,0.1); color: #64748b; border: 1px solid rgba(100,116,139,0.18); }
+    .vb-blue   { background: rgba(59,130,246,0.1);  color: #60a5fa; border: 1px solid rgba(59,130,246,0.18); }
+    .vb-final  { background: rgba(34,197,94,0.12);  color: #4ade80; border: 1px solid rgba(34,197,94,0.25); }
+
+    .ver-desc { font-size: 0.88rem; color: #334e6e; }
+
+    /* Strategy & weight cells */
+    .cell-tags { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .ctag {
+      font-size: 0.8rem; font-weight: 600; padding: 5px 14px; border-radius: 5px;
+      white-space: nowrap;
+    }
+    .ct-gray   { background: rgba(100,116,139,0.1); color: #64748b; border: 1px solid rgba(100,116,139,0.18); }
+    .ct-purple { background: rgba(139,92,246,0.1);  color: #a78bfa; border: 1px solid rgba(139,92,246,0.2); }
+    .ct-amber  { background: rgba(245,158,11,0.09); color: #fbbf24; border: 1px solid rgba(245,158,11,0.18); }
+    .ct-teal   { background: rgba(20,184,166,0.09); color: #2dd4bf; border: 1px solid rgba(20,184,166,0.18); }
+    .ct-dash   { color: #1a3356; font-size: 1.3rem; font-weight: 700; padding: 0 4px; }
+
+    /* v4 highlight row */
+    .row-final td { background: rgba(34,197,94,0.04); }
+    .row-final { border-bottom: none !important; }
+    .row-final-border { height: 2px; background: linear-gradient(to right, transparent, rgba(34,197,94,0.3), transparent); opacity: 0; }
+    .row-final-border.active { animation: a-row 0.45s ease forwards; }
+
+    .final-badge {
+      font-size: 0.7rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+      background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3);
+      padding: 3px 9px; border-radius: 5px;
+    }
+
+    @keyframes a-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes a-row {
+      from { opacity: 0; transform: translateX(-8px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    /* ── Responsive scaling: fit fixed-size canvas to any viewport ── */
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #slideContainer { flex-shrink: 0; }
+      /* ── Gallery nav button (global) ── */
+    .gallery-nav-btn {
+      position: absolute; top: 14px; right: 14px; z-index: 30;
+      width: 30px; height: 30px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.09);
+      color: #60a5fa; text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    }
+    .gallery-nav-btn:hover {
+      background: rgba(96,165,250,0.14); border-color: rgba(96,165,250,0.35);
+      transform: scale(1.06);
+    }
+  </style>
+</head>
+<body>
+<div class="slide" id="slideContainer">
+  <a class="gallery-nav-btn" href="all_slides.html" title="All Slides" onclick="event.stopPropagation()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+  </a>
+
+
+  <div class="bg-grid"></div>
+  <div class="header"><span class="h-title">Experiment Settings</span></div>
+
+  <div class="content">
+
+    <!-- Right: Table -->
+    <div class="right-col">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Version</th>
+              <th>Retrieval Strategy</th>
+              <th>Edge Weight</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Baseline -->
+            <tr class="row-baseline">
+              <td>
+                <div class="ver-cell">
+                  <span class="ver-badge vb-gray">Baseline</span>
+                  <span class="ver-desc">No graph</span>
+                </div>
+              </td>
+              <td><span class="ct-dash">—</span></td>
+              <td><span class="ct-dash">—</span></td>
+            </tr>
+
+            <!-- v1 -->
+            <tr class="row-v1">
+              <td>
+                <div class="ver-cell">
+                  <span class="ver-badge vb-blue">v1</span>
+                  <span class="ver-desc">Starting version</span>
+                </div>
+              </td>
+              <td>
+                <div class="cell-tags">
+                  <span class="ctag ct-gray">Single-layer</span>
+                  <span class="ctag ct-gray">Top-K</span>
+                </div>
+              </td>
+              <td><span class="ctag ct-amber">Conditional Probability</span></td>
+            </tr>
+
+            <!-- v2 -->
+            <tr class="row-v2">
+              <td>
+                <div class="ver-cell">
+                  <span class="ver-badge vb-blue">v2</span>
+                  <span class="ver-desc">↑ retrieval</span>
+                </div>
+              </td>
+              <td>
+                <div class="cell-tags">
+                  <span class="ctag ct-purple">Two-layer</span>
+                  <span class="ctag ct-purple">Adaptive</span>
+                </div>
+              </td>
+              <td><span class="ctag ct-amber">Conditional Probability</span></td>
+            </tr>
+
+            <!-- v3 -->
+            <tr class="row-v3">
+              <td>
+                <div class="ver-cell">
+                  <span class="ver-badge vb-blue">v3</span>
+                  <span class="ver-desc">↑ edge weight</span>
+                </div>
+              </td>
+              <td>
+                <div class="cell-tags">
+                  <span class="ctag ct-gray">Single-layer</span>
+                  <span class="ctag ct-gray">Top-K</span>
+                </div>
+              </td>
+              <td><span class="ctag ct-teal">NPMI</span></td>
+            </tr>
+
+            <!-- v4 (final) -->
+            <tr class="row-v4 row-final">
+              <td>
+                <div class="ver-cell">
+                  <span class="ver-badge vb-final">v4</span>
+                  <span class="final-badge">Final</span>
+                </div>
+              </td>
+              <td>
+                <div class="cell-tags">
+                  <span class="ctag ct-purple">Two-layer</span>
+                  <span class="ctag ct-purple">Adaptive</span>
+                </div>
+              </td>
+              <td><span class="ctag ct-teal">NPMI</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="row-final-border fb"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+  import { initSlideController } from './tool/slide-controller.js';
+  import './tool/slide-scale.js';
+
+  const steps = [
+    ['.row-baseline'],
+    ['.row-v1'],
+    ['.row-v2'],
+    ['.row-v3'],
+    ['.row-v4', '.fb'],
+  ];
+
+  function updateSlide(step) {
+    steps.flat().forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.remove('active')));
+    for (let i = 0; i < step; i++) {
+      if (steps[i]) steps[i].forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.add('active')));
+    }
+  }
+
+  initSlideController({
+    maxSteps: steps.length,
+    nextSlideUrl: 'results.html',
+    prevSlideUrl: 'evaluation_metrics.html',
+    onUpdate: updateSlide
+  });
+</script>
+</body>
+</html>

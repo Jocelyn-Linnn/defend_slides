@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>All Slides - Chest X-ray Report Refinement System</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 1280px; height: 720px; overflow: hidden;
+      background: #050d1a;
+      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+      color: #e2e8f0;
+    }
+
+    .slide { width: 1280px; height: 720px; position: relative; display: flex; flex-direction: column; cursor: pointer; }
+
+    .bg-grid {
+      position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(21,40,64,0.22) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(21,40,64,0.22) 1px, transparent 1px);
+      background-size: 64px 64px; pointer-events: none;
+    }
+
+    .header {
+      position: absolute; top: 0; left: 0; right: 0; height: 58px;
+      display: flex; align-items: center; justify-content: center;
+      border-bottom: 1px solid #0d1f38; z-index: 1;
+    }
+    .h-title { font-size: 1rem; font-weight: 700; letter-spacing: 0.35em; text-transform: uppercase; color: #60a5fa; }
+
+    /* ── Subtitle box (below header line) ── */
+    .subtitle-bar {
+      position: absolute; top: 58px; left: 0; right: 0; height: 50px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .h-subtitle-box {
+      display: inline-flex; align-items: center; gap: 9px;
+      padding: 8px 22px 8px 18px; border-radius: 999px;
+      background: linear-gradient(90deg, rgba(59,130,246,0.09), rgba(139,92,246,0.07));
+      border: 1px solid rgba(96,165,250,0.25);
+      box-shadow: 0 0 26px -14px rgba(59,130,246,0.55);
+    }
+    .h-subtitle-icon { width: 15px; height: 15px; flex-shrink: 0; color: #60a5fa; display: flex; }
+    .h-subtitle { font-size: 0.72rem; font-weight: 500; color: #8ba3c7; letter-spacing: 0.015em; }
+    .h-subtitle b { color: #dbeafe; font-weight: 700; }
+
+    /* ── Thumbnail grid ── */
+    .gallery-grid {
+      position: absolute; top: 108px; left: 0; right: 0; bottom: 0;
+      overflow-y: auto;
+      padding: 16px 36px 22px 36px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+      gap: 16px 14px;
+      align-content: start;
+    }
+    .gallery-grid::-webkit-scrollbar { width: 8px; }
+    .gallery-grid::-webkit-scrollbar-thumb { background: #14273f; border-radius: 4px; }
+    .gallery-grid::-webkit-scrollbar-track { background: transparent; }
+
+    .gallery-tile { display: flex; flex-direction: column; gap: 6px; cursor: pointer; }
+
+    .gallery-thumb-wrap {
+      position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden;
+      border-radius: 9px; border: 1px solid rgba(255,255,255,0.08);
+      background: #050d1a;
+      transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .gallery-tile:hover .gallery-thumb-wrap {
+      border-color: rgba(96,165,250,0.5);
+      box-shadow: 0 0 24px -10px rgba(59,130,246,0.55);
+      transform: translateY(-2px);
+    }
+    .gallery-thumb-wrap iframe {
+      position: absolute; top: 0; left: 0; width: 1280px; height: 720px;
+      border: 0; pointer-events: none; transform-origin: top left;
+      background: #050d1a;
+    }
+    .gallery-num {
+      position: absolute; top: 5px; left: 6px; z-index: 2;
+      font-size: 0.56rem; font-weight: 800; padding: 1px 6px; border-radius: 5px;
+      background: rgba(5,13,26,0.75); color: #60a5fa; letter-spacing: 0.02em;
+      border: 1px solid rgba(96,165,250,0.25);
+    }
+    .gallery-label {
+      font-size: 0.62rem; color: #8ba3c7; line-height: 1.35; text-align: center;
+      padding: 0 2px;
+      overflow: hidden; text-overflow: ellipsis;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    }
+
+    /* ── Responsive scaling: fit fixed-size canvas to any viewport ── */
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #slideContainer { flex-shrink: 0; }
+  </style>
+</head>
+<body>
+<div class="slide" id="slideContainer">
+
+  <div class="bg-grid"></div>
+  <div class="header"><span class="h-title">All Slides</span></div>
+  <div class="subtitle-bar">
+    <div class="h-subtitle-box">
+      <svg class="h-subtitle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      <span class="h-subtitle" id="gallerySubtitle">Loading slides…</span>
+    </div>
+  </div>
+
+  <div class="gallery-grid" id="galleryGrid"></div>
+
+</div>
+
+<script type="module">
+  import { initSlideController } from './tool/slide-controller.js';
+  import './tool/slide-scale.js';
+  import { slideOrder } from './tool/slide-order.js';
+
+  const SELF = 'all_slides.html';
+  const grid = document.getElementById('galleryGrid');
+  const subtitle = document.getElementById('gallerySubtitle');
+
+  function titleFromFilename(fn) {
+    return fn.replace(/\.html$/, '')
+      .split('_')
+      .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(' ');
+  }
+
+  // Always read the manifest at load time, so inserting/reordering/removing
+  // slides in slide-order.js is reflected here automatically — no manual edits needed.
+  const others = slideOrder.filter(fn => fn !== SELF);
+  subtitle.innerHTML = `<b>${others.length}</b> slides (shown at final animation state) — click any thumbnail to jump directly`;
+
+  others.forEach((fn, i) => {
+    const tile = document.createElement('div');
+    tile.className = 'gallery-tile';
+    tile.addEventListener('click', (e) => {
+      e.stopPropagation();
+      window.location.href = fn;
+    });
+
+    const wrap = document.createElement('div');
+    wrap.className = 'gallery-thumb-wrap';
+
+    // Load with #last so the thumbnail shows the slide's fully-revealed
+    // final state (after all its click-driven animation steps), not step 0.
+    // slide-controller.js already supports this hash for back-navigation.
+    const iframe = document.createElement('iframe');
+    iframe.src = fn + '#last';
+    iframe.loading = 'lazy';
+    iframe.tabIndex = -1;
+
+    const num = document.createElement('div');
+    num.className = 'gallery-num';
+    num.textContent = String(i + 1).padStart(2, '0');
+
+    wrap.appendChild(iframe);
+    wrap.appendChild(num);
+
+    const label = document.createElement('div');
+    label.className = 'gallery-label';
+    label.textContent = titleFromFilename(fn);
+
+    tile.appendChild(wrap);
+    tile.appendChild(label);
+    grid.appendChild(tile);
+  });
+
+  // Every tile shares the same width (auto-fill grid), and the 1280x720 canvas
+  // itself never actually resizes (only its outer CSS transform does) — so a
+  // single measurement of one tile's real layout width gives the correct scale
+  // for every iframe.
+  function applyThumbScale() {
+    const firstWrap = grid.querySelector('.gallery-thumb-wrap');
+    if (!firstWrap) return;
+    const scale = firstWrap.offsetWidth / 1280;
+    grid.querySelectorAll('.gallery-thumb-wrap iframe').forEach(f => {
+      f.style.transform = `scale(${scale})`;
+    });
+  }
+  applyThumbScale();
+  window.addEventListener('resize', applyThumbScale);
+
+  initSlideController({
+    maxSteps: 0,
+    nextSlideUrl: 'cover.html',
+    prevSlideUrl: null,
+    onUpdate: () => {}
+  });
+</script>
+</body>
+</html>

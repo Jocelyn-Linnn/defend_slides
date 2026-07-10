@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>Visual Question Answering Inference - Chest X-ray Report Refinement System</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 1280px; height: 720px; overflow: hidden;
+      background: #050d1a;
+      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+      color: #e2e8f0;
+    }
+
+    .slide { width: 1280px; height: 720px; position: relative; display: flex; flex-direction: column; cursor: pointer; }
+
+    .bg-grid {
+      position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(21,40,64,0.22) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(21,40,64,0.22) 1px, transparent 1px);
+      background-size: 64px 64px; pointer-events: none;
+    }
+
+    .header { position: absolute; top: 0; left: 0; right: 0; height: 58px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #0d1f38; z-index: 1; }
+    .h-title { font-size: 1rem; font-weight: 700; letter-spacing: 0.28em; text-transform: uppercase; color: #60a5fa; }
+
+    /* ── Subtitle box ── */
+    .subtitle-bar { position: absolute; top: 58px; left: 0; right: 0; height: 50px; display: flex; align-items: center; justify-content: center; }
+    .h-subtitle-box {
+      display: inline-flex; align-items: center; gap: 9px;
+      padding: 8px 22px 8px 18px; border-radius: 999px;
+      background: linear-gradient(90deg, rgba(59,130,246,0.09), rgba(139,92,246,0.07));
+      border: 1px solid rgba(96,165,250,0.25);
+      box-shadow: 0 0 26px -14px rgba(59,130,246,0.55);
+    }
+    .h-subtitle-icon { width: 15px; height: 15px; flex-shrink: 0; color: #60a5fa; display: flex; }
+    .h-subtitle { font-size: 0.72rem; font-weight: 500; color: #8ba3c7; letter-spacing: 0.015em; }
+    .h-subtitle b { color: #dbeafe; font-weight: 700; }
+
+    /* ── Two-column layout ── */
+    .content { position: absolute; top: 108px; left: 0; right: 0; bottom: 0; display: flex; }
+
+    .vq-col { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; padding: 22px 40px; opacity: 0; }
+    .vq-col:first-child { border-right: 1px solid #0a1828; }
+    .vq-col.active { animation: a-in 0.6s ease forwards; }
+
+    .vq-num { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); font-size: 3.8rem; font-weight: 800; line-height: 1; letter-spacing: -0.02em; pointer-events: none; user-select: none; }
+    .num-blue  { color: rgba(59,130,246,0.08); }
+    .num-green { color: rgba(34,197,94,0.08); }
+
+    .vq-card {
+      position: relative; display: flex; flex-direction: column; gap: 12px;
+      width: 100%; max-width: 480px; padding: 28px 28px 26px;
+      border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);
+      background: rgba(255,255,255,0.012);
+    }
+    .card-blue  { border-color: rgba(59,130,246,0.16); box-shadow: 0 0 40px -20px rgba(59,130,246,0.3); }
+    .card-green { border-color: rgba(34,197,94,0.16);  box-shadow: 0 0 40px -20px rgba(34,197,94,0.3); }
+
+    .vq-head { display: flex; align-items: center; gap: 12px; }
+    .vq-icon { width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .icon-blue  { background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.28); color: #60a5fa; }
+    .icon-green { background: rgba(34,197,94,0.08);  border: 1px solid rgba(34,197,94,0.28);  color: #4ade80; }
+
+    .vq-tag { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #2c4a6e; }
+    .vq-title { font-size: 1.02rem; font-weight: 700; color: #e2e8f0; line-height: 1.32; margin-top: 2px; }
+    .vq-desc { font-size: 0.78rem; color: #94a3b8; line-height: 1.55; }
+    .vq-desc b { color: #cbd5e1; }
+
+    /* ── Example callout ── */
+    .cc-example { width: 100%; padding: 10px 12px; border-radius: 8px; background: rgba(59,130,246,0.05); border: 1px solid rgba(59,130,246,0.14); display: flex; flex-direction: column; gap: 6px; }
+    .cc-ex-tag { font-size: 0.54rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #334155; margin-bottom: 4px; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .cc-ex-field { display: flex; align-items: flex-start; gap: 8px; }
+    .cc-ex-field-label { font-size: 0.66rem; font-weight: 800; letter-spacing: 0.03em; color: #60a5fa; flex-shrink: 0; min-width: 30px; margin-top: 1px; }
+    .cc-ex-field-value { font-size: 0.76rem; color: #64748b; line-height: 1.5; }
+    .cc-ex-field-value i { font-style: normal; color: #cbd5e1; }
+    .cc-ex-field-value b { color: #4ade80; }
+
+    .vq-note { display: flex; align-items: flex-start; gap: 8px; padding: 8px 11px; border-radius: 8px; background: rgba(59,130,246,0.06); border: 1px solid rgba(59,130,246,0.16); }
+    .vq-note-text { font-size: 0.7rem; color: #94a3b8; line-height: 1.5; }
+    .vq-note-text b { color: #60a5fa; }
+
+    /* ── Field list (Merge card) ── */
+    .field-list { width: 100%; display: flex; flex-direction: column; gap: 9px; }
+    .field-row { display: flex; align-items: flex-start; gap: 10px; }
+    .field-badge {
+      flex-shrink: 0; margin-top: 1px; padding: 2px 9px; border-radius: 6px;
+      font-size: 0.66rem; font-weight: 800; font-family: 'Consolas','Monaco',monospace;
+      background: rgba(34,197,94,0.12); color: #4ade80;
+    }
+    .field-text { font-size: 0.78rem; color: #94a3b8; line-height: 1.5; }
+    .field-text b { color: #cbd5e1; }
+
+    .vq-final { display: flex; align-items: center; gap: 8px; margin-top: 2px; padding: 8px 12px; border-radius: 8px; background: rgba(34,197,94,0.07); border: 1px solid rgba(34,197,94,0.18); }
+    .vq-final-text { font-size: 0.8rem; font-weight: 700; color: #86efac; }
+    .vq-final-text b { color: #dcfce7; }
+
+    @keyframes a-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    /* ── Responsive scaling: fit fixed-size canvas to any viewport ── */
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #slideContainer { flex-shrink: 0; }
+      /* ── Gallery nav button (global) ── */
+    .gallery-nav-btn {
+      position: absolute; top: 14px; right: 14px; z-index: 30;
+      width: 30px; height: 30px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.09);
+      color: #60a5fa; text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    }
+    .gallery-nav-btn:hover {
+      background: rgba(96,165,250,0.14); border-color: rgba(96,165,250,0.35);
+      transform: scale(1.06);
+    }
+  </style>
+</head>
+<body>
+<div class="slide" id="slideContainer">
+  <a class="gallery-nav-btn" href="all_slides.html" title="All Slides" onclick="event.stopPropagation()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+  </a>
+
+  <div class="bg-grid"></div>
+  <div class="header"><span class="h-title">Visual Question Answering Inference</span></div>
+  <div class="subtitle-bar">
+    <div class="h-subtitle-box">
+      <svg class="h-subtitle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.09 9a3 3 0 1 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/><circle cx="12" cy="12" r="9"/></svg>
+      <span class="h-subtitle">Re-grounding retrieved questions in the <b>image itself</b>, not just the free-text report</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Left: Re-verifying the image -->
+    <div class="vq-col v1">
+      <div class="vq-num num-blue">01</div>
+      <div class="vq-card card-blue">
+        <div class="vq-head">
+          <div class="vq-icon icon-blue">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <div class="vq-tag">Visual Question Answering</div>
+        </div>
+        <div class="vq-title">MedGemma Re-Answers Each Retrieved Question</div>
+        <div class="vq-desc">Reloads MedGemma (<b>medgemma-1.5-4b-it</b>) and asks every knowledge-graph-retrieved question directly against the image — grounding each candidate finding in visual evidence rather than free-text generation alone.</div>
+
+        <div class="cc-example">
+          <div class="cc-ex-tag">Example</div>
+          <div class="cc-ex-field"><span class="cc-ex-field-label">Q</span><span class="cc-ex-field-value"><i>"Do you see any sign of pneumonia in the image?"</i></span></div>
+          <div class="cc-ex-field"><span class="cc-ex-field-label">A</span><span class="cc-ex-field-value"><b>No.</b> There are no clear signs of pneumonia in the image. The lung fields appear relatively clear, with no consolidation or infiltrates visible.</span></div>
+        </div>
+
+        <div class="vq-note">
+          <span class="vq-note-text"><b>Forced format</b> — every answer starts with Yes/No, followed by a 1–2 sentence justification, for consistent and parseable output</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Merging for the final report -->
+    <div class="vq-col v2">
+      <div class="vq-num num-green">02</div>
+      <div class="vq-card card-green">
+        <div class="vq-head">
+          <div class="vq-icon icon-green">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.12 15.88M14.47 14.48 20 20M8.12 8.12 12 12"/></svg>
+          </div>
+          <div class="vq-tag">Structured Merge</div>
+        </div>
+        <div class="vq-title">Two Complementary Fields → One Input</div>
+        <div class="vq-desc">The Q&amp;A results are merged with the original report into a single structured record for final report generation:</div>
+
+        <div class="field-list">
+          <div class="field-row"><div class="field-badge">medgemma</div><span class="field-text">the coherent <b>free-text initial report</b> — overall narrative description</span></div>
+          <div class="field-row"><div class="field-badge">qa</div><span class="field-text">all retrieved questions + <b>Yes/No visual verification</b> — itemized, knowledge-graph-driven checks</span></div>
+        </div>
+
+        <div class="vq-final">
+          <span class="vq-final-text">→ passed to <b>GPT-4o</b> for final report synthesis</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+  import { initSlideController } from './tool/slide-controller.js';
+  import './tool/slide-scale.js';
+
+  const steps = [['.v1'], ['.v2']];
+
+  function updateSlide(step) {
+    steps.flat().forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.remove('active')));
+    for (let i = 0; i < step; i++) {
+      if (steps[i]) steps[i].forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.add('active')));
+    }
+  }
+
+  initSlideController({
+    maxSteps: steps.length,
+    nextSlideUrl: 'gpt4o_integration_prompt.html',
+    prevSlideUrl: 'retrieval_design_rationale.html',
+    onUpdate: updateSlide
+  });
+</script>
+</body>
+</html>

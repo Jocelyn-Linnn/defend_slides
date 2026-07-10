@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>Research Limitations &amp; Future Directions - Chest X-ray Report Refinement System</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 1280px; height: 720px; overflow: hidden;
+      background: #050d1a;
+      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+      color: #e2e8f0;
+    }
+
+    .slide { width: 1280px; height: 720px; position: relative; display: flex; flex-direction: column; cursor: pointer; }
+
+    .bg-grid {
+      position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(21,40,64,0.22) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(21,40,64,0.22) 1px, transparent 1px);
+      background-size: 64px 64px; pointer-events: none;
+    }
+
+    .header {
+      position: absolute; top: 0; left: 0; right: 0; height: 58px;
+      display: flex; align-items: center; justify-content: center;
+      border-bottom: 1px solid #0d1f38; z-index: 1;
+    }
+    .h-title { font-size: 1rem; font-weight: 700; letter-spacing: 0.24em; text-transform: uppercase; color: #60a5fa; }
+
+    .content {
+      position: absolute; top: 58px; left: 0; right: 0; bottom: 0;
+      display: flex;
+    }
+
+    .lf-col {
+      flex: 1; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 20px 26px;
+      opacity: 0;
+    }
+    .lf-col:not(:last-child) { border-right: 1px solid #0a1828; }
+    .lf-col.active { animation: a-in 0.6s ease forwards; }
+
+    .lf-num {
+      position: absolute; top: 10px; left: 16px;
+      font-size: 2.4rem; font-weight: 800; line-height: 1; letter-spacing: -0.02em;
+      color: rgba(148,163,184,0.10);
+      pointer-events: none; user-select: none;
+    }
+
+    .lf-block { width: 100%; max-width: 340px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+
+    .lf-head { display: flex; align-items: center; gap: 8px; }
+    .lf-icon {
+      width: 30px; height: 30px; border-radius: 9px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .icon-limit  { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.28); color: #f87171; }
+    .icon-future { background: rgba(96,165,250,0.1);  border: 1px solid rgba(96,165,250,0.28);  color: #60a5fa; }
+
+    .lf-tag { font-size: 0.56rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+    .tag-limit  { color: #f87171; }
+    .tag-future { color: #60a5fa; }
+
+    .lf-title { font-size: 0.86rem; font-weight: 700; color: #e2e8f0; line-height: 1.35; text-align: center; }
+
+    .lf-desc { font-size: 0.68rem; color: #64748b; line-height: 1.55; text-align: center; }
+    .lf-desc b { color: #94a3b8; }
+
+    .lf-connector { display: flex; flex-direction: column; align-items: center; gap: 2px; margin: 10px 0; }
+    .lf-connector-line { width: 1px; height: 16px; background: linear-gradient(to bottom, rgba(248,113,113,0.4), rgba(96,165,250,0.4)); }
+    .lf-connector-label { font-size: 0.54rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #2c4a6e; }
+    .lf-connector-arrow { color: #1a3356; font-size: 0.85rem; line-height: 1; }
+
+    @keyframes a-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    /* ── Responsive scaling: fit fixed-size canvas to any viewport ── */
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #slideContainer { flex-shrink: 0; }
+      /* ── Gallery nav button (global) ── */
+    .gallery-nav-btn {
+      position: absolute; top: 14px; right: 14px; z-index: 30;
+      width: 30px; height: 30px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.09);
+      color: #60a5fa; text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    }
+    .gallery-nav-btn:hover {
+      background: rgba(96,165,250,0.14); border-color: rgba(96,165,250,0.35);
+      transform: scale(1.06);
+    }
+  </style>
+</head>
+<body>
+<div class="slide" id="slideContainer">
+  <a class="gallery-nav-btn" href="all_slides.html" title="All Slides" onclick="event.stopPropagation()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+  </a>
+
+
+  <div class="bg-grid"></div>
+  <div class="header"><span class="h-title">Research Limitations &amp; Future Directions</span></div>
+
+  <div class="content">
+
+    <!-- Pair 1: VQA accuracy ceiling -->
+    <div class="lf-col l1">
+      <div class="lf-num">01</div>
+
+      <div class="lf-block">
+        <div class="lf-head">
+          <div class="lf-icon icon-limit">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <span class="lf-tag tag-limit">Limitation</span>
+        </div>
+        <div class="lf-title">VQA Accuracy Ceiling</div>
+        <div class="lf-desc">VQA can still answer <b>"Yes"</b> with no matching finding in the image — the real bottleneck, not retrieval design</div>
+      </div>
+
+      <div class="lf-connector">
+        <div class="lf-connector-line"></div>
+        <span class="lf-connector-label">Addressed By</span>
+        <span class="lf-connector-arrow">↓</span>
+      </div>
+
+      <div class="lf-block">
+        <div class="lf-head">
+          <div class="lf-icon icon-future">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg>
+          </div>
+          <span class="lf-tag tag-future">Future Work</span>
+        </div>
+        <div class="lf-title">Improve VQA Accuracy</div>
+        <div class="lf-desc">A stronger medical VLM, or an <b>answer-verification module</b> to filter image-inconsistent answers</div>
+      </div>
+    </div>
+
+    <!-- Pair 2: cumulative error propagation -->
+    <div class="lf-col l2">
+      <div class="lf-num">02</div>
+
+      <div class="lf-block">
+        <div class="lf-head">
+          <div class="lf-icon icon-limit">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="14" width="6" height="6" rx="1.2"/><rect x="9" y="8" width="6" height="6" rx="1.2"/><rect x="14" y="2" width="6" height="6" rx="1.2"/></svg>
+          </div>
+          <span class="lf-tag tag-limit">Limitation</span>
+        </div>
+        <div class="lf-title">Cumulative Error Propagation</div>
+        <div class="lf-desc">A flawed initial report misguides retrieval and QA — <b>compounding more</b> hallucinations downstream</div>
+      </div>
+
+      <div class="lf-connector">
+        <div class="lf-connector-line"></div>
+        <span class="lf-connector-label">Addressed By</span>
+        <span class="lf-connector-arrow">↓</span>
+      </div>
+
+      <div class="lf-block">
+        <div class="lf-head">
+          <div class="lf-icon icon-future">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v6l4 4"/><circle cx="12" cy="13" r="9"/></svg>
+          </div>
+          <span class="lf-tag tag-future">Future Work</span>
+        </div>
+        <div class="lf-title">Strengthen Pipeline Error Tolerance</div>
+        <div class="lf-desc">Score report confidence, adapt QA depth, or explore <b>multi-round self-correction</b></div>
+      </div>
+    </div>
+
+    <!-- Pair 3: limits of hallucination post-processing -->
+    <div class="lf-col l3">
+      <div class="lf-num">03</div>
+
+      <div class="lf-block">
+        <div class="lf-head">
+          <div class="lf-icon icon-limit">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+          </div>
+          <span class="lf-tag tag-limit">Limitation</span>
+        </div>
+        <div class="lf-title">Limits of Hallucination Post-Processing</div>
+        <div class="lf-desc">Touched only <b>12%</b> of reports, and <b>~50%</b> of its deletions were true positives</div>
+      </div>
+
+      <div class="lf-connector">
+        <div class="lf-connector-line"></div>
+        <span class="lf-connector-label">Addressed By</span>
+        <span class="lf-connector-arrow">↓</span>
+      </div>
+
+      <div class="lf-block">
+        <div class="lf-head">
+          <div class="lf-icon icon-future">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </div>
+          <span class="lf-tag tag-future">Future Work</span>
+        </div>
+        <div class="lf-title">More Precise Hallucination Detection &amp; Removal</div>
+        <div class="lf-desc">An <b>LLM-based semantic checker</b>, and filtering <b>before</b> synthesis rather than after</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+  import { initSlideController } from './tool/slide-controller.js';
+  import './tool/slide-scale.js';
+
+  const steps = [['.l1'], ['.l2'], ['.l3']];
+
+  function updateSlide(step) {
+    steps.flat().forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.remove('active')));
+    for (let i = 0; i < step; i++) {
+      if (steps[i]) steps[i].forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.add('active')));
+    }
+  }
+
+  initSlideController({
+    maxSteps: steps.length,
+    nextSlideUrl: null,
+    prevSlideUrl: 'research_summary.html',
+    onUpdate: updateSlide
+  });
+</script>
+</body>
+</html>

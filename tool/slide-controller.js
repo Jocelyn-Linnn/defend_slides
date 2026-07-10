@@ -1,14 +1,37 @@
 /**
  * 簡報通用導覽控制器 (Slide Controller)
  * 支援功能：上下頁雜湊（#last）追蹤、鍵盤/滑鼠事件監聽、按上退回前一頁最後一個動畫
+ *
+ * 換頁順序優先從 slide-order.js 清單自動解析（依目前檔名在清單中的位置找出
+ * 上一頁／下一頁），呼叫端傳入的 nextSlideUrl / prevSlideUrl 只在「目前頁面
+ * 不在清單中」時作為備援使用。這樣插入新頁面時，只需更新 slide-order.js，
+ * 不必逐頁修改 prevSlideUrl / nextSlideUrl。
  */
+import { slideOrder } from './slide-order.js';
+
+function resolveNeighborUrls(fallbackNext, fallbackPrev) {
+  const currentFile = window.location.pathname.split('/').pop();
+  const idx = slideOrder.indexOf(currentFile);
+
+  if (idx === -1) {
+    // 目前檔案不在清單中，退回呼叫端傳入的值
+    return { next: fallbackNext, prev: fallbackPrev };
+  }
+
+  return {
+    next: idx < slideOrder.length - 1 ? slideOrder[idx + 1] : null,
+    prev: idx > 0 ? slideOrder[idx - 1] : null
+  };
+}
+
 export function initSlideController({
   maxSteps,
-  nextSlideUrl,
-  prevSlideUrl,
+  nextSlideUrl: fallbackNextSlideUrl,
+  prevSlideUrl: fallbackPrevSlideUrl,
   containerId = 'slideContainer',
   onUpdate // 這是外部傳進來的 updateSlide 函式
 }) {
+  const { next: nextSlideUrl, prev: prevSlideUrl } = resolveNeighborUrls(fallbackNextSlideUrl, fallbackPrevSlideUrl);
   const container = document.getElementById(containerId);
 
   // 初始化偵測：若網址帶有 #last 暗號則直接跳至最後一步，否則從第 0 步開始

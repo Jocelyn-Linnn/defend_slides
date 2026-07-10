@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>Retrieval Design Rationale - Chest X-ray Report Refinement System</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 1280px; height: 720px; overflow: hidden;
+      background: #050d1a;
+      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+      color: #e2e8f0;
+    }
+
+    .slide { width: 1280px; height: 720px; position: relative; display: flex; flex-direction: column; cursor: pointer; }
+
+    .bg-grid {
+      position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(21,40,64,0.22) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(21,40,64,0.22) 1px, transparent 1px);
+      background-size: 64px 64px; pointer-events: none;
+    }
+
+    .header { position: absolute; top: 0; left: 0; right: 0; height: 58px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #0d1f38; z-index: 1; }
+    .h-title { font-size: 1rem; font-weight: 700; letter-spacing: 0.35em; text-transform: uppercase; color: #60a5fa; }
+
+    /* ── Subtitle box ── */
+    .subtitle-bar { position: absolute; top: 58px; left: 0; right: 0; height: 50px; display: flex; align-items: center; justify-content: center; }
+    .h-subtitle-box {
+      display: inline-flex; align-items: center; gap: 9px;
+      padding: 8px 22px 8px 18px; border-radius: 999px;
+      background: linear-gradient(90deg, rgba(59,130,246,0.09), rgba(139,92,246,0.07));
+      border: 1px solid rgba(96,165,250,0.25);
+      box-shadow: 0 0 26px -14px rgba(59,130,246,0.55);
+    }
+    .h-subtitle-icon { width: 15px; height: 15px; flex-shrink: 0; color: #60a5fa; display: flex; }
+    .h-subtitle { font-size: 0.72rem; font-weight: 500; color: #8ba3c7; letter-spacing: 0.015em; }
+
+    /* ── Three-column layout ── */
+    .content { position: absolute; top: 108px; left: 0; right: 0; bottom: 0; display: flex; }
+
+    .rd-col {
+      flex: 1; position: relative; display: flex; align-items: center; justify-content: center;
+      padding: 22px 30px; opacity: 0;
+    }
+    .rd-col:not(:last-child)::after {
+      content: ''; position: absolute; top: 10%; bottom: 10%; right: 0; width: 1px;
+      background: linear-gradient(to bottom, transparent, #142c4a, transparent);
+    }
+    .rd-col.active { animation: a-in 0.6s ease forwards; }
+
+    .rd-num {
+      position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+      font-size: 4.4rem; font-weight: 800; line-height: 1; letter-spacing: -0.02em;
+      pointer-events: none; user-select: none;
+    }
+    .num-purple { color: rgba(139,92,246,0.08); }
+    .num-green  { color: rgba(34,197,94,0.08); }
+    .num-teal   { color: rgba(45,212,191,0.08); }
+
+    .rd-card {
+      position: relative; display: flex; flex-direction: column; align-items: center;
+      gap: 13px; width: 100%; max-width: 340px;
+      padding: 32px 24px 26px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.05);
+      background: rgba(255,255,255,0.012);
+    }
+    .card-purple { border-color: rgba(139,92,246,0.16); box-shadow: 0 0 40px -20px rgba(139,92,246,0.32); }
+    .card-green  { border-color: rgba(34,197,94,0.16);  box-shadow: 0 0 40px -20px rgba(34,197,94,0.32); }
+    .card-teal   { border-color: rgba(45,212,191,0.16); box-shadow: 0 0 40px -20px rgba(45,212,191,0.32); }
+
+    .rd-icon {
+      width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .icon-purple { background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.28); color: #a78bfa; }
+    .icon-green  { background: rgba(34,197,94,0.08);  border: 1px solid rgba(34,197,94,0.28);  color: #4ade80; }
+    .icon-teal   { background: rgba(45,212,191,0.08); border: 1px solid rgba(45,212,191,0.28);  color: #2dd4bf; }
+
+    .rd-title { font-size: 1rem; font-weight: 700; color: #eef2f8; line-height: 1.3; text-align: center; }
+
+    .rd-divider { width: 40px; height: 2px; border-radius: 2px; }
+    .div-purple { background: linear-gradient(90deg, transparent, #8b5cf6, transparent); }
+    .div-green  { background: linear-gradient(90deg, transparent, #22c55e, transparent); }
+    .div-teal   { background: linear-gradient(90deg, transparent, #2dd4bf, transparent); }
+
+    .rd-desc { font-size: 0.76rem; color: #94a3b8; line-height: 1.6; text-align: center; }
+    .rd-desc b { color: #cbd5e1; }
+
+    @keyframes a-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    /* ── Responsive scaling: fit fixed-size canvas to any viewport ── */
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #slideContainer { flex-shrink: 0; }
+      /* ── Gallery nav button (global) ── */
+    .gallery-nav-btn {
+      position: absolute; top: 14px; right: 14px; z-index: 30;
+      width: 30px; height: 30px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.09);
+      color: #60a5fa; text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    }
+    .gallery-nav-btn:hover {
+      background: rgba(96,165,250,0.14); border-color: rgba(96,165,250,0.35);
+      transform: scale(1.06);
+    }
+  </style>
+</head>
+<body>
+<div class="slide" id="slideContainer">
+  <a class="gallery-nav-btn" href="all_slides.html" title="All Slides" onclick="event.stopPropagation()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+  </a>
+
+  <div class="bg-grid"></div>
+  <div class="header"><span class="h-title">Retrieval Design Rationale</span></div>
+  <div class="subtitle-bar">
+    <div class="h-subtitle-box">
+      <svg class="h-subtitle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16.5"/><circle cx="12" cy="7.5" r="0.9" fill="currentColor" stroke="none"/></svg>
+      <span class="h-subtitle">Three design decisions behind the knowledge-graph retrieval module</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Column 1: Why two retrieval strategies -->
+    <div class="rd-col r1">
+      <div class="rd-num num-purple">01</div>
+      <div class="rd-card card-purple">
+        <div class="rd-icon icon-purple">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v12a3 3 0 0 0 3 3h9"/><path d="M18 3v6a3 3 0 0 1-3 3H6"/><circle cx="6" cy="3" r="0"/></svg>
+        </div>
+        <div class="rd-title">Why Two Retrieval Strategies</div>
+        <div class="rd-divider div-purple"></div>
+        <div class="rd-desc">Two dimensions of comparison: <b>depth</b> (single-layer vs. two-layer — does deeper inference add recall?) and <b>filtering</b> (fixed Top-K vs. adaptive weight — how does candidate quality change?). Isolating each choice reveals its individual effect on report quality.</div>
+      </div>
+    </div>
+
+    <!-- Column 2: Why K = 5 -->
+    <div class="rd-col r2">
+      <div class="rd-num num-green">02</div>
+      <div class="rd-card card-green">
+        <div class="rd-icon icon-green">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        </div>
+        <div class="rd-title">Why K = 5 (Strategy 1)</div>
+        <div class="rd-divider div-green"></div>
+        <div class="rd-desc">Tuned empirically: a larger K pulled in <b>low-relevance candidates</b>, causing more false "Yes" answers in VQA and more hallucinations. Reducing to K=5 sharply improved candidate precision.</div>
+      </div>
+    </div>
+
+    <!-- Column 3: Why mean + std -->
+    <div class="rd-col r3">
+      <div class="rd-num num-teal">03</div>
+      <div class="rd-card card-teal">
+        <div class="rd-icon icon-teal">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>
+        </div>
+        <div class="rd-title">Why Mean + Std (Strategy 2)</div>
+        <div class="rd-divider div-teal"></div>
+        <div class="rd-desc">Mean alone let too many <b>low-relevance candidates</b> through, hurting downstream VQA quality. Adding one standard deviation narrows the pool while keeping the more strongly associated nodes.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+  import { initSlideController } from './tool/slide-controller.js';
+  import './tool/slide-scale.js';
+
+  const steps = [['.r1'], ['.r2'], ['.r3']];
+
+  function updateSlide(step) {
+    steps.flat().forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.remove('active')));
+    for (let i = 0; i < step; i++) {
+      if (steps[i]) steps[i].forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.add('active')));
+    }
+  }
+
+  initSlideController({
+    maxSteps: steps.length,
+    nextSlideUrl: 'visual_question_answering_inference.html',
+    prevSlideUrl: 'retrieve_method_2_two_layer_expansion_with_adaptive_per_layer_filtering.html',
+    onUpdate: updateSlide
+  });
+</script>
+</body>
+</html>

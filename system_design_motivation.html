@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>System Design Motivation - Chest X-ray Report Refinement System</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 1280px; height: 720px; overflow: hidden;
+      background: #050d1a;
+      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+      color: #e2e8f0;
+    }
+
+    .slide { width: 1280px; height: 720px; position: relative; display: flex; flex-direction: column; cursor: pointer; }
+
+    .bg-grid {
+      position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(21,40,64,0.22) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(21,40,64,0.22) 1px, transparent 1px);
+      background-size: 64px 64px; pointer-events: none;
+    }
+
+    .header {
+      position: absolute; top: 0; left: 0; right: 0; height: 58px;
+      display: flex; align-items: center; justify-content: center;
+      border-bottom: 1px solid #0d1f38; z-index: 1;
+    }
+    .h-title { font-size: 1rem; font-weight: 700; letter-spacing: 0.35em; text-transform: uppercase; color: #60a5fa; }
+
+    /* ── Subtitle box (below header line) ── */
+    .subtitle-bar {
+      position: absolute; top: 58px; left: 0; right: 0; height: 50px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .h-subtitle-box {
+      display: inline-flex; align-items: center; gap: 9px;
+      padding: 8px 22px 8px 18px; border-radius: 999px;
+      background: linear-gradient(90deg, rgba(59,130,246,0.09), rgba(139,92,246,0.07));
+      border: 1px solid rgba(96,165,250,0.25);
+      box-shadow: 0 0 26px -14px rgba(59,130,246,0.55);
+    }
+    .h-subtitle-icon { width: 15px; height: 15px; flex-shrink: 0; color: #60a5fa; display: flex; }
+    .h-subtitle { font-size: 0.72rem; font-weight: 500; color: #8ba3c7; letter-spacing: 0.015em; }
+    .h-subtitle b { color: #dbeafe; font-weight: 700; }
+
+    /* ── Two-column layout ── */
+    .content {
+      position: absolute; top: 108px; left: 0; right: 0; bottom: 0;
+      display: flex;
+    }
+
+    .sdm-col {
+      flex: 1; position: relative; display: flex; align-items: center; justify-content: center;
+      padding: 24px 42px;
+      opacity: 0;
+    }
+    .sdm-col:first-child { border-right: 1px solid #0a1828; }
+    .sdm-col.active { animation: a-in 0.6s ease forwards; }
+
+    /* Ghost index number */
+    .sdm-num {
+      position: absolute; top: 18px; left: 50%; transform: translateX(-50%);
+      font-size: 4rem; font-weight: 800; line-height: 1; letter-spacing: -0.02em;
+      pointer-events: none; user-select: none;
+    }
+    .num-blue  { color: rgba(59,130,246,0.08); }
+    .num-green { color: rgba(34,197,94,0.08); }
+
+    /* Card */
+    .sdm-card {
+      position: relative; display: flex; flex-direction: column;
+      gap: 12px; width: 100%; max-width: 470px;
+      padding: 30px 28px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.05);
+      background: rgba(255,255,255,0.012);
+    }
+    .card-blue  { border-color: rgba(59,130,246,0.16); box-shadow: 0 0 40px -20px rgba(59,130,246,0.3); }
+    .card-green { border-color: rgba(34,197,94,0.16);  box-shadow: 0 0 40px -20px rgba(34,197,94,0.3); }
+
+    .sdm-head { display: flex; align-items: center; gap: 12px; }
+    .sdm-icon {
+      width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .icon-blue  { background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.28); color: #60a5fa; }
+    .icon-green { background: rgba(34,197,94,0.08);  border: 1px solid rgba(34,197,94,0.28);  color: #4ade80; }
+
+    .sdm-tag { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #2c4a6e; }
+    .sdm-title { font-size: 1.08rem; font-weight: 700; color: #e2e8f0; line-height: 1.35; margin-top: 2px; }
+
+    .sdm-desc { font-size: 0.8rem; color: #94a3b8; line-height: 1.55; }
+    .sdm-desc b { color: #cbd5e1; }
+
+    /* ── Example callout (Observation card) ── */
+    .cc-example {
+      width: 100%; padding: 10px 12px; border-radius: 8px;
+      background: rgba(59,130,246,0.05); border: 1px solid rgba(59,130,246,0.14);
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .cc-ex-tag {
+      font-size: 0.54rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+      color: #334155; margin-bottom: 4px; padding-bottom: 6px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .cc-ex-field { display: flex; align-items: flex-start; gap: 8px; }
+    .cc-ex-field-label {
+      font-size: 0.66rem; font-weight: 800; letter-spacing: 0.03em; color: #60a5fa;
+      flex-shrink: 0; min-width: 100px; margin-top: 1px;
+    }
+    .cc-ex-field-value { font-size: 0.78rem; color: #64748b; line-height: 1.5; }
+    .cc-ex-field-value b { color: #94a3b8; }
+    .cc-ex-field-value i { font-style: normal; color: #cbd5e1; }
+
+    /* ── Step list (Design Logic card) ── */
+    .step-list { width: 100%; display: flex; flex-direction: column; gap: 9px; }
+    .step-row { display: flex; align-items: flex-start; gap: 10px; }
+    .step-badge {
+      width: 20px; height: 20px; border-radius: 6px; flex-shrink: 0; margin-top: 1px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.66rem; font-weight: 800;
+      background: rgba(34,197,94,0.12); color: #4ade80;
+    }
+    .step-text { font-size: 0.78rem; color: #94a3b8; line-height: 1.5; }
+    .step-text b { color: #cbd5e1; }
+    .step-arrow { font-size: 0.7rem; color: #1a3356; padding-left: 5px; }
+
+    @keyframes a-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    /* ── Responsive scaling: fit fixed-size canvas to any viewport ── */
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #slideContainer { flex-shrink: 0; }
+      /* ── Gallery nav button (global) ── */
+    .gallery-nav-btn {
+      position: absolute; top: 14px; right: 14px; z-index: 30;
+      width: 30px; height: 30px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.09);
+      color: #60a5fa; text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    }
+    .gallery-nav-btn:hover {
+      background: rgba(96,165,250,0.14); border-color: rgba(96,165,250,0.35);
+      transform: scale(1.06);
+    }
+  </style>
+</head>
+<body>
+<div class="slide" id="slideContainer">
+  <a class="gallery-nav-btn" href="all_slides.html" title="All Slides" onclick="event.stopPropagation()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+  </a>
+
+
+  <div class="bg-grid"></div>
+  <div class="header"><span class="h-title">System Design Motivation</span></div>
+  <div class="subtitle-bar">
+    <div class="h-subtitle-box">
+      <svg class="h-subtitle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16.5"/><circle cx="12" cy="7.5" r="0.9" fill="currentColor" stroke="none"/></svg>
+      <span class="h-subtitle">From an observed <b>capability gap</b> to a <b>question-driven correction</b> design</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Left: The Observation -->
+    <div class="sdm-col s1">
+      <div class="sdm-num num-blue">01</div>
+      <div class="sdm-card card-blue">
+        <div class="sdm-head">
+          <div class="sdm-icon icon-blue">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+          </div>
+          <div class="sdm-tag">The Observation</div>
+        </div>
+        <div class="sdm-title">Generation Omits What the Model Can Verify</div>
+        <div class="sdm-desc">MedGemma's free-text reports sometimes omit findings explicit in the ground truth — even though the model can confirm them when asked directly</div>
+
+        <div class="cc-example">
+          <div class="cc-ex-tag">Motivating Case</div>
+          <div class="cc-ex-field"><span class="cc-ex-field-label">GT</span><span class="cc-ex-field-value">Records a chest tube</span></div>
+          <div class="cc-ex-field"><span class="cc-ex-field-label">MedGemma</span><span class="cc-ex-field-value">Initial report omits it entirely</span></div>
+          <div class="cc-ex-field"><span class="cc-ex-field-label">Direct Question</span><span class="cc-ex-field-value"><i>"Do you see a tube in the image?"</i></span></div>
+          <div class="cc-ex-field"><span class="cc-ex-field-label">Answer</span><span class="cc-ex-field-value"><b>Yes</b> — correctly confirms it</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: The Design Logic -->
+    <div class="sdm-col s2">
+      <div class="sdm-num num-green">02</div>
+      <div class="sdm-card card-green">
+        <div class="sdm-head">
+          <div class="sdm-icon icon-green">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18h6"/><path d="M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.4c.5.5.9 1.1 1 1.8V16h6v-.8c.1-.7.5-1.3 1-1.8A6 6 0 0 0 12 3z"/>
+            </svg>
+          </div>
+          <div class="sdm-tag">The Design Logic</div>
+        </div>
+        <div class="sdm-title">→ Knowledge-Graph-Guided Question-Driven Correction</div>
+        <div class="sdm-desc">A <b>generation gap, not a perception gap</b> — but useful questions must be clinically informed, or they stay superficial</div>
+
+        <div class="step-list">
+          <div class="step-row"><div class="step-badge">1</div><span class="step-text">Generate the <b>initial report</b> (MedGemma)</span></div>
+          <div class="step-row"><div class="step-badge">2</div><span class="step-text">Mine it for <b>potential clinical clues</b></span></div>
+          <div class="step-row"><div class="step-badge">3</div><span class="step-text">Retrieve related questions from the <b>knowledge graph</b> — substituting for a radiologist's domain expertise</span></div>
+          <div class="step-row"><div class="step-badge">4</div><span class="step-text">Re-ask the model on the image to <b>confirm and supplement</b> omissions</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+  import { initSlideController } from './tool/slide-controller.js';
+  import './tool/slide-scale.js';
+
+  const steps = [['.s1'], ['.s2']];
+
+  function updateSlide(step) {
+    steps.flat().forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.remove('active')));
+    for (let i = 0; i < step; i++) {
+      if (steps[i]) steps[i].forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.add('active')));
+    }
+  }
+
+  initSlideController({
+    maxSteps: steps.length,
+    nextSlideUrl: 'system_flow.html',
+    prevSlideUrl: 'methodology.html',
+    onUpdate: updateSlide
+  });
+</script>
+</body>
+</html>

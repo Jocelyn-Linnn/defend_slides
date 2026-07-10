@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>Metrics - Chest X-ray Report Refinement System</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 1280px; height: 720px; overflow: hidden;
+      background: #050d1a;
+      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+      color: #e2e8f0;
+    }
+
+    .slide { width: 1280px; height: 720px; position: relative; display: flex; flex-direction: column; cursor: pointer; }
+
+    .bg-grid {
+      position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(21,40,64,0.22) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(21,40,64,0.22) 1px, transparent 1px);
+      background-size: 64px 64px; pointer-events: none;
+    }
+
+    .header { position: absolute; top: 0; left: 0; right: 0; height: 58px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #0d1f38; z-index: 1; }
+    .h-title { font-size: 1rem; font-weight: 700; letter-spacing: 0.35em; text-transform: uppercase; color: #60a5fa; }
+
+    /* ── Three-column layout ── */
+    .content {
+      position: absolute; top: 58px; left: 0; right: 0; bottom: 0;
+      display: flex; gap: 0;
+    }
+
+    .metric-col {
+      flex: 1; position: relative; display: flex; align-items: center; justify-content: center;
+      padding: 22px 34px;
+      opacity: 0;
+    }
+    .metric-col:not(:last-child)::after {
+      content: ''; position: absolute; top: 12%; bottom: 12%; right: 0; width: 1px;
+      background: linear-gradient(to bottom, transparent, #142c4a, transparent);
+    }
+    .metric-col.active { animation: a-in 0.6s ease forwards; }
+
+    /* ── Ghost index number ── */
+    .mc-num {
+      position: absolute; top: 26px; left: 50%; transform: translateX(-50%);
+      font-size: 5rem; font-weight: 800; line-height: 1; letter-spacing: -0.02em;
+      pointer-events: none; user-select: none;
+    }
+    .num-blue   { color: rgba(59,130,246,0.07); }
+    .num-purple { color: rgba(139,92,246,0.07); }
+    .num-green  { color: rgba(16,185,129,0.07); }
+
+    /* ── Card ── */
+    .mc-card {
+      position: relative; display: flex; flex-direction: column; align-items: center;
+      gap: 18px; width: 100%; max-width: 250px;
+      padding: 38px 26px 32px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.05);
+      background: rgba(255,255,255,0.012);
+    }
+    .card-blue   { border-color: rgba(59,130,246,0.16); box-shadow: 0 0 40px -20px rgba(59,130,246,0.35); }
+    .card-purple { border-color: rgba(139,92,246,0.16); box-shadow: 0 0 40px -20px rgba(139,92,246,0.35); }
+    .card-green  { border-color: rgba(16,185,129,0.16); box-shadow: 0 0 40px -20px rgba(16,185,129,0.35); }
+
+    /* ── Icon badge ── */
+    .mc-icon {
+      width: 60px; height: 60px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .icon-blue   { background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.28); color: #60a5fa; }
+    .icon-purple { background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.28); color: #a78bfa; }
+    .icon-green  { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.28); color: #34d399; }
+
+    /* ── Metric header ── */
+    .mc-tag {
+      display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+      font-size: 0.6rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+    }
+    .mc-tag-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .dot-blue   { background: #3b82f6; }
+    .dot-purple { background: #8b5cf6; }
+    .dot-green  { background: #10b981; }
+    .col-tag-blue   { color: #60a5fa; }
+    .col-tag-purple { color: #a78bfa; }
+    .col-tag-green  { color: #34d399; }
+
+    .mc-name { font-size: 1.7rem; font-weight: 800; color: #eef2f8; line-height: 1.2; text-align: center; margin-top: -4px; }
+
+    .mc-divider { width: 40px; height: 2px; border-radius: 2px; }
+    .div-blue   { background: linear-gradient(90deg, transparent, #3b82f6, transparent); }
+    .div-purple { background: linear-gradient(90deg, transparent, #8b5cf6, transparent); }
+    .div-green  { background: linear-gradient(90deg, transparent, #10b981, transparent); }
+
+    .mc-full { font-size: 0.78rem; color: #64748b; font-weight: 500; line-height: 1.65; text-align: center; }
+
+    /* ── Sub-metric rows (Macro / Micro F1) ── */
+    .mc-metrics {
+      display: flex; flex-direction: column; gap: 10px; width: 100%;
+      margin-top: 4px; padding-top: 14px; border-top: 1px solid rgba(139,92,246,0.14);
+    }
+    .metric-row { display: flex; flex-direction: column; gap: 3px; align-items: center; }
+    .metric-label {
+      font-size: 0.62rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+      color: #a78bfa;
+    }
+    .metric-desc { font-size: 0.68rem; color: #64748b; line-height: 1.5; text-align: center; }
+
+    @keyframes a-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    /* ── Responsive scaling: fit fixed-size canvas to any viewport ── */
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #slideContainer { flex-shrink: 0; }
+      /* ── Gallery nav button (global) ── */
+    .gallery-nav-btn {
+      position: absolute; top: 14px; right: 14px; z-index: 30;
+      width: 30px; height: 30px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.09);
+      color: #60a5fa; text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    }
+    .gallery-nav-btn:hover {
+      background: rgba(96,165,250,0.14); border-color: rgba(96,165,250,0.35);
+      transform: scale(1.06);
+    }
+  </style>
+</head>
+<body>
+<div class="slide" id="slideContainer">
+  <a class="gallery-nav-btn" href="all_slides.html" title="All Slides" onclick="event.stopPropagation()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+  </a>
+
+
+  <div class="bg-grid"></div>
+  <div class="header"><span class="h-title">Evaluation Metrics</span></div>
+
+  <div class="content">
+
+    <!-- Column 1: RadGraph F1 -->
+    <div class="metric-col m1">
+      <div class="mc-num num-blue">01</div>
+      <div class="mc-card card-blue">
+        <div class="mc-icon icon-blue">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="6" cy="6" r="2.6"/><circle cx="18" cy="6" r="2.6"/><circle cx="12" cy="18" r="2.6"/>
+            <line x1="8.2" y1="7.3" x2="10.3" y2="16"/><line x1="15.8" y1="7.3" x2="13.7" y2="16"/><line x1="8.4" y1="6" x2="15.6" y2="6"/>
+          </svg>
+        </div>
+        <div class="mc-tag col-tag-blue"><div class="mc-tag-dot dot-blue"></div>Entity &amp; Relation</div>
+        <div class="mc-name">RadGraph F1</div>
+        <div class="mc-divider div-blue"></div>
+        <div class="mc-full">Structured graph overlap between<br>generated &amp; reference report</div>
+      </div>
+    </div>
+
+    <!-- Column 2: CheXBert F1 -->
+    <div class="metric-col m2">
+      <div class="mc-num num-purple">02</div>
+      <div class="mc-card card-purple">
+        <div class="mc-icon icon-purple">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/>
+            <rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>
+          </svg>
+        </div>
+        <div class="mc-tag col-tag-purple"><div class="mc-tag-dot dot-purple"></div>Disease Classification</div>
+        <div class="mc-name">CheXBert F1</div>
+        <div class="mc-divider div-purple"></div>
+        <div class="mc-full">BERT-based classifier for 14 chest<br>disease labels per report</div>
+
+        <div class="mc-metrics">
+          <div class="metric-row">
+            <span class="metric-label">Macro F1</span>
+            <span class="metric-desc">Equal weight per class</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">Micro F1</span>
+            <span class="metric-desc">Sample-weighted — reflects real-world class distribution</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Column 3: GREEN -->
+    <div class="metric-col m3">
+      <div class="mc-num num-green">03</div>
+      <div class="mc-card card-green">
+        <div class="mc-icon icon-green">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2.5l2.4 5.1 5.6.6-4.1 3.9 1.1 5.6-4.9-2.9-4.9 2.9 1.1-5.6-4.1-3.9 5.6-.6z"/>
+          </svg>
+        </div>
+        <div class="mc-tag col-tag-green"><div class="mc-tag-dot dot-green"></div>LLM-as-Judge</div>
+        <div class="mc-name">GREEN</div>
+        <div class="mc-divider div-green"></div>
+        <div class="mc-full">Generative Radiology Report<br>Evaluation &amp; Error Notation</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+  import { initSlideController } from './tool/slide-controller.js';
+  import './tool/slide-scale.js';
+
+  const steps = [['.m1'], ['.m2'], ['.m3']];
+
+  function updateSlide(step) {
+    steps.flat().forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.remove('active')));
+    for (let i = 0; i < step; i++) {
+      if (steps[i]) steps[i].forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.add('active')));
+    }
+  }
+
+  initSlideController({
+    maxSteps: steps.length,
+    nextSlideUrl: 'experiment_settings.html',
+    prevSlideUrl: 'dataset.html',
+    onUpdate: updateSlide
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>Prior Work I - Chest X-ray Report Refinement System</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 1280px; height: 720px; overflow: hidden;
+      background: #050d1a;
+      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+      color: #e2e8f0;
+    }
+
+    .slide { width: 1280px; height: 720px; position: relative; display: flex; flex-direction: column; cursor: pointer; }
+
+    .bg-grid {
+      position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(21,40,64,0.22) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(21,40,64,0.22) 1px, transparent 1px);
+      background-size: 64px 64px; pointer-events: none;
+    }
+
+    .header { position: absolute; top: 0; left: 0; right: 0; height: 58px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #0d1f38; z-index: 1; }
+    .h-title { font-size: 1rem; font-weight: 700; letter-spacing: 0.35em; text-transform: uppercase; color: #60a5fa; }
+
+    .content { position: absolute; top: 58px; left: 0; right: 0; bottom: 0; display: flex; }
+
+    /* ── Left: VLMs ── */
+    .left-col { width: 680px; display: flex; flex-direction: column; justify-content: center; padding: 18px 20px 18px 108px; gap: 16px; }
+    .col-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: #3b82f6; }
+
+    .vlm-list { position: relative; display: flex; flex-direction: column; gap: 26px; }
+    .vlm-list::before {
+      content: '';
+      position: absolute;
+      top: 18px; bottom: 18px; left: 28px;
+      width: 2px;
+      background: linear-gradient(to bottom, transparent, #1a3356 10%, #1a3356 90%, transparent);
+      z-index: 0;
+    }
+
+    .vlm-item { position: relative; z-index: 1; display: flex; align-items: flex-start; gap: 18px; opacity: 0; }
+    .vlm-item.active { animation: a-in 0.5s ease forwards; }
+
+    .vlm-year { width: 56px; height: 36px; border-radius: 9px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 800; letter-spacing: 0.02em; margin-top: 2px; }
+    .b-blue   { background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.24); color: #3b82f6; }
+    .b-indigo { background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.24); color: #818cf8; }
+    .b-violet { background: rgba(139,92,246,0.12); border: 1px solid rgba(139,92,246,0.24); color: #a78bfa; }
+    .b-sky    { background: rgba(14,165,233,0.12);  border: 1px solid rgba(14,165,233,0.24);  color: #38bdf8; }
+    .b-emerald { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.24); color: #34d399; }
+
+    .vlm-body { display: flex; flex-direction: column; gap: 4px; }
+    .vlm-name { font-size: 1.02rem; font-weight: 700; color: #cbd5e1; }
+    .vlm-source { font-size: 0.82rem; color: #94a3b8; }
+
+    /* ── Divider ── */
+    .v-div { width: 1px; align-self: stretch; margin: 26px 0; background: linear-gradient(to bottom, transparent 0%, #152840 15%, #152840 85%, transparent 100%); }
+
+    /* ── Right: Issues ── */
+    .right-col { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 18px 48px 18px 30px; gap: 13px; opacity: 0; }
+    .right-col.active { animation: a-in 0.55s ease 0.05s forwards; }
+
+    .rh { display: flex; align-items: center; gap: 10px; padding-bottom: 11px; border-bottom: 1px solid #0d1f38; }
+    .rh-icon { width: 34px; height: 34px; border-radius: 7px; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.18); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .rh-text { font-size: 1.02rem; font-weight: 700; color: #cbd5e1; }
+
+    .iss-group { display: flex; flex-direction: column; gap: 5px; }
+    .iss-gtitle { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; }
+    .gt-amber { color: #d97706; }
+    .gt-red   { color: #dc2626; }
+
+    .bullets { display: flex; flex-direction: column; gap: 4px; }
+    .bl { display: flex; align-items: flex-start; gap: 8px; }
+    .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
+    .d-amber { background: #78350f; }
+    .d-red   { background: #7f1d1d; }
+    .bl-text { font-size: 0.82rem; color: #94a3b8; line-height: 1.5; }
+    .bl-text b { color: #cbd5e1; }
+
+    .root-note { display: flex; align-items: flex-start; gap: 9px; padding: 9px 12px; border-radius: 7px; background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.1); }
+    .root-text { font-size: 0.8rem; color: #94a3b8; line-height: 1.5; }
+    .root-text b { color: #f87171; }
+
+    @keyframes a-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    /* ── Responsive scaling: fit fixed-size canvas to any viewport ── */
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #slideContainer { flex-shrink: 0; }
+      /* ── Gallery nav button (global) ── */
+    .gallery-nav-btn {
+      position: absolute; top: 14px; right: 14px; z-index: 30;
+      width: 30px; height: 30px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.09);
+      color: #60a5fa; text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    }
+    .gallery-nav-btn:hover {
+      background: rgba(96,165,250,0.14); border-color: rgba(96,165,250,0.35);
+      transform: scale(1.06);
+    }
+  </style>
+</head>
+<body>
+<div class="slide" id="slideContainer">
+  <a class="gallery-nav-btn" href="all_slides.html" title="All Slides" onclick="event.stopPropagation()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+  </a>
+
+
+  <div class="bg-grid"></div>
+  <div class="header"><span class="h-title">Prior Work</span></div>
+
+  <div class="content">
+
+    <!-- Left: VLMs -->
+    <div class="left-col">
+      <div class="col-label">Medical Vision–Language Models</div>
+
+      <div class="vlm-list">
+        <div class="vlm-item i1">
+          <div class="vlm-year b-blue">2023</div>
+          <div class="vlm-body">
+            <div class="vlm-name">LLaVA-Med</div>
+            <div class="vlm-source">Microsoft Research</div>
+          </div>
+        </div>
+
+        <div class="vlm-item i2">
+          <div class="vlm-year b-indigo">2023</div>
+          <div class="vlm-body">
+            <div class="vlm-name">RaDialog</div>
+            <div class="vlm-source">Technical University of Munich（CAMP lab）</div>
+          </div>
+        </div>
+
+        <div class="vlm-item i3">
+          <div class="vlm-year b-emerald">2024</div>
+          <div class="vlm-body">
+            <div class="vlm-name">MAIRA-2</div>
+            <div class="vlm-source">Microsoft Research</div>
+          </div>
+        </div>
+
+        <div class="vlm-item i4">
+          <div class="vlm-year b-violet">2025</div>
+          <div class="vlm-body">
+            <div class="vlm-name">RadVLM</div>
+            <div class="vlm-source">EPFL 與蘇黎世大學醫院等瑞士機構聯合團隊</div>
+          </div>
+        </div>
+
+        <div class="vlm-item i5">
+          <div class="vlm-year b-sky">2025</div>
+          <div class="vlm-body">
+            <div class="vlm-name">MedGemma</div>
+            <div class="vlm-source">Google Research 與 Google DeepMind</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="v-div"></div>
+
+    <!-- Right: Issues -->
+    <div class="right-col rc">
+      <div class="rh">
+        <div class="rh-icon">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div>
+          <div class="rh-text">Report Quality Challenges</div>
+        </div>
+      </div>
+
+      <div class="iss-group">
+        <div class="iss-gtitle gt-amber">Missed Findings</div>
+        <div class="bullets">
+          <div class="bl"><div class="dot d-amber"></div><span class="bl-text">Subtle lesions and multi-lesion co-occurrence frequently undetected</span></div>
+        </div>
+      </div>
+
+      <div class="iss-group">
+        <div class="iss-gtitle gt-red">Hallucinations</div>
+        <div class="bullets">
+          <div class="bl"><div class="dot d-red"></div><span class="bl-text"><b>False findings</b> — non-existent pathology reported as present</span></div>
+          <div class="bl"><div class="dot d-red"></div><span class="bl-text"><b>Polarity inversion</b> — present pathology stated as absent</span></div>
+          <div class="bl"><div class="dot d-red"></div><span class="bl-text"><b>Comparison bias</b> — fabricated "no change vs. prior" from MIMIC training distribution</span></div>
+          <div class="bl"><div class="dot d-red"></div><span class="bl-text"><b>Measurement errors</b> — device positions, organ sizes, lesion dimensions</span></div>
+        </div>
+      </div>
+
+      <div class="root-note">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span class="root-text"><b>Root issue:</b> VLMs cannot self-correct.</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+  import { initSlideController } from './tool/slide-controller.js';
+  import './tool/slide-scale.js';
+
+  const steps = [['.i1'], ['.i2'], ['.i3'], ['.i4'], ['.i5'], ['.rc']];
+
+  function updateSlide(step) {
+    steps.flat().forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.remove('active')));
+    for (let i = 0; i < step; i++) {
+      if (steps[i]) steps[i].forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.add('active')));
+    }
+  }
+
+  initSlideController({
+    maxSteps: steps.length,
+    nextSlideUrl: 'prior_work_3.html',
+    prevSlideUrl: 'prior_work_1.html',
+    onUpdate: updateSlide
+  });
+</script>
+</body>
+</html>

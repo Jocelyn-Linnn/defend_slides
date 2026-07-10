@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>Dataset - Chest X-ray Report Refinement System</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 1280px; height: 720px; overflow: hidden;
+      background: #050d1a;
+      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+      color: #e2e8f0;
+    }
+
+    .slide { width: 1280px; height: 720px; position: relative; display: flex; flex-direction: column; cursor: pointer; }
+
+    .bg-grid {
+      position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(21,40,64,0.22) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(21,40,64,0.22) 1px, transparent 1px);
+      background-size: 64px 64px; pointer-events: none;
+    }
+
+    .header {
+      position: absolute; top: 0; left: 0; right: 0; height: 58px;
+      display: flex; align-items: center; justify-content: center;
+      border-bottom: 1px solid #0d1f38; z-index: 1;
+    }
+    .h-title { font-size: 1rem; font-weight: 700; letter-spacing: 0.35em; text-transform: uppercase; color: #60a5fa; }
+
+    /* ── Subtitle box (below header line) ── */
+    .subtitle-bar {
+      position: absolute; top: 58px; left: 0; right: 0; height: 50px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .h-subtitle-box {
+      display: inline-flex; align-items: center; gap: 9px;
+      padding: 8px 22px 8px 18px; border-radius: 999px;
+      background: linear-gradient(90deg, rgba(59,130,246,0.09), rgba(139,92,246,0.07));
+      border: 1px solid rgba(96,165,250,0.25);
+      box-shadow: 0 0 26px -14px rgba(59,130,246,0.55);
+    }
+    .h-subtitle-icon { width: 15px; height: 15px; flex-shrink: 0; color: #60a5fa; display: flex; }
+    .h-subtitle { font-size: 0.72rem; font-weight: 500; color: #8ba3c7; letter-spacing: 0.015em; }
+    .h-subtitle b { color: #dbeafe; font-weight: 700; }
+
+    /* ── Two-column layout ── */
+    .content {
+      position: absolute; top: 108px; left: 0; right: 0; bottom: 0;
+      display: flex;
+    }
+
+    .ds-col {
+      flex: 1; position: relative; display: flex; align-items: center; justify-content: center;
+      padding: 22px 40px;
+      opacity: 0;
+    }
+    .ds-col:first-child { border-right: 1px solid #0a1828; }
+    .ds-col.active { animation: a-in 0.6s ease forwards; }
+
+    /* Ghost index number */
+    .ds-num {
+      position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+      font-size: 3.8rem; font-weight: 800; line-height: 1; letter-spacing: -0.02em;
+      pointer-events: none; user-select: none;
+    }
+    .num-blue  { color: rgba(59,130,246,0.08); }
+    .num-green { color: rgba(34,197,94,0.08); }
+
+    /* Card */
+    .ds-card {
+      position: relative; display: flex; flex-direction: column;
+      gap: 13px; width: 100%; max-width: 480px;
+      padding: 28px 28px 26px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.05);
+      background: rgba(255,255,255,0.012);
+    }
+    .card-blue  { border-color: rgba(59,130,246,0.16); box-shadow: 0 0 40px -20px rgba(59,130,246,0.3); }
+    .card-green { border-color: rgba(34,197,94,0.16);  box-shadow: 0 0 40px -20px rgba(34,197,94,0.3); }
+
+    .ds-head { display: flex; align-items: center; gap: 12px; }
+    .ds-icon {
+      width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .icon-blue  { background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.28); color: #60a5fa; }
+    .icon-green { background: rgba(34,197,94,0.08);  border: 1px solid rgba(34,197,94,0.28);  color: #4ade80; }
+
+    .ds-tag { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #2c4a6e; }
+    .ds-title { font-size: 1.03rem; font-weight: 700; color: #e2e8f0; line-height: 1.32; margin-top: 2px; }
+
+    .ds-desc { font-size: 0.78rem; color: #94a3b8; line-height: 1.55; }
+    .ds-desc b { color: #cbd5e1; }
+
+    /* ── Step list (Test Set Construction card) ── */
+    .step-list { width: 100%; display: flex; flex-direction: column; gap: 8px; }
+    .step-row { display: flex; align-items: flex-start; gap: 10px; }
+    .step-badge {
+      width: 19px; height: 19px; border-radius: 6px; flex-shrink: 0; margin-top: 1px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.64rem; font-weight: 800;
+      background: rgba(59,130,246,0.12); color: #60a5fa;
+    }
+    .step-text { font-size: 0.76rem; color: #94a3b8; line-height: 1.5; }
+    .step-text b { color: #cbd5e1; }
+
+    .step-final {
+      display: flex; align-items: center; gap: 8px; margin-top: 2px;
+      padding: 8px 12px; border-radius: 8px;
+      background: rgba(59,130,246,0.07); border: 1px solid rgba(59,130,246,0.18);
+    }
+    .step-final-text { font-size: 0.8rem; font-weight: 700; color: #93c5fd; }
+    .step-final-text b { color: #dbeafe; }
+
+    /* ── Example callout (Bootstrap validation card) ── */
+    .cc-example {
+      width: 100%; padding: 11px 13px; border-radius: 8px;
+      background: rgba(34,197,94,0.05); border: 1px solid rgba(34,197,94,0.14);
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .cc-ex-tag {
+      font-size: 0.56rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+      color: #4ade80; margin-bottom: 3px; padding-bottom: 6px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .cc-ex-field { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+    .cc-ex-field-label { font-size: 0.72rem; color: #94a3b8; }
+    .cc-ex-field-value { font-size: 0.76rem; font-weight: 700; color: #cbd5e1; white-space: nowrap; }
+
+    .ds-note {
+      display: flex; align-items: flex-start; gap: 8px; margin-top: 2px;
+      padding: 8px 11px; border-radius: 8px;
+      background: rgba(34,197,94,0.06); border: 1px solid rgba(34,197,94,0.16);
+    }
+    .ds-note-text { font-size: 0.72rem; color: #94a3b8; line-height: 1.5; }
+    .ds-note-text b { color: #4ade80; }
+
+    @keyframes a-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    /* ── Responsive scaling: fit fixed-size canvas to any viewport ── */
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #slideContainer { flex-shrink: 0; }
+      /* ── Gallery nav button (global) ── */
+    .gallery-nav-btn {
+      position: absolute; top: 14px; right: 14px; z-index: 30;
+      width: 30px; height: 30px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.09);
+      color: #60a5fa; text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    }
+    .gallery-nav-btn:hover {
+      background: rgba(96,165,250,0.14); border-color: rgba(96,165,250,0.35);
+      transform: scale(1.06);
+    }
+  </style>
+</head>
+<body>
+<div class="slide" id="slideContainer">
+  <a class="gallery-nav-btn" href="all_slides.html" title="All Slides" onclick="event.stopPropagation()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+  </a>
+
+  <div class="bg-grid"></div>
+  <div class="header"><span class="h-title">Dataset</span></div>
+  <div class="subtitle-bar">
+    <div class="h-subtitle-box">
+      <svg class="h-subtitle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.66 3.58 3 8 3s8-1.34 8-3V5"/><path d="M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3"/></svg>
+      <span class="h-subtitle">Ground truth uses only the <b>Findings</b> section — matching how generated reports are extracted</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Left: Test Set Construction -->
+    <div class="ds-col d1">
+      <div class="ds-num num-blue">01</div>
+      <div class="ds-card card-blue">
+        <div class="ds-head">
+          <div class="ds-icon icon-blue">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.66 3.58 3 8 3s8-1.34 8-3V5"/><path d="M4 11v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"/></svg>
+          </div>
+          <div class="ds-tag">Test Set Construction</div>
+        </div>
+        <div class="ds-title">MIMIC-CXR-JPG · Frontal, Single-Study Test Images</div>
+        <div class="ds-desc">~227K chest X-ray image–report pairs (Beth Israel Deaconess Medical Center) — a widely used public benchmark. Only the official <b>test split</b> is used, to avoid overlap with MedGemma's pretraining data</div>
+
+        <div class="step-list">
+          <div class="step-row"><div class="step-badge">1</div><span class="step-text">Keep <b>frontal views only</b> (AP/PA) — MedGemma is designed for frontal chest X-rays</span></div>
+          <div class="step-row"><div class="step-badge">2</div><span class="step-text">Regex-filter out reports with <b>comparison language</b> (e.g. "compared to prior", "interval change", "stable") — these depend on prior-image context unavailable to a single-image model</span></div>
+          <div class="step-row"><div class="step-badge">3</div><span class="step-text">Randomly sample from the remaining qualifying images</span></div>
+        </div>
+
+        <div class="step-final">
+          <span class="step-final-text">→ <b>n = 500</b> test images</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Why n=500 Is Sufficient -->
+    <div class="ds-col d2">
+      <div class="ds-num num-green">02</div>
+      <div class="ds-card card-green">
+        <div class="ds-head">
+          <div class="ds-icon icon-green">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          </div>
+          <div class="ds-tag">Sample-Size Validation</div>
+        </div>
+        <div class="ds-title">Bootstrap 95% CI Confirms Stability</div>
+        <div class="ds-desc">Evaluating all 220K+ images is computationally infeasible — each sample requires <b>multiple LLM inference passes</b> (MedGemma generation + GREEN evaluation). 500 was chosen and then validated post hoc</div>
+
+        <div class="cc-example">
+          <div class="cc-ex-tag">Bootstrap 95% CI · 1000 resamples (n=500)</div>
+          <div class="cc-ex-field"><span class="cc-ex-field-label">RadGraph F1 (partial)</span><span class="cc-ex-field-value">0.286 ± 0.012</span></div>
+          <div class="cc-ex-field"><span class="cc-ex-field-label">GREEN</span><span class="cc-ex-field-value">0.382 ± 0.020</span></div>
+          <div class="cc-ex-field"><span class="cc-ex-field-label">CheXBert Micro F1</span><span class="cc-ex-field-value">0.457 ± 0.031</span></div>
+          <div class="cc-ex-field"><span class="cc-ex-field-label">CheXBert Macro F1</span><span class="cc-ex-field-value">0.344 ± 0.027</span></div>
+        </div>
+
+        <div class="ds-note">
+          <span class="ds-note-text">All metrics converge by <b>~300 samples</b>; worst-case CI half-width is only <b>±0.044</b></span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+  import { initSlideController } from './tool/slide-controller.js';
+  import './tool/slide-scale.js';
+
+  const steps = [['.d1'], ['.d2']];
+
+  function updateSlide(step) {
+    steps.flat().forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.remove('active')));
+    for (let i = 0; i < step; i++) {
+      if (steps[i]) steps[i].forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.add('active')));
+    }
+  }
+
+  initSlideController({
+    maxSteps: steps.length,
+    nextSlideUrl: 'evaluation_metrics.html',
+    prevSlideUrl: 'experiment_result.html',
+    onUpdate: updateSlide
+  });
+</script>
+</body>
+</html>

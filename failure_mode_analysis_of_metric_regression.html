@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>Failure Mode Analysis of Metric Regression - Chest X-ray Report Refinement System</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 1280px; height: 720px; overflow: hidden;
+      background: #050d1a;
+      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+      color: #e2e8f0;
+    }
+
+    .slide { width: 1280px; height: 720px; position: relative; display: flex; flex-direction: column; cursor: pointer; }
+
+    .bg-grid {
+      position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(21,40,64,0.22) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(21,40,64,0.22) 1px, transparent 1px);
+      background-size: 64px 64px; pointer-events: none;
+    }
+
+    .header {
+      position: absolute; top: 0; left: 0; right: 0; height: 58px;
+      display: flex; align-items: center; justify-content: center;
+      border-bottom: 1px solid #0d1f38; z-index: 1;
+    }
+    .h-title { font-size: 1rem; font-weight: 700; letter-spacing: 0.35em; text-transform: uppercase; color: #60a5fa; }
+
+    /* ── Two-column layout ── */
+    .content {
+      position: absolute; top: 58px; left: 0; right: 0; bottom: 0;
+      display: flex;
+    }
+
+    .fm-col {
+      flex: 1; position: relative; display: flex; align-items: center; justify-content: center;
+      padding: 30px 48px;
+      opacity: 0;
+    }
+    .fm-col:first-child { border-right: 1px solid #0a1828; }
+    .fm-col.active { animation: a-in 0.6s ease forwards; }
+
+    /* Card */
+    .fm-card {
+      position: relative; display: flex; flex-direction: column; align-items: center;
+      gap: 16px; width: 100%; max-width: 440px;
+      padding: 34px 30px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.05);
+      background: rgba(255,255,255,0.012);
+    }
+    .card-red    { border-color: rgba(248,113,113,0.16); box-shadow: 0 0 40px -20px rgba(248,113,113,0.3); }
+    .card-orange { border-color: rgba(251,146,60,0.16);  box-shadow: 0 0 40px -20px rgba(251,146,60,0.3); }
+
+    .fm-icon {
+      width: 46px; height: 46px; border-radius: 12px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .icon-red    { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.28); color: #f87171; }
+    .icon-orange { background: rgba(251,146,60,0.1);  border: 1px solid rgba(251,146,60,0.28);  color: #fb923c; }
+
+    .fm-tag {
+      font-size: 0.6rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+      color: #2c4a6e;
+    }
+
+    .fm-title { font-size: 1.05rem; font-weight: 700; color: #e2e8f0; line-height: 1.4; text-align: center; }
+
+    .fm-divider { width: 40px; height: 2px; border-radius: 2px; }
+    .div-red    { background: linear-gradient(90deg, transparent, #f87171, transparent); }
+    .div-orange { background: linear-gradient(90deg, transparent, #fb923c, transparent); }
+
+    /* Placeholder body — content to be added later */
+    .fm-content {
+      width: 100%; flex: 1; min-height: 40px;
+      display: flex; flex-direction: column; gap: 10px; align-items: flex-start;
+    }
+
+    /* ── Key-point bullet ── */
+    .cc-bullets { display: flex; flex-direction: column; gap: 4px; width: 100%; }
+    .cc-bullet { display: flex; align-items: flex-start; width: 100%; }
+    .cc-bullet .bt { font-size: 0.84rem; color: #94a3b8; line-height: 1.55; }
+
+    /* ── Example callout ── */
+    .cc-example {
+      width: 100%; padding: 10px 12px; border-radius: 8px;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .cc-example.ex-red    { background: rgba(248,113,113,0.05); border: 1px solid rgba(248,113,113,0.14); }
+    .cc-example.ex-orange { background: rgba(251,146,60,0.05); border: 1px solid rgba(251,146,60,0.14); }
+    .cc-ex-tag {
+      font-size: 0.54rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+      color: #334155; margin-bottom: 6px; padding-bottom: 6px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .cc-ex-field { display: flex; align-items: flex-start; gap: 8px; }
+    .cc-ex-field-label {
+      font-size: 0.66rem; font-weight: 800; letter-spacing: 0.03em;
+      flex-shrink: 0; min-width: 78px; margin-top: 1px;
+    }
+    .ex-red    .cc-ex-field-label { color: #f87171; }
+    .ex-orange .cc-ex-field-label { color: #fb923c; }
+    .cc-ex-field-value { font-size: 0.78rem; color: #64748b; line-height: 1.5; }
+    .cc-ex-field-value b { color: #94a3b8; }
+    .cc-ex-field-value i { font-style: normal; color: #cbd5e1; }
+
+    @keyframes a-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    /* ── Responsive scaling: fit fixed-size canvas to any viewport ── */
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #slideContainer { flex-shrink: 0; }
+      /* ── Gallery nav button (global) ── */
+    .gallery-nav-btn {
+      position: absolute; top: 14px; right: 14px; z-index: 30;
+      width: 30px; height: 30px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.09);
+      color: #60a5fa; text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    }
+    .gallery-nav-btn:hover {
+      background: rgba(96,165,250,0.14); border-color: rgba(96,165,250,0.35);
+      transform: scale(1.06);
+    }
+  </style>
+</head>
+<body>
+<div class="slide" id="slideContainer">
+  <a class="gallery-nav-btn" href="all_slides.html" title="All Slides" onclick="event.stopPropagation()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+  </a>
+
+
+  <div class="bg-grid"></div>
+  <div class="header"><span class="h-title">Failure Mode Analysis of Metric Regression</span></div>
+
+  <div class="content">
+
+    <!-- Pattern 1: Inaccurate QA answers introduce hallucinations -->
+    <div class="fm-col f1">
+      <div class="fm-card card-red">
+        <div class="fm-icon icon-red">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="16.3" r="0.9" fill="currentColor" stroke="none"/>
+          </svg>
+        </div>
+        <div class="fm-tag">Pattern 1</div>
+        <div class="fm-title">Inaccurate QA Answers Introduce Hallucinations</div>
+        <div class="fm-divider div-red"></div>
+        <div class="fm-content">
+          <div class="cc-bullets">
+            <div class="cc-bullet">
+              <span class="bt">QA can hallucinate answers even when the initial report is correct</span>
+            </div>
+          </div>
+
+          <div class="cc-example ex-red">
+            <div class="cc-ex-tag">Example</div>
+            <div class="cc-ex-field"><span class="cc-ex-field-label">GT</span><span class="cc-ex-field-value">"The cardiomediastinal silhouette is normal" — no cardiomegaly</span></div>
+            <div class="cc-ex-field"><span class="cc-ex-field-label">MedGemma</span><span class="cc-ex-field-value">Already correct — clear lungs, normal heart size</span></div>
+            <div class="cc-ex-field"><span class="cc-ex-field-label">QA Step</span><span class="cc-ex-field-value">Asked about reduced heart size → answered <i>"Yes... suggesting some resolution of cardiomegaly"</i> — pure hallucination, since no cardiomegaly ever existed</span></div>
+            <div class="cc-ex-field"><span class="cc-ex-field-label">Final Report</span><span class="cc-ex-field-value">Incorporates the fabricated QA answer, introducing a finding absent from both GT and MedGemma's baseline</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pattern 2: Hallucinations compounding on a flawed baseline -->
+    <div class="fm-col f2">
+      <div class="fm-card card-orange">
+        <div class="fm-icon icon-orange">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="14" width="6" height="6" rx="1.2"/><rect x="9" y="8" width="6" height="6" rx="1.2"/><rect x="14" y="2" width="6" height="6" rx="1.2"/>
+          </svg>
+        </div>
+        <div class="fm-tag">Pattern 2</div>
+        <div class="fm-title">Hallucinations Compounding on a Flawed Baseline</div>
+        <div class="fm-divider div-orange"></div>
+        <div class="fm-content">
+          <div class="cc-bullets">
+            <div class="cc-bullet">
+              <span class="bt">QA tends to confirm more errors on top of an already-wrong baseline</span>
+            </div>
+          </div>
+
+          <div class="cc-example ex-orange">
+            <div class="cc-ex-tag">Example</div>
+            <div class="cc-ex-field"><span class="cc-ex-field-label">GT</span><span class="cc-ex-field-value">Tube position too high; pacemaker/catheter unchanged; lungs otherwise unchanged</span></div>
+            <div class="cc-ex-field"><span class="cc-ex-field-label">MedGemma</span><span class="cc-ex-field-value">Already wrong — falsely lists 4 findings: bilateral (R+L) pleural effusion and bilateral lower-lobe atelectasis</span></div>
+            <div class="cc-ex-field"><span class="cc-ex-field-label">QA Step</span><span class="cc-ex-field-value">Built on that false premise → <i>"lingular atelectasis?"</i> → Yes; <i>"signs of recent CABG?"</i> → Yes (sternal wires present, but GT mentions no recent surgery)</span></div>
+            <div class="cc-ex-field"><span class="cc-ex-field-label">Final Report</span><span class="cc-ex-field-value">Stacks every affirmative answer → 6+ findings inconsistent with GT</span></div>
+            <div class="cc-ex-field"><span class="cc-ex-field-label">GREEN</span><span class="cc-ex-field-value">Drops to <b>0.222</b></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+  import { initSlideController } from './tool/slide-controller.js';
+  import './tool/slide-scale.js';
+
+  const steps = [['.f1'], ['.f2']];
+
+  function updateSlide(step) {
+    steps.flat().forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.remove('active')));
+    for (let i = 0; i < step; i++) {
+      if (steps[i]) steps[i].forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.add('active')));
+    }
+  }
+
+  initSlideController({
+    maxSteps: steps.length,
+    nextSlideUrl: 'extended_experiment_and_improvement_limitations.html',
+    prevSlideUrl: 'macro_micro_f1_asymmetry.html',
+    onUpdate: updateSlide
+  });
+</script>
+</body>
+</html>

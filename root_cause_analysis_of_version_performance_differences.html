@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>Root-Cause Analysis - Chest X-ray Report Refinement System</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 1280px; height: 720px; overflow: hidden;
+      background: #050d1a;
+      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+      color: #e2e8f0;
+    }
+
+    .slide { width: 1280px; height: 720px; position: relative; display: flex; flex-direction: column; cursor: pointer; }
+
+    .bg-grid {
+      position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(21,40,64,0.22) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(21,40,64,0.22) 1px, transparent 1px);
+      background-size: 64px 64px; pointer-events: none;
+    }
+
+    .header { position: absolute; top: 0; left: 0; right: 0; height: 58px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #0d1f38; z-index: 1; }
+    .h-title { font-size: 1rem; font-weight: 700; letter-spacing: 0.35em; text-transform: uppercase; color: #60a5fa; }
+
+    /* ── 3-column row ── */
+    .content {
+      position: absolute; top: 58px; left: 0; right: 0; bottom: 0;
+      display: flex;
+    }
+
+    .cause-cell {
+      flex: 1; position: relative; display: flex; align-items: center; justify-content: center;
+      padding: 26px 32px;
+      opacity: 0;
+    }
+    .cause-cell:not(:last-child) { border-right: 1px solid #0a1828; }
+    .cause-cell.active { animation: a-in 0.55s ease forwards; }
+
+    /* Ghost index number */
+    .cc-num {
+      position: absolute; top: 14px; left: 22px;
+      font-size: 3rem; font-weight: 800; line-height: 1; letter-spacing: -0.02em;
+      pointer-events: none; user-select: none;
+    }
+    .num-purple { color: rgba(139,92,246,0.08); }
+    .num-teal   { color: rgba(20,184,166,0.08); }
+    .num-green  { color: rgba(34,197,94,0.08); }
+    .num-blue   { color: rgba(59,130,246,0.08); }
+
+    /* Card body */
+    .cc-body { position: relative; display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 380px; }
+
+    .cc-head { display: flex; align-items: center; gap: 12px; }
+
+    .cc-icon {
+      width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .icon-purple { background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.28); color: #a78bfa; }
+    .icon-teal   { background: rgba(20,184,166,0.08); border: 1px solid rgba(20,184,166,0.28); color: #2dd4bf; }
+    .icon-green  { background: rgba(34,197,94,0.08);  border: 1px solid rgba(34,197,94,0.28);  color: #4ade80; }
+    .icon-blue   { background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.28); color: #60a5fa; }
+
+    .cc-transition { display: flex; align-items: center; gap: 6px; }
+    .vchip {
+      font-size: 0.74rem; font-weight: 700; padding: 2px 9px; border-radius: 5px;
+      letter-spacing: 0.02em;
+    }
+    .vc-base  { background: rgba(100,116,139,0.1); color: #64748b; border: 1px solid rgba(100,116,139,0.18); }
+    .vc-mid   { background: rgba(59,130,246,0.1);  color: #60a5fa; border: 1px solid rgba(59,130,246,0.18); }
+    .vc-final { background: rgba(34,197,94,0.12);  color: #4ade80; border: 1px solid rgba(34,197,94,0.25); }
+    .vt-arrow { font-size: 0.7rem; color: #1a3356; }
+
+    .cc-title { font-size: 1.12rem; font-weight: 700; color: #e2e8f0; line-height: 1.35; margin-top: 2px; }
+
+    /* Placeholder body for content to be added later */
+    .cc-content {
+      flex: 1; min-height: 64px; margin-top: 6px;
+      display: flex; flex-direction: column; gap: 8px; align-items: flex-start;
+    }
+
+    /* ── Key-point bullets ── */
+    .cc-bullets { display: flex; flex-direction: column; gap: 4px; width: 100%; }
+    .cc-bullet { display: flex; align-items: flex-start; gap: 6px; }
+    .cc-bdot { width: 4px; height: 4px; border-radius: 50%; flex-shrink: 0; margin-top: 6px; background: #3b1f6e; }
+    .cc-bullet span.bt { font-size: 0.76rem; color: #64748b; line-height: 1.5; }
+    .cc-bullet span.bt b { color: #94a3b8; }
+
+    /* ── Example callout ── */
+    .cc-example {
+      width: 100%; padding: 7px 10px; border-radius: 8px;
+      background: rgba(139,92,246,0.05); border: 1px solid rgba(139,92,246,0.14);
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .cc-ex-tag { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #a78bfa; }
+    .cc-ex-line { font-size: 0.72rem; color: #64748b; line-height: 1.5; }
+    .cc-ex-line b { color: #94a3b8; }
+    .cc-ex-metrics { display: flex; gap: 16px; margin-top: 10px; }
+    .cc-ex-metric { display: flex; flex-direction: column; gap: 0; }
+    .cc-ex-metric-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #1a3356; }
+    .cc-ex-metric-val { font-size: 0.78rem; font-weight: 700; color: #4ade80; }
+    .cc-ex-metric-val .from { color: #475569; font-weight: 500; }
+
+    .cc-example.ex-teal { background: rgba(20,184,166,0.05); border-color: rgba(20,184,166,0.14); }
+    .cc-example.ex-teal .cc-ex-tag { color: #2dd4bf; }
+
+    .cc-example.ex-green { background: rgba(34,197,94,0.05); border-color: rgba(34,197,94,0.14); }
+    .cc-example.ex-green .cc-ex-tag { color: #4ade80; }
+
+    .cc-example.ex-blue { background: rgba(59,130,246,0.05); border-color: rgba(59,130,246,0.14); }
+    .cc-example.ex-blue .cc-ex-tag { color: #60a5fa; }
+
+    @keyframes a-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    /* ── Responsive scaling: fit fixed-size canvas to any viewport ── */
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #slideContainer { flex-shrink: 0; }
+      /* ── Gallery nav button (global) ── */
+    .gallery-nav-btn {
+      position: absolute; top: 14px; right: 14px; z-index: 30;
+      width: 30px; height: 30px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.09);
+      color: #60a5fa; text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    }
+    .gallery-nav-btn:hover {
+      background: rgba(96,165,250,0.14); border-color: rgba(96,165,250,0.35);
+      transform: scale(1.06);
+    }
+  </style>
+</head>
+<body>
+<div class="slide" id="slideContainer">
+  <a class="gallery-nav-btn" href="all_slides.html" title="All Slides" onclick="event.stopPropagation()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+  </a>
+
+
+  <div class="bg-grid"></div>
+  <div class="header"><span class="h-title">Root-Cause Analysis of Version Performance Differences</span></div>
+
+  <div class="content">
+
+    <!-- 1: Marginal effect of retrieval strategy (v1 -> v2) -->
+    <div class="cause-cell c1">
+      <div class="cc-num num-purple">01</div>
+      <div class="cc-body">
+        <div class="cc-head">
+          <div class="cc-icon icon-purple">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 22 8.5 12 15 2 8.5 12 2"/>
+              <polyline points="2 15.5 12 22 22 15.5"/>
+            </svg>
+          </div>
+          <div class="cc-transition">
+            <span class="vchip vc-mid">v1</span>
+            <span class="vt-arrow">→</span>
+            <span class="vchip vc-mid">v2</span>
+          </div>
+        </div>
+        <div class="cc-title">Marginal Effect of Retrieval Strategy</div>
+        <div class="cc-content">
+          <div class="cc-bullets">
+            <div class="cc-bullet">
+              <div class="cc-bdot"></div>
+              <span class="bt">Two-Layer reaches L2 neighbors Top-K structurally can't see</span>
+            </div>
+          </div>
+          <div class="cc-example">
+            <div class="cc-ex-tag">Case A</div>
+            <div class="cc-ex-line"><b>GT:</b> mild pulmonary edema — MedGemma missed it, Micro F1 stuck at 0.333</div>
+            <div class="cc-ex-line"><b>v1 (Top-K):</b> asks about bronchovascular crowding → edema untouched</div>
+            <div class="cc-ex-line"><b>v2 (Two-Layer):</b> reaches L2 via "lung volume low" → asks about edema → confirmed</div>
+            <div class="cc-ex-metrics">
+              <div class="cc-ex-metric">
+                <span class="cc-ex-metric-label">RadGraph F1</span>
+                <span class="cc-ex-metric-val"><span class="from">0.2319</span> → 0.2899</span>
+              </div>
+              <div class="cc-ex-metric">
+                <span class="cc-ex-metric-label">CheXBert Micro F1</span>
+                <span class="cc-ex-metric-val"><span class="from">0.333</span> → 0.571</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2: Marginal effect of edge weight algorithm (v1 -> v3) -->
+    <div class="cause-cell c2">
+      <div class="cc-num num-teal">02</div>
+      <div class="cc-body">
+        <div class="cc-head">
+          <div class="cc-icon icon-teal">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="3" x2="12" y2="21"/>
+              <path d="M5 7l-3 6a3 3 0 0 0 6 0z"/>
+              <path d="M19 7l-3 6a3 3 0 0 0 6 0z"/>
+              <line x1="6" y1="7" x2="18" y2="7"/>
+            </svg>
+          </div>
+          <div class="cc-transition">
+            <span class="vchip vc-mid">v1</span>
+            <span class="vt-arrow">→</span>
+            <span class="vchip vc-mid">v3</span>
+          </div>
+        </div>
+        <div class="cc-title">Marginal Effect of Edge Weight Algorithm</div>
+        <div class="cc-content">
+          <div class="cc-bullets">
+            <div class="cc-bullet">
+              <div class="cc-bdot"></div>
+              <span class="bt">CP overweights high-frequency findings (e.g. atelectasis) regardless of relevance</span>
+            </div>
+            <div class="cc-bullet">
+              <div class="cc-bdot"></div>
+              <span class="bt">NPMI corrects via marginal probabilities — keeps only significant associations</span>
+            </div>
+          </div>
+          <div class="cc-example ex-teal">
+            <div class="cc-ex-tag">Case B</div>
+            <div class="cc-ex-line"><b>GT:</b> cardiomegaly, moderate edema, bilateral effusion — MedGemma baseline already correct, GREEN = 1.0</div>
+            <div class="cc-ex-line"><b>v1 (CP):</b> 2 extra atelectasis questions → QA said Yes → hallucinated findings added</div>
+            <div class="cc-ex-line"><b>v3 (NPMI):</b> atelectasis nodes score too low vs. anchor → filtered out → report unchanged, GREEN stays 1.0</div>
+            <div class="cc-ex-metrics">
+              <div class="cc-ex-metric">
+                <span class="cc-ex-metric-label">RadGraph F1</span>
+                <span class="cc-ex-metric-val"><span class="from">0.1702</span> → 0.2500</span>
+              </div>
+              <div class="cc-ex-metric">
+                <span class="cc-ex-metric-label">GREEN</span>
+                <span class="cc-ex-metric-val"><span class="from">0.3333</span> → 1.0000</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3: Interaction effect of retrieval strategy & edge weight algorithm (v1/v2/v3 -> v4) -->
+    <div class="cause-cell c3">
+      <div class="cc-num num-blue">03</div>
+      <div class="cc-body">
+        <div class="cc-head">
+          <div class="cc-icon icon-blue">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="6" cy="6" r="2.6"/><circle cx="18" cy="6" r="2.6"/><circle cx="12" cy="18" r="2.6"/>
+              <line x1="8.2" y1="7.3" x2="10.3" y2="16"/><line x1="15.8" y1="7.3" x2="13.7" y2="16"/><line x1="8.4" y1="6" x2="15.6" y2="6"/>
+            </svg>
+          </div>
+          <div class="cc-transition">
+            <span class="vchip vc-mid">v1</span>
+            <span class="vchip vc-mid">v2</span>
+            <span class="vchip vc-mid">v3</span>
+            <span class="vt-arrow">→</span>
+            <span class="vchip vc-final">v4</span>
+          </div>
+        </div>
+        <div class="cc-title">Synergy &amp; Interaction of Two-Layer Expansion with NPMI</div>
+        <div class="cc-content">
+          <div class="cc-bullets">
+            <div class="cc-bullet">
+              <div class="cc-bdot"></div>
+              <span class="bt">Largest Macro F1 gain of all comparisons: v3→v4 <b>0.3450→0.3535</b></span>
+            </div>
+            <div class="cc-bullet">
+              <div class="cc-bdot"></div>
+              <span class="bt">Asymmetry proves synergy: CP→NPMI <b>−0.003</b> under Top-K, <b>+0.011</b> under Two-Hop</span>
+            </div>
+            <div class="cc-bullet">
+              <div class="cc-bdot"></div>
+              <span class="bt">NPMI only pays off with Two-Hop's larger candidate pool</span>
+            </div>
+          </div>
+          <div class="cc-example ex-blue">
+            <div class="cc-ex-tag">Case C</div>
+            <div class="cc-ex-line"><b>GT:</b> multifocal pneumonia — v1/v2/v3 stuck at Micro F1 0.333</div>
+            <div class="cc-ex-line"><b>v2 (Two-Hop, CP):</b> reaches L2 but favors high-freq nodes → misses it, hallucinates congestion/edema</div>
+            <div class="cc-ex-line"><b>v3 (Top-K, NPMI):</b> limited to L1 → unreachable, hallucinates rib fracture</div>
+            <div class="cc-ex-line"><b>v4 (Two-Hop, NPMI):</b> reaches L2 and ranks it top → correctly recovered</div>
+            <div class="cc-ex-metrics">
+              <div class="cc-ex-metric">
+                <span class="cc-ex-metric-label">CheXBert Micro F1</span>
+                <span class="cc-ex-metric-val"><span class="from">v1/v2/v3 0.333</span> → v4 0.571</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+  import { initSlideController } from './tool/slide-controller.js';
+  import './tool/slide-scale.js';
+
+  const steps = [['.c1'], ['.c2'], ['.c3']];
+
+  function updateSlide(step) {
+    steps.flat().forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.remove('active')));
+    for (let i = 0; i < step; i++) {
+      if (steps[i]) steps[i].forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.add('active')));
+    }
+  }
+
+  initSlideController({
+    maxSteps: steps.length,
+    nextSlideUrl: 'divergent_trends_across_the_three_metrics.html',
+    prevSlideUrl: 'discussion.html',
+    onUpdate: updateSlide
+  });
+</script>
+</body>
+</html>

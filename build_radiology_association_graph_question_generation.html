@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Build Radiology Association Graph - Question Generation · Slide 8</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 1280px; height: 720px;
+      overflow: hidden;
+      background: #050d1a;
+      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+      color: #e2e8f0;
+    }
+
+    .slide { width: 1280px; height: 720px; position: relative; display: flex; cursor: pointer; }
+
+    /* ── Header ── */
+    .header {
+      position: absolute; top: 0; left: 0; right: 0; height: 68px;
+      display: flex; align-items: center; justify-content: center;
+      border-bottom: 2px solid #0d1f38;
+    }
+    .h-title {
+      font-size: 1rem; font-weight: 700;
+      letter-spacing: 0.35em; text-transform: uppercase;
+      color: #60a5fa;
+      opacity: 0; animation: a-fade-in 0.7s ease 0.1s forwards;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      position: absolute; left: 600px; top: 88px; bottom: 36px; width: 2px;
+      background: linear-gradient(to bottom, transparent 0%, #152840 15%, #152840 85%, transparent 100%);
+    }
+
+    /* ── Left Panel ── */
+    .panel-left {
+      width: 600px;
+      display: flex; flex-direction: column;
+      align-items: flex-start; justify-content: center;
+      padding: 88px 64px 36px;
+    }
+
+    /* 將步驟元素改為平滑的 Transition 控制 */
+    .step { display: flex; align-items: flex-start; margin-bottom: 24px; width: 100%; opacity: 0; transition: opacity 0.4s ease, transform 0.4s ease; transform: translateY(6px); }
+    .step.active { opacity: 1; transform: translateY(0); }
+    
+    .step-num {
+      width: 42px; height: 42px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; font-weight: 700;
+      flex-shrink: 0; margin-right: 20px; margin-top: 2px;
+    }
+    .step-body { flex: 1; }
+    .step-title { font-size: 1.35rem; font-weight: 700; letter-spacing: 0.03em; margin-bottom: 10px; }
+    .step-desc { font-size: 1.05rem; color: #94a3b8; line-height: 1.6; }
+
+    .sep { width: 100%; height: 2px; background: linear-gradient(to right, #0d2040, transparent); margin: 32px 0; opacity: 0; transition: opacity 0.4s ease; }
+    .sep.active { opacity: 1; }
+
+    /* ── Right Panel ── */
+    .panel-right {
+      width: 680px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 68px 24px 36px;
+    }
+    .right-svg {
+      opacity: 0; transform: scale(0.9);
+      animation: a-zoom 0.8s cubic-bezier(.16,1,.3,1) 0.5s forwards;
+    }
+
+    /* ── SVG group visibility ── */
+    .gpt-path { opacity: 0; transition: opacity 0.5s ease; }
+    .gpt-path.active { opacity: 1; }
+    
+    .writeback { opacity: 0; transition: opacity 0.5s ease; }
+    .writeback.active { opacity: 1; }
+
+    /* ── Keyframes ── */
+    @keyframes a-fade-in  { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes a-zoom     { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    /* ── Responsive scaling: fit fixed-size canvas to any viewport ── */
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #slideContainer { flex-shrink: 0; }
+      /* ── Gallery nav button (global) ── */
+    .gallery-nav-btn {
+      position: absolute; top: 14px; right: 14px; z-index: 30;
+      width: 30px; height: 30px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.09);
+      color: #60a5fa; text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    }
+    .gallery-nav-btn:hover {
+      background: rgba(96,165,250,0.14); border-color: rgba(96,165,250,0.35);
+      transform: scale(1.06);
+    }
+  </style>
+</head>
+<body>
+<div class="slide" id="slideContainer">
+  <a class="gallery-nav-btn" href="all_slides.html" title="All Slides" onclick="event.stopPropagation()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+  </a>
+
+
+  <div class="header">
+    <span class="h-title">Build Radiology Association Graph - Question Generation</span>
+  </div>
+  <div class="divider"></div>
+
+  <div class="panel-left">
+
+    <div class="step" id="step1Header">
+      <div class="step-num" style="background:#1a1100;border:2px solid #f59e0b;color:#fbbf24;">1</div>
+      <div class="step-body">
+        <div class="step-title" style="color:#fbbf24;">GPT-4o Generation</div>
+        <div class="step-desc">Pass the supernode text content to GPT-4o, and use the adjusted prompt to request the model to convert the text into a question.</div>
+      </div>
+    </div>
+
+    <div class="sep" id="sep1"></div>
+
+    <div class="step" id="step2Header">
+      <div class="step-num" style="background:#0b2619;border:2px solid #22c55e;color:#4ade80;">2</div>
+      <div class="step-body">
+        <div class="step-title" style="color:#4ade80;">Write Back to Neo4j</div>
+        <div class="step-desc">Receive the generated clinical question and save it directly into the graph database.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="panel-right">
+    <svg width="620" height="520" viewBox="0 0 620 520" fill="none" class="right-svg">
+      <defs>
+        <marker id="arr-a" markerWidth="10" markerHeight="10" refX="7" refY="4" orient="auto">
+          <path d="M0,0 L9,4 L0,8 Z" fill="#d97706" opacity="0.9"/>
+        </marker>
+        <marker id="arr-g" markerWidth="10" markerHeight="10" refX="7" refY="4" orient="auto">
+          <path d="M0,0 L9,4 L0,8 Z" fill="#22c55e" opacity="0.9"/>
+        </marker>
+      </defs>
+
+      <rect x="135" y="15" width="350" height="80" rx="14"
+            fill="#0a0700" stroke="#d97706" stroke-width="2.5"/>
+      <text x="310" y="42" fill="#fbbf24" font-size="12" font-weight="700"
+            letter-spacing="0.2em" text-anchor="middle">SUPERNODE</text>
+
+      <text x="165" y="70" fill="#94a3b8" font-size="13" font-weight="600">text:</text>
+      <text x="215" y="70" fill="#fff" font-size="14.5" font-weight="700">"opacity lung"</text>
+
+
+      <g class="gpt-path" id="gptPathGroup">
+        <line x1="310" y1="95" x2="310" y2="140"
+              stroke="#d97706" stroke-width="2.5" stroke-opacity="0.8"
+              marker-end="url(#arr-a)"/>
+
+        <rect x="200" y="142" width="220" height="50" rx="10"
+              fill="#000e0d" stroke="#0d9488" stroke-width="2"/>
+        <text x="310" y="173" fill="#2dd4bf" font-size="15" font-weight="700"
+              text-anchor="middle">GPT-4o</text>
+
+        <line x1="310" y1="192" x2="310" y2="237"
+              stroke="#22c55e" stroke-width="2" stroke-opacity="0.7"
+              marker-end="url(#arr-g)"/>
+
+        <rect x="180" y="240" width="260" height="65" rx="8"
+              fill="#030f06" stroke="#22c55e" stroke-width="1.8"/>
+        <text x="310" y="266" fill="#4ade80" font-size="12.5" font-weight="600"
+              text-anchor="middle" font-family="Consolas,Monaco,monospace">{"question":</text>
+        <text x="310" y="289" fill="#4ade80" font-size="12.5" font-weight="600"
+              text-anchor="middle" font-family="Consolas,Monaco,monospace">"Is there opacity...?"}</text>
+      </g>
+
+
+      <g class="writeback" id="writebackGroup">
+        <line x1="310" y1="305" x2="310" y2="350"
+              stroke="#22c55e" stroke-width="2.5" stroke-opacity="0.8"
+              stroke-dasharray="5 4" marker-end="url(#arr-g)"/>
+
+        <rect x="135" y="352" width="350" height="110" rx="14"
+              fill="#020d08" stroke="#22c55e" stroke-width="2.5"/>
+        <text x="310" y="380" fill="#4ade80" font-size="12" font-weight="700"
+              letter-spacing="0.2em" text-anchor="middle">SUPERNODE (UPDATED)</text>
+
+        <text x="165" y="410" fill="#94a3b8" font-size="13" font-weight="600">text:</text>
+        <text x="215" y="410" fill="#e2e8f0" font-size="14.5" font-weight="500">"opacity lung"</text>
+
+        <text x="165" y="440" fill="#a7f3d0" font-size="13" font-weight="600">question:</text>
+        <text x="245" y="440" fill="#fff" font-size="13" font-weight="700"
+              font-family="Consolas,Monaco,monospace">"Is there opacity in the lung?"</text>
+      </g>
+
+    </svg>
+  </div>
+
+</div>
+
+<script type="module">
+  import { initSlideController } from './tool/slide-controller.js';
+  import './tool/slide-scale.js';
+
+  const maxSteps = 2; // 本頁共有 2 步動畫
+
+  // 狀態同步函式，根據控制器傳入的 step 決定哪些元素要加上 active 類別
+  function updateSlide(step) {
+    // 移除所有主動新增的狀態類別
+    const activeElements = document.querySelectorAll('.active');
+    activeElements.forEach(el => el.classList.remove('active'));
+
+    // 步驟 1: GPT-4o 生成
+    if (step >= 1) {
+      document.getElementById('step1Header').classList.add('active');
+      document.getElementById('gptPathGroup').classList.add('active');
+    }
+
+    // 步驟 2: 寫回 Neo4j 
+    if (step >= 2) {
+      document.getElementById('sep1').classList.add('active');
+      document.getElementById('step2Header').classList.add('active');
+      document.getElementById('writebackGroup').classList.add('active');
+    }
+  }
+
+  // 初始化控制器並配置生命週期參數
+  initSlideController({
+    maxSteps: maxSteps,
+    nextSlideUrl: 'build_radiology_association_graph_knowledge_graph_at_scale.html',
+    prevSlideUrl: 'build_radiology_association_graph_edge_weight_calculation.html',
+    onUpdate: updateSlide
+  });
+</script>
+</body>
+</html>
