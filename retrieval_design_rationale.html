@@ -22,11 +22,12 @@
       background-size: 64px 64px; pointer-events: none;
     }
 
-    .header { position: absolute; top: 0; left: 0; right: 0; height: 58px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #0d1f38; z-index: 1; }
-    .h-title { font-size: 1rem; font-weight: 700; letter-spacing: 0.35em; text-transform: uppercase; color: #60a5fa; }
+    .header { position: absolute; top: 0; left: 0; right: 0; height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border-bottom: 1px solid #0d1f38; z-index: 1; }
+    .h-kicker { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.24em; text-transform: uppercase; color: #2c4a6e; }
+    .h-title { font-size: 1rem; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: #60a5fa; }
 
     /* ── Subtitle box ── */
-    .subtitle-bar { position: absolute; top: 58px; left: 0; right: 0; height: 50px; display: flex; align-items: center; justify-content: center; }
+    .subtitle-bar { position: absolute; top: 80px; left: 0; right: 0; height: 50px; display: flex; align-items: center; justify-content: center; }
     .h-subtitle-box {
       display: inline-flex; align-items: center; gap: 9px;
       padding: 8px 22px 8px 18px; border-radius: 999px;
@@ -38,7 +39,7 @@
     .h-subtitle { font-size: 0.72rem; font-weight: 500; color: #8ba3c7; letter-spacing: 0.015em; }
 
     /* ── Three-column layout ── */
-    .content { position: absolute; top: 108px; left: 0; right: 0; bottom: 0; display: flex; }
+    .content { position: absolute; top: 130px; left: 0; right: 0; bottom: 0; display: flex; }
 
     .rd-col {
       flex: 1; position: relative; display: flex; align-items: center; justify-content: center;
@@ -89,6 +90,16 @@
     .rd-desc { font-size: 0.76rem; color: #94a3b8; line-height: 1.6; text-align: center; }
     .rd-desc b { color: #cbd5e1; }
 
+    .rd-list { list-style: none; width: 100%; display: flex; flex-direction: column; gap: 7px; }
+    .rd-item {
+      font-size: 0.76rem; color: #94a3b8; line-height: 1.45;
+      position: relative; padding-left: 14px; text-align: left;
+    }
+    .rd-item::before { content: "•"; position: absolute; left: 0; color: #a78bfa; }
+    .card-green .rd-item::before  { color: #4ade80; }
+    .card-teal .rd-item::before   { color: #2dd4bf; }
+    .rd-item b { color: #cbd5e1; }
+
     @keyframes a-in {
       from { opacity: 0; transform: translateY(10px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -125,7 +136,10 @@
   </a>
 
   <div class="bg-grid"></div>
-  <div class="header"><span class="h-title">Retrieval Design Rationale</span></div>
+  <div class="header">
+    <span class="h-kicker">Inference Time Pipeline</span>
+    <span class="h-title">Retrieval Design Rationale</span>
+  </div>
   <div class="subtitle-bar">
     <div class="h-subtitle-box">
       <svg class="h-subtitle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16.5"/><circle cx="12" cy="7.5" r="0.9" fill="currentColor" stroke="none"/></svg>
@@ -144,7 +158,11 @@
         </div>
         <div class="rd-title">Why Two Retrieval Strategies</div>
         <div class="rd-divider div-purple"></div>
-        <div class="rd-desc">Two dimensions of comparison: <b>depth</b> (single-layer vs. two-layer — does deeper inference add recall?) and <b>filtering</b> (fixed Top-K vs. adaptive weight — how does candidate quality change?). Isolating each choice reveals its individual effect on report quality.</div>
+        <ul class="rd-list">
+          <li class="rd-item"><b>Depth</b> — single-layer vs. two-layer: does deeper inference add recall?</li>
+          <li class="rd-item"><b>Filtering</b> — fixed Top-K vs. adaptive weight: how does candidate quality change?</li>
+          <li class="rd-item">Isolates each choice's effect on report quality</li>
+        </ul>
       </div>
     </div>
 
@@ -157,7 +175,11 @@
         </div>
         <div class="rd-title">Why K = 5 (Strategy 1)</div>
         <div class="rd-divider div-green"></div>
-        <div class="rd-desc">Tuned empirically: a larger K pulled in <b>low-relevance candidates</b>, causing more false "Yes" answers in VQA and more hallucinations. Reducing to K=5 sharply improved candidate precision.</div>
+        <ul class="rd-list">
+          <li class="rd-item">Tuned <b>empirically</b></li>
+          <li class="rd-item">Larger K → more <b>low-relevance candidates</b> → more false "Yes" in VQA → more hallucinations</li>
+          <li class="rd-item">K=5 sharply improves candidate <b>precision</b></li>
+        </ul>
       </div>
     </div>
 
@@ -170,7 +192,11 @@
         </div>
         <div class="rd-title">Why Mean + Std (Strategy 2)</div>
         <div class="rd-divider div-teal"></div>
-        <div class="rd-desc">Mean alone let too many <b>low-relevance candidates</b> through, hurting downstream VQA quality. Adding one standard deviation narrows the pool while keeping the more strongly associated nodes.</div>
+        <ul class="rd-list">
+          <li class="rd-item">Mean alone lets too many <b>low-relevance candidates</b> through</li>
+          <li class="rd-item">+1 std narrows the pool to the <b>strongly associated</b> nodes</li>
+          <li class="rd-item">Improves downstream VQA quality</li>
+        </ul>
       </div>
     </div>
 

@@ -19,21 +19,28 @@
 
     /* ── Header ── */
     .header {
-      position: absolute; top: 0; left: 0; right: 0; height: 68px;
-      display: flex; align-items: center; justify-content: center;
+      position: absolute; top: 0; left: 0; right: 0; height: 90px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
       border-bottom: 1px solid #0d1f38;
+    }
+    .h-kicker {
+      font-size: 0.6rem; font-weight: 700;
+      letter-spacing: 0.24em; text-transform: uppercase;
+      color: #2c4a6e;
+      opacity: 0;
+      animation: a-fade 0.7s ease 0.1s forwards;
     }
     .h-title {
       font-size: 1rem; font-weight: 700;
-      letter-spacing: 0.35em; text-transform: uppercase;
+      letter-spacing: 0.3em; text-transform: uppercase;
       color: #60a5fa;
-      opacity: 0; 
+      opacity: 0;
       animation: a-fade 0.7s ease 0.1s forwards;
     }
 
     /* ── Divider ── */
     .divider {
-      position: absolute; left: 600px; top: 88px; bottom: 38px; width: 1px;
+      position: absolute; left: 600px; top: 110px; bottom: 38px; width: 1px;
       background: linear-gradient(to bottom, transparent 0%, #152840 15%, #152840 85%, transparent 100%);
     }
 
@@ -42,7 +49,7 @@
       width: 600px;
       display: flex; flex-direction: column;
       align-items: flex-start; justify-content: center;
-      padding: 68px 60px 36px;
+      padding: 90px 60px 36px;
     }
 
     /* Step row */
@@ -95,7 +102,7 @@
       width: 680px;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
-      padding: 68px 10px 36px;
+      padding: 90px 10px 36px;
     }
 
     .right-svg {
@@ -169,7 +176,8 @@
 
 
   <div class="header">
-    <span class="h-title">Build Radiology Association Graph - Token Preprocessing</span>
+    <span class="h-kicker">Build Radiology Association Graph</span>
+    <span class="h-title">Token Preprocessing</span>
   </div>
 
   <div class="divider"></div>

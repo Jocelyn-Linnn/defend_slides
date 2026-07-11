@@ -18,20 +18,26 @@
 
     /* ── Header ── */
     .header {
-      position: absolute; top: 0; left: 0; right: 0; height: 68px;
-      display: flex; align-items: center; justify-content: center;
+      position: absolute; top: 0; left: 0; right: 0; height: 90px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
       border-bottom: 2px solid #0d1f38;
+    }
+    .h-kicker {
+      font-size: 0.6rem; font-weight: 700;
+      letter-spacing: 0.24em; text-transform: uppercase;
+      color: #2c4a6e;
+      opacity: 0; animation: a-fade-in 0.7s ease 0.1s forwards;
     }
     .h-title {
       font-size: 1rem; font-weight: 700;
-      letter-spacing: 0.35em; text-transform: uppercase;
+      letter-spacing: 0.3em; text-transform: uppercase;
       color: #60a5fa;
       opacity: 0; animation: a-fade-in 0.7s ease 0.1s forwards;
     }
 
     /* ── Divider ── */
     .divider {
-      position: absolute; left: 600px; top: 88px; bottom: 36px; width: 2px;
+      position: absolute; left: 600px; top: 110px; bottom: 36px; width: 2px;
       background: linear-gradient(to bottom, transparent 0%, #152840 15%, #152840 85%, transparent 100%);
     }
 
@@ -40,7 +46,7 @@
       width: 600px;
       display: flex; flex-direction: column;
       align-items: flex-start; justify-content: center;
-      padding: 88px 64px 36px;
+      padding: 110px 64px 36px;
     }
 
     /* 將步驟元素改為平滑的 Transition 控制 */
@@ -57,6 +63,19 @@
     .step-title { font-size: 1.35rem; font-weight: 700; letter-spacing: 0.03em; margin-bottom: 10px; }
     .step-desc { font-size: 1.05rem; color: #94a3b8; line-height: 1.6; }
 
+    .prompt-box { margin-top: 10px; padding: 8px 11px; border-radius: 7px; background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.18); }
+    .prompt-box-text { font-size: 0.74rem; color: #a8967a; line-height: 1.5; }
+    .prompt-box-text b { color: #fbbf24; }
+    .prompt-list { margin: 4px 0 0 0; padding-left: 1.1em; list-style: disc; }
+    .prompt-list li { font-size: 0.74rem; color: #a8967a; line-height: 1.5; margin-bottom: 2px; }
+    .prompt-list li b { color: #fbbf24; }
+    .prompt-example {
+      margin-top: 6px; padding: 6px 9px; border-radius: 6px;
+      background: rgba(0,0,0,0.2); font-family: Consolas, Monaco, monospace;
+      font-size: 0.68rem; color: #94a3b8; line-height: 1.5;
+    }
+    .prompt-example b { color: #fbbf24; font-weight: 700; }
+
     .sep { width: 100%; height: 2px; background: linear-gradient(to right, #0d2040, transparent); margin: 32px 0; opacity: 0; transition: opacity 0.4s ease; }
     .sep.active { opacity: 1; }
 
@@ -65,7 +84,7 @@
       width: 680px;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
-      padding: 68px 24px 36px;
+      padding: 90px 24px 36px;
     }
     .right-svg {
       opacity: 0; transform: scale(0.9);
@@ -115,7 +134,8 @@
 
 
   <div class="header">
-    <span class="h-title">Build Radiology Association Graph - Question Generation</span>
+    <span class="h-kicker">Build Radiology Association Graph</span>
+    <span class="h-title">Question Generation</span>
   </div>
   <div class="divider"></div>
 
@@ -124,18 +144,16 @@
     <div class="step" id="step1Header">
       <div class="step-num" style="background:#1a1100;border:2px solid #f59e0b;color:#fbbf24;">1</div>
       <div class="step-body">
-        <div class="step-title" style="color:#fbbf24;">GPT-4o Generation</div>
-        <div class="step-desc">Pass the supernode text content to GPT-4o, and use the adjusted prompt to request the model to convert the text into a question.</div>
-      </div>
-    </div>
-
-    <div class="sep" id="sep1"></div>
-
-    <div class="step" id="step2Header">
-      <div class="step-num" style="background:#0b2619;border:2px solid #22c55e;color:#4ade80;">2</div>
-      <div class="step-body">
-        <div class="step-title" style="color:#4ade80;">Write Back to Neo4j</div>
-        <div class="step-desc">Receive the generated clinical question and save it directly into the graph database.</div>
+        <div class="step-title" style="color:#fbbf24;">GPT-4o mini Generation</div>
+        <div class="step-desc">Pass the supernode text content to GPT-4o mini, and use the adjusted prompt to request the model to convert the text into a question.</div>
+        <div class="prompt-box">
+          <span class="prompt-box-text"><b>Prompt</b></span>
+          <ul class="prompt-list">
+            <li><b>Role:</b> thoracic radiologist</li>
+            <li><b>Task:</b> convert the text into an open question — "Do you see...", "Do you observe...", or "Can you identify...?"</li>
+            <li><b>Preserve:</b> modifiers, severity, anatomical location</li>
+          </ul>
+        </div>
       </div>
     </div>
 
@@ -166,21 +184,21 @@
               stroke="#d97706" stroke-width="2.5" stroke-opacity="0.8"
               marker-end="url(#arr-a)"/>
 
-        <rect x="200" y="142" width="220" height="50" rx="10"
+        <rect x="180" y="142" width="260" height="50" rx="10"
               fill="#000e0d" stroke="#0d9488" stroke-width="2"/>
         <text x="310" y="173" fill="#2dd4bf" font-size="15" font-weight="700"
-              text-anchor="middle">GPT-4o</text>
+              text-anchor="middle">GPT-4o mini</text>
 
         <line x1="310" y1="192" x2="310" y2="237"
               stroke="#22c55e" stroke-width="2" stroke-opacity="0.7"
               marker-end="url(#arr-g)"/>
 
-        <rect x="180" y="240" width="260" height="65" rx="8"
+        <rect x="140" y="240" width="340" height="65" rx="8"
               fill="#030f06" stroke="#22c55e" stroke-width="1.8"/>
         <text x="310" y="266" fill="#4ade80" font-size="12.5" font-weight="600"
               text-anchor="middle" font-family="Consolas,Monaco,monospace">{"question":</text>
-        <text x="310" y="289" fill="#4ade80" font-size="12.5" font-weight="600"
-              text-anchor="middle" font-family="Consolas,Monaco,monospace">"Is there opacity...?"}</text>
+        <text x="310" y="289" fill="#4ade80" font-size="11" font-weight="600"
+              text-anchor="middle" font-family="Consolas,Monaco,monospace">"Do you observe opacity in the lung?"}</text>
       </g>
 
 
@@ -189,17 +207,17 @@
               stroke="#22c55e" stroke-width="2.5" stroke-opacity="0.8"
               stroke-dasharray="5 4" marker-end="url(#arr-g)"/>
 
-        <rect x="135" y="352" width="350" height="110" rx="14"
+        <rect x="105" y="352" width="410" height="110" rx="14"
               fill="#020d08" stroke="#22c55e" stroke-width="2.5"/>
         <text x="310" y="380" fill="#4ade80" font-size="12" font-weight="700"
               letter-spacing="0.2em" text-anchor="middle">SUPERNODE (UPDATED)</text>
 
-        <text x="165" y="410" fill="#94a3b8" font-size="13" font-weight="600">text:</text>
-        <text x="215" y="410" fill="#e2e8f0" font-size="14.5" font-weight="500">"opacity lung"</text>
+        <text x="135" y="410" fill="#94a3b8" font-size="13" font-weight="600">text:</text>
+        <text x="185" y="410" fill="#e2e8f0" font-size="14.5" font-weight="500">"opacity lung"</text>
 
-        <text x="165" y="440" fill="#a7f3d0" font-size="13" font-weight="600">question:</text>
-        <text x="245" y="440" fill="#fff" font-size="13" font-weight="700"
-              font-family="Consolas,Monaco,monospace">"Is there opacity in the lung?"</text>
+        <text x="135" y="440" fill="#a7f3d0" font-size="13" font-weight="600">question:</text>
+        <text x="215" y="440" fill="#fff" font-size="11" font-weight="700"
+              font-family="Consolas,Monaco,monospace">"Do you observe opacity in the lung?"</text>
       </g>
 
     </svg>
@@ -211,7 +229,7 @@
   import { initSlideController } from './tool/slide-controller.js';
   import './tool/slide-scale.js';
 
-  const maxSteps = 2; // 本頁共有 2 步動畫
+  const maxSteps = 1; // 本頁共有 1 步動畫
 
   // 狀態同步函式，根據控制器傳入的 step 決定哪些元素要加上 active 類別
   function updateSlide(step) {
@@ -219,16 +237,10 @@
     const activeElements = document.querySelectorAll('.active');
     activeElements.forEach(el => el.classList.remove('active'));
 
-    // 步驟 1: GPT-4o 生成
+    // 步驟 1: GPT-4o mini 生成，並同步顯示寫回 Neo4j 後的 Supernode
     if (step >= 1) {
       document.getElementById('step1Header').classList.add('active');
       document.getElementById('gptPathGroup').classList.add('active');
-    }
-
-    // 步驟 2: 寫回 Neo4j 
-    if (step >= 2) {
-      document.getElementById('sep1').classList.add('active');
-      document.getElementById('step2Header').classList.add('active');
       document.getElementById('writebackGroup').classList.add('active');
     }
   }

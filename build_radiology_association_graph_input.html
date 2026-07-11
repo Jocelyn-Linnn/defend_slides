@@ -27,17 +27,27 @@
     .header {
       position: absolute;
       top: 0; left: 0; right: 0;
-      height: 58px;
+      height: 80px;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 4px;
       border-bottom: 1px solid #0d1f38;
+    }
+
+    .h-kicker {
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: #2c4a6e;
     }
 
     .h-title {
       font-size: 1rem;
       font-weight: 700;
-      letter-spacing: 0.35em;
+      letter-spacing: 0.3em;
       text-transform: uppercase;
       color: #60a5fa;
     }
@@ -46,7 +56,7 @@
     .divider {
       position: absolute;
       left: 640px;
-      top: 68px;
+      top: 90px;
       bottom: 28px;
       width: 1px;
       background: linear-gradient(to bottom, transparent 0%, #152840 15%, #152840 85%, transparent 100%);
@@ -59,7 +69,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 58px 32px 28px;
+      padding: 80px 32px 28px;
     }
 
     .p-sub {
@@ -203,7 +213,8 @@
 
 
   <div class="header">
-    <span class="h-title">Build Radiology Association Graph - Input</span>
+    <span class="h-kicker">Build Radiology Association Graph</span>
+    <span class="h-title">Input</span>
   </div>
 
   <div class="divider"></div>

@@ -18,19 +18,24 @@
 
     /* ── Header ── */
     .header {
-      position: absolute; top: 0; left: 0; right: 0; height: 68px;
-      display: flex; align-items: center; justify-content: center;
+      position: absolute; top: 0; left: 0; right: 0; height: 90px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
       border-bottom: 1px solid #0d1f38;
+    }
+    .h-kicker {
+      font-size: 0.6rem; font-weight: 700;
+      letter-spacing: 0.24em; text-transform: uppercase;
+      color: #2c4a6e;
     }
     .h-title {
       font-size: 1rem; font-weight: 700;
-      letter-spacing: 0.35em; text-transform: uppercase;
+      letter-spacing: 0.3em; text-transform: uppercase;
       color: #60a5fa;
     }
 
     /* ── Divider ── */
     .divider {
-      position: absolute; left: 620px; top: 88px; bottom: 38px; width: 1px;
+      position: absolute; left: 620px; top: 110px; bottom: 38px; width: 1px;
       background: linear-gradient(to bottom, transparent 0%, #152840 15%, #152840 85%, transparent 100%);
     }
 
@@ -39,7 +44,7 @@
       width: 620px;
       display: flex; flex-direction: column;
       align-items: flex-start; justify-content: center;
-      padding: 88px 48px 36px 64px;
+      padding: 110px 48px 36px 64px;
     }
 
     /* 將步驟元素改為可逆向的 Transition 控制 */
@@ -90,6 +95,9 @@
     .weight-rationale { margin-top: 10px; padding: 8px 11px; border-radius: 7px; background: rgba(139,92,246,0.06); border: 1px solid rgba(139,92,246,0.18); }
     .weight-rationale-text { font-size: 0.74rem; color: #8a86a8; line-height: 1.5; }
     .weight-rationale-text b { color: #a78bfa; }
+    .rationale-list { margin: 4px 0 0 0; padding-left: 1.1em; list-style: disc; }
+    .rationale-list li { font-size: 0.74rem; color: #8a86a8; line-height: 1.5; margin-bottom: 2px; }
+    .rationale-list li b { color: #a78bfa; }
 
     .sep { width: 100%; height: 1px; background: linear-gradient(to right, #0d2040, transparent); margin: 12px 0; opacity: 0; transition: opacity 0.4s ease; }
     .sep.active { opacity: 1; }
@@ -99,7 +107,7 @@
       width: 660px;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
-      padding: 88px 32px 36px 16px;
+      padding: 110px 32px 36px 16px;
     }
     .right-svg {
       opacity: 0; transform: scale(0.85);
@@ -154,7 +162,8 @@
 
 
   <div class="header">
-    <span class="h-title">Build Radiology Association Graph - Edge Weight Calculation</span>
+    <span class="h-kicker">Build Radiology Association Graph</span>
+    <span class="h-title">Edge Weight Calculation</span>
   </div>
   <div class="divider"></div>
 
@@ -193,8 +202,6 @@
       <div class="step-num" style="background:#1a1100;border:1.5px solid #f59e0b;color:#fbbf24;">2</div>
       <div class="step-body">
         <div class="step-title" style="color:#fbbf24;">Method 1 — Conditional Probability</div>
-        <div class="step-desc">Probability of pointing to B given out-edges from A.<br>
-          Sum of out-edge weights from the same source ≤ 1.</div>
         <div class="step-formula"
              style="color:#fde68a;background:rgba(120,53,15,0.15);border-left-color:#d97706;">
           weight = count(A→B) / count(A→*)
@@ -208,13 +215,18 @@
       <div class="step-num" style="background:#051a1a;border:1.5px solid #14b8a6;color:#2dd4bf;">3</div>
       <div class="step-body">
         <div class="step-title" style="color:#2dd4bf;">Method 2 — NPMI</div>
-        <div class="step-desc">Penalizes highly frequent targets to highlight relationships with clinical specificity. Range: [−1, 1]</div>
         <div class="step-formula"
              style="color:#99f6e4;background:rgba(13,148,136,0.1);border-left-color:#0d9488;">
           NPMI = PMI / −log P(A→B)
         </div>
         <div class="weight-rationale">
-          <span class="weight-rationale-text"><b>Why both</b> — CP overestimates frequent targets; NPMI corrects via marginal probabilities to surface clinically specific pairs. Comparing both tests which definition retrieves better.</span>
+          <span class="weight-rationale-text"><b>Why both</b></span>
+          <ul class="rationale-list">
+            <li><b>CP</b> — simple, probabilistic, valid distribution (Σ ≤ 1)</li>
+            <li>But overestimates frequent targets (e.g. "hilar haziness", "bilateral effusion")</li>
+            <li><b>NPMI</b> — corrects via A &amp; B's marginal probabilities, surfaces true clinical specificity</li>
+            <li>Comparing both isolates which weighting definition retrieves better</li>
+          </ul>
         </div>
       </div>
     </div>
@@ -266,6 +278,15 @@
               font-style="italic" font-weight="600">total = 1,247</text>
       </g>
 
+      <g class="cnt-label" id="cntLabel2">
+        <text x="103" y="118" fill="#a15c12" font-size="9.5" font-weight="700"
+              text-anchor="middle">count(A→*) = 8</text>
+      </g>
+      <g class="cnt-label" id="cntLabel3">
+        <text x="446" y="118" fill="#14b8a6" font-size="9.5" font-weight="700"
+              text-anchor="middle">count(*→B) = 8</text>
+      </g>
+
       <g class="m1-box" id="m1BoxGroup">
         <rect x="15" y="132" width="248" height="148" rx="10"
               fill="#080500" stroke="#d97706" stroke-width="1.5"/>
@@ -296,33 +317,37 @@
         <text x="410" y="154" fill="#2dd4bf" font-size="10" font-weight="700"
               letter-spacing="0.05em" text-anchor="middle">METHOD 2 — NPMI</text>
 
-        <text x="410" y="181" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle">
+        <text x="410" y="176" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle">
           PMI = log( P(A→B) / P(A)·P(B) )
         </text>
+        <text x="410" y="192" fill="#5e8a83" font-size="8.5" font-weight="600" text-anchor="middle">
+          P(A) = 8/1,247 &nbsp;·&nbsp; P(B) = 8/1,247
+        </text>
 
-        <text x="350" y="207" fill="#94a3b8" font-size="12" font-weight="600" text-anchor="middle">NPMI =</text>
-        <text x="438" y="202" fill="#e2e8f0" font-size="12" font-weight="600" text-anchor="middle">PMI</text>
-        <line x1="408" y1="207" x2="468" y2="207"
+        <text x="350" y="214" fill="#94a3b8" font-size="12" font-weight="600" text-anchor="middle">NPMI =</text>
+        <text x="438" y="209" fill="#e2e8f0" font-size="12" font-weight="600" text-anchor="middle">PMI</text>
+        <line x1="408" y1="214" x2="468" y2="214"
               stroke="#475569" stroke-width="1.5"/>
-        <text x="438" y="220" fill="#94a3b8" font-size="11" text-anchor="middle">−log P(AB)</text>
+        <text x="438" y="227" fill="#94a3b8" font-size="11" text-anchor="middle">−log P(AB)</text>
+        <text x="479" y="219" fill="#2dd4bf" font-size="14" font-weight="700">= 0.83</text>
 
-        <text x="410" y="238" fill="#14b8a6" font-size="9" font-weight="600" text-anchor="middle">
+        <text x="410" y="245" fill="#14b8a6" font-size="9" font-weight="600" text-anchor="middle">
           P(B) ↑  →  NPMI ↓  (Penalize High Freq)
         </text>
 
-        <rect x="311" y="244" width="198" height="24" rx="12"
+        <rect x="311" y="251" width="198" height="24" rx="12"
               fill="rgba(13,148,136,0.1)" stroke="rgba(13,148,136,0.4)" stroke-width="1"/>
-        <text x="410" y="260" fill="#99f6e4" font-size="10" font-weight="700"
-              text-anchor="middle">r.weight_npmi ∈ [−1, 1]</text>
+        <text x="410" y="267" fill="#99f6e4" font-size="10" font-weight="700"
+              text-anchor="middle">r.weight_npmi = 0.83</text>
       </g>
 
       <g class="set-label" id="setLabelGroup">
         <rect x="124" y="296" width="300" height="42" rx="9"
               fill="rgba(5,13,26,0.95)" stroke="#1e4a2e" stroke-width="1.5"/>
         <text x="274" y="313" fill="#34d399" font-size="10" font-weight="700"
-              text-anchor="middle">SET r.weight = 0.625</text>
+              text-anchor="middle">weight_cp = 0.625</text>
         <text x="274" y="329" fill="#34d399" font-size="10" font-weight="700"
-              text-anchor="middle">SET r.weight_npmi = 0.83</text>
+              text-anchor="middle">weight_npmi = 0.83</text>
       </g>
 
     </svg>
@@ -347,6 +372,8 @@
       document.getElementById('step1Header').classList.add('active');
       document.getElementById('cntLabel1').classList.add('active');
       document.getElementById('cntLabel4').classList.add('active');
+      document.getElementById('cntLabel2').classList.add('active');
+      document.getElementById('cntLabel3').classList.add('active');
     }
 
     // 步驟 2: 條件機率計算與 M1 Box 區塊

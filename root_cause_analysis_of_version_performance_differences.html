@@ -33,7 +33,7 @@
 
     .cause-cell {
       flex: 1; position: relative; display: flex; align-items: center; justify-content: center;
-      padding: 26px 32px;
+      padding: 34px 32px;
       opacity: 0;
     }
     .cause-cell:not(:last-child) { border-right: 1px solid #0a1828; }
@@ -51,7 +51,7 @@
     .num-blue   { color: rgba(59,130,246,0.08); }
 
     /* Card body */
-    .cc-body { position: relative; display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 380px; }
+    .cc-body { position: relative; display: flex; flex-direction: column; gap: 18px; width: 100%; max-width: 380px; }
 
     .cc-head { display: flex; align-items: center; gap: 12px; }
 
@@ -78,12 +78,12 @@
 
     /* Placeholder body for content to be added later */
     .cc-content {
-      flex: 1; min-height: 64px; margin-top: 6px;
-      display: flex; flex-direction: column; gap: 8px; align-items: flex-start;
+      flex: 1; min-height: 64px;
+      display: flex; flex-direction: column; gap: 14px; align-items: flex-start;
     }
 
     /* ── Key-point bullets ── */
-    .cc-bullets { display: flex; flex-direction: column; gap: 4px; width: 100%; }
+    .cc-bullets { display: flex; flex-direction: column; gap: 8px; width: 100%; }
     .cc-bullet { display: flex; align-items: flex-start; gap: 6px; }
     .cc-bdot { width: 4px; height: 4px; border-radius: 50%; flex-shrink: 0; margin-top: 6px; background: #3b1f6e; }
     .cc-bullet span.bt { font-size: 0.76rem; color: #64748b; line-height: 1.5; }
@@ -91,18 +91,25 @@
 
     /* ── Example callout ── */
     .cc-example {
-      width: 100%; padding: 7px 10px; border-radius: 8px;
+      width: 100%; padding: 9px 12px; border-radius: 8px;
       background: rgba(139,92,246,0.05); border: 1px solid rgba(139,92,246,0.14);
-      display: flex; flex-direction: column; gap: 4px;
+      display: flex; flex-direction: column; gap: 6px;
     }
     .cc-ex-tag { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #a78bfa; }
     .cc-ex-line { font-size: 0.72rem; color: #64748b; line-height: 1.5; }
     .cc-ex-line b { color: #94a3b8; }
-    .cc-ex-metrics { display: flex; gap: 16px; margin-top: 10px; }
-    .cc-ex-metric { display: flex; flex-direction: column; gap: 0; }
-    .cc-ex-metric-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #1a3356; }
-    .cc-ex-metric-val { font-size: 0.78rem; font-weight: 700; color: #4ade80; }
-    .cc-ex-metric-val .from { color: #475569; font-weight: 500; }
+
+    /* ── Evaluation-score table ── */
+    .cc-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+    .cc-table th, .cc-table td { padding: 4px 6px; font-size: 0.72rem; text-align: right; white-space: nowrap; }
+    .cc-table th:first-child, .cc-table td:first-child { text-align: left; white-space: normal; }
+    .cc-table td:first-child { color: #94a3b8; font-weight: 600; }
+    .cc-table th {
+      font-size: 0.6rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;
+      border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 5px;
+    }
+    .cc-table td.from { color: #64748b; }
+    .cc-table td.to { color: #4ade80; font-weight: 700; }
 
     .cc-example.ex-teal { background: rgba(20,184,166,0.05); border-color: rgba(20,184,166,0.14); }
     .cc-example.ex-teal .cc-ex-tag { color: #2dd4bf; }
@@ -184,16 +191,13 @@
             <div class="cc-ex-line"><b>GT:</b> mild pulmonary edema — MedGemma missed it, Micro F1 stuck at 0.333</div>
             <div class="cc-ex-line"><b>v1 (Top-K):</b> asks about bronchovascular crowding → edema untouched</div>
             <div class="cc-ex-line"><b>v2 (Two-Layer):</b> reaches L2 via "lung volume low" → asks about edema → confirmed</div>
-            <div class="cc-ex-metrics">
-              <div class="cc-ex-metric">
-                <span class="cc-ex-metric-label">RadGraph F1</span>
-                <span class="cc-ex-metric-val"><span class="from">0.2319</span> → 0.2899</span>
-              </div>
-              <div class="cc-ex-metric">
-                <span class="cc-ex-metric-label">CheXBert Micro F1</span>
-                <span class="cc-ex-metric-val"><span class="from">0.333</span> → 0.571</span>
-              </div>
-            </div>
+            <table class="cc-table">
+              <thead><tr><th></th><th>v1</th><th>v2</th></tr></thead>
+              <tbody>
+                <tr><td>RadGraph F1</td><td class="from">0.2319</td><td class="to">0.2899</td></tr>
+                <tr><td>CheXBert Micro F1</td><td class="from">0.333</td><td class="to">0.571</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -235,16 +239,13 @@
             <div class="cc-ex-line"><b>GT:</b> cardiomegaly, moderate edema, bilateral effusion — MedGemma baseline already correct, GREEN = 1.0</div>
             <div class="cc-ex-line"><b>v1 (CP):</b> 2 extra atelectasis questions → QA said Yes → hallucinated findings added</div>
             <div class="cc-ex-line"><b>v3 (NPMI):</b> atelectasis nodes score too low vs. anchor → filtered out → report unchanged, GREEN stays 1.0</div>
-            <div class="cc-ex-metrics">
-              <div class="cc-ex-metric">
-                <span class="cc-ex-metric-label">RadGraph F1</span>
-                <span class="cc-ex-metric-val"><span class="from">0.1702</span> → 0.2500</span>
-              </div>
-              <div class="cc-ex-metric">
-                <span class="cc-ex-metric-label">GREEN</span>
-                <span class="cc-ex-metric-val"><span class="from">0.3333</span> → 1.0000</span>
-              </div>
-            </div>
+            <table class="cc-table">
+              <thead><tr><th></th><th>v1</th><th>v3</th></tr></thead>
+              <tbody>
+                <tr><td>RadGraph F1</td><td class="from">0.1702</td><td class="to">0.2500</td></tr>
+                <tr><td>GREEN</td><td class="from">0.3333</td><td class="to">1.0000</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -291,12 +292,12 @@
             <div class="cc-ex-line"><b>v2 (Two-Hop, CP):</b> reaches L2 but favors high-freq nodes → misses it, hallucinates congestion/edema</div>
             <div class="cc-ex-line"><b>v3 (Top-K, NPMI):</b> limited to L1 → unreachable, hallucinates rib fracture</div>
             <div class="cc-ex-line"><b>v4 (Two-Hop, NPMI):</b> reaches L2 and ranks it top → correctly recovered</div>
-            <div class="cc-ex-metrics">
-              <div class="cc-ex-metric">
-                <span class="cc-ex-metric-label">CheXBert Micro F1</span>
-                <span class="cc-ex-metric-val"><span class="from">v1/v2/v3 0.333</span> → v4 0.571</span>
-              </div>
-            </div>
+            <table class="cc-table">
+              <thead><tr><th></th><th>v1/v2/v3</th><th>v4</th></tr></thead>
+              <tbody>
+                <tr><td>CheXBert Micro F1</td><td class="from">0.333</td><td class="to">0.571</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

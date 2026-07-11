@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>Final Report Integration &amp; Generation - Chest X-ray Report Refinement System</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 1280px; height: 720px;
+      overflow: hidden;
+      background: #050d1a;
+      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+      color: #e2e8f0;
+    }
+
+    .slide { width: 1280px; height: 720px; position: relative; display: flex; cursor: pointer; }
+
+    .header {
+      position: absolute; top: 0; left: 0; right: 0; height: 90px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+      border-bottom: 2px solid #0d1f38;
+    }
+    .h-kicker {
+      font-size: 0.6rem; font-weight: 700;
+      letter-spacing: 0.24em; text-transform: uppercase;
+      color: #2c4a6e;
+    }
+    .h-title {
+      font-size: 1rem; font-weight: 700;
+      letter-spacing: 0.3em; text-transform: uppercase;
+      color: #60a5fa;
+    }
+
+    .divider {
+      position: absolute; left: 480px; top: 110px; bottom: 36px; width: 2px;
+      background: linear-gradient(to bottom, transparent 0%, #152840 15%, #152840 85%, transparent 100%);
+    }
+
+    .panel-left {
+      width: 480px;
+      display: flex; flex-direction: column;
+      align-items: flex-start; justify-content: center;
+      padding: 110px 50px 36px;
+    }
+
+    .step {
+      display: flex; align-items: flex-start; margin-bottom: 10px; width: 100%;
+      opacity: 0; transition: opacity 0.4s ease, transform 0.4s ease; transform: translateY(6px);
+    }
+    .step.active { opacity: 1; transform: translateY(0); }
+
+    .step-num {
+      width: 34px; height: 34px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.95rem; font-weight: 700;
+      flex-shrink: 0; margin-right: 14px; margin-top: 2px;
+    }
+    .step-body { flex: 1; }
+    .step-title { font-size: 1.05rem; font-weight: 700; letter-spacing: 0.03em; margin-bottom: 5px; }
+    .step-desc { font-size: 0.82rem; color: #94a3b8; line-height: 1.5; }
+    .step-desc ul { margin: 0; padding-left: 1.1em; list-style: disc; }
+    .step-desc li { margin-bottom: 3px; }
+    .step-desc li:last-child { margin-bottom: 0; }
+    .step-desc b { color: #cbd5e1; }
+
+    .sep {
+      width: 100%; height: 2px;
+      background: linear-gradient(to right, #0d2040, transparent);
+      margin: 8px 0;
+      opacity: 0; transition: opacity 0.4s ease;
+    }
+    .sep.active { opacity: 1; }
+
+    .panel-right {
+      width: 800px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 94px 16px 28px;
+    }
+    .right-svg {
+      opacity: 0; transform: scale(0.92);
+      animation: a-zoom 0.8s cubic-bezier(.16,1,.3,1) 0.5s forwards;
+    }
+
+    .g-step1, .g-step2, .g-step3 {
+      opacity: 0; transition: opacity 0.5s ease;
+    }
+    .g-step1.active, .g-step2.active, .g-step3.active { opacity: 1; }
+
+    @keyframes a-zoom { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
+    /* ── Responsive scaling: fit fixed-size canvas to any viewport ── */
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #slideContainer { flex-shrink: 0; }
+      /* ── Gallery nav button (global) ── */
+    .gallery-nav-btn {
+      position: absolute; top: 14px; right: 14px; z-index: 30;
+      width: 30px; height: 30px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.09);
+      color: #60a5fa; text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    }
+    .gallery-nav-btn:hover {
+      background: rgba(96,165,250,0.14); border-color: rgba(96,165,250,0.35);
+      transform: scale(1.06);
+    }
+  </style>
+</head>
+<body>
+<div class="slide" id="slideContainer">
+  <a class="gallery-nav-btn" href="all_slides.html" title="All Slides" onclick="event.stopPropagation()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+  </a>
+
+  <div class="header">
+    <span class="h-kicker">Inference Time Pipeline</span>
+    <span class="h-title">Final Report Integration &amp; Generation</span>
+  </div>
+  <div class="divider"></div>
+
+  <!-- ── Left Panel ── -->
+  <div class="panel-left">
+
+    <div class="step" id="step1">
+      <div class="step-num" style="background:#0c2a4a;border:2px solid #3b82f6;color:#60a5fa;">1</div>
+      <div class="step-body">
+        <div class="step-title" style="color:#60a5fa;">Filter QA Pairs</div>
+        <div class="step-desc">
+          <ul>
+            <li>Keep only answers starting with <b>"Yes"</b></li>
+            <li>Discard hedging language (e.g. "difficult to assess")</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="sep" id="sep1"></div>
+
+    <div class="step" id="step2">
+      <div class="step-num" style="background:#1a1100;border:2px solid #f59e0b;color:#fbbf24;">2</div>
+      <div class="step-body">
+        <div class="step-title" style="color:#fbbf24;">Classify the Answers</div>
+        <div class="step-desc">
+          <ul>
+            <li><b>CONFIRMED</b> — one confirmed finding, no alternatives → kept in full</li>
+            <li><b>MIXED</b> — confirmed finding + speculative extension → trimmed to the confirmed clause</li>
+            <li><b>DIFFERENTIAL</b> — multiple possible diagnoses, none confirmed → discarded entirely</li>
+            <li><b>NORMAL</b> — confirms "within normal limits" → discarded, no added value</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="sep" id="sep2"></div>
+
+    <div class="step" id="step3">
+      <div class="step-num" style="background:#0b2619;border:2px solid #22c55e;color:#4ade80;">3</div>
+      <div class="step-body">
+        <div class="step-title" style="color:#4ade80;">GPT-4o Generate Final Report</div>
+        <div class="step-desc">
+          <ul>
+            <li><b>Initial report has highest priority</b> — QA may only supplement, never overwrite</li>
+            <li><b>Rule exemption</b> when image quality limits QA: severely damaged (e.g. large effusion, collapse) or completely normal</li>
+            <li><b>Negative statements</b> ("no X") may only come from the initial report, never introduced by QA</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Right Panel (one worked example per step) ── -->
+  <div class="panel-right">
+    <svg width="720" height="552" viewBox="0 0 580 460" fill="none" class="right-svg">
+      <defs>
+        <marker id="arr-blue"   markerWidth="8" markerHeight="8" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#3b82f6"/></marker>
+        <marker id="arr-amber"  markerWidth="8" markerHeight="8" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#f59e0b"/></marker>
+        <marker id="arr-green"  markerWidth="8" markerHeight="8" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#22c55e"/></marker>
+      </defs>
+
+      <!-- ═══════════ STEP 1 EXAMPLE: filtering raw QA ═══════════ -->
+      <g class="g-step1" id="gStep1">
+        <text x="20" y="14" fill="#2c4a6e" font-size="9" font-weight="700" letter-spacing="0.14em">RAW QA RESULTS (3 QUESTIONS ASKED)</text>
+
+        <rect x="20" y="22" width="540" height="56" rx="8" fill="#030d1f" stroke="#22c55e" stroke-width="1.6"/>
+        <text x="34" y="40" fill="#60a5fa" font-size="8.4">Q: Do you see a scar in the right mid lung?</text>
+        <text x="34" y="55" fill="#a7f3d0" font-size="8.4">A: Yes — linear opacity, right mid-lung, c/w scar</text>
+        <text x="524" y="36" fill="#4ade80" font-size="7.2" font-weight="800" text-anchor="end">✓ KEPT</text>
+
+        <rect x="20" y="84" width="540" height="56" rx="8" fill="#0c0c0c" stroke="#4b5563" stroke-width="1.6" stroke-dasharray="4 3"/>
+        <text x="34" y="102" fill="#7c8aa0" font-size="8.4">Q: Do you see any sign of pneumonia?</text>
+        <text x="34" y="117" fill="#7c8aa0" font-size="8.4" text-decoration="line-through">A: No — no clear signs of pneumonia</text>
+        <text x="524" y="98" fill="#f87171" font-size="7.2" font-weight="800" text-anchor="end">✕ NOT "YES"</text>
+
+        <rect x="20" y="146" width="540" height="56" rx="8" fill="#030d1f" stroke="#22c55e" stroke-width="1.6"/>
+        <text x="34" y="164" fill="#60a5fa" font-size="8.4">Q: Do you see any sign of pleural effusion?</text>
+        <text x="34" y="179" fill="#a7f3d0" font-size="8.4">A: Yes — small pleural effusion, left costophrenic angle</text>
+        <text x="524" y="160" fill="#4ade80" font-size="7.2" font-weight="800" text-anchor="end">✓ KEPT</text>
+
+        <line x1="290" y1="210" x2="290" y2="238" stroke="#22c55e" stroke-width="1.8" marker-end="url(#arr-green)"/>
+        <text x="310" y="228" fill="#4ade80" font-size="8" font-style="italic">keep "Yes" only</text>
+
+        <rect x="20" y="240" width="540" height="88" rx="10" fill="#020d08" stroke="#22c55e" stroke-width="2"/>
+        <text x="38" y="260" fill="#4ade80" font-size="9" font-weight="700" letter-spacing="0.1em">FILTERED QA (2 OF 3 KEPT)</text>
+        <text x="38" y="278" fill="#a7f3d0" font-size="8.6">• Yes — linear opacity, right mid-lung (scar)</text>
+        <text x="38" y="293" fill="#a7f3d0" font-size="8.6">• Yes — small pleural effusion, left costophrenic angle</text>
+        <text x="38" y="314" fill="#3a7a58" font-size="7.5" font-style="italic">→ passed forward to answer classification</text>
+      </g>
+
+      <!-- ═══════════ STEP 2 EXAMPLE: 4-way classification ═══════════ -->
+      <g class="g-step2" id="gStep2">
+        <rect x="20" y="16" width="540" height="84" rx="8" fill="#030d1f" stroke="#22c55e" stroke-width="1.6"/>
+        <text x="34" y="32" fill="#4ade80" font-size="7.6" font-weight="800" letter-spacing="0.1em">CONFIRMED</text>
+        <text x="34" y="46" fill="#6b8299" font-size="7.4" font-style="italic">Means: one confirmed finding, no alternatives</text>
+        <text x="34" y="63" fill="#cbd5e1" font-size="8.4">"Yes. There is a small pleural effusion in the left costophrenic angle."</text>
+        <text x="34" y="80" fill="#4ade80" font-size="8" font-style="italic">→ kept in full ✓</text>
+
+        <rect x="20" y="108" width="540" height="104" rx="8" fill="#0a0700" stroke="#f59e0b" stroke-width="1.6"/>
+        <text x="34" y="124" fill="#fbbf24" font-size="7.6" font-weight="800" letter-spacing="0.1em">MIXED</text>
+        <text x="34" y="138" fill="#6b8299" font-size="7.4" font-style="italic">Means: confirmed finding + speculative extension</text>
+        <text x="34" y="155" fill="#cbd5e1" font-size="8.4">"Yes. There is patchy opacity in the lung base. <tspan fill="#7c8aa0" text-decoration="line-through">This could be</tspan></text>
+        <text x="34" y="169" fill="#7c8aa0" font-size="8.4" text-decoration="line-through">due to atelectasis, consolidation, or a mass."</text>
+        <text x="34" y="192" fill="#fbbf24" font-size="8" font-style="italic">→ trimmed to the confirmed clause only</text>
+
+        <rect x="20" y="220" width="540" height="80" rx="8" fill="#0c0c0c" stroke="#4b5563" stroke-width="1.6" stroke-dasharray="4 3"/>
+        <text x="34" y="236" fill="#94a3b8" font-size="7.6" font-weight="800" letter-spacing="0.1em">DIFFERENTIAL</text>
+        <text x="34" y="250" fill="#6b8299" font-size="7.4" font-style="italic">Means: multiple possible diagnoses, none confirmed</text>
+        <text x="34" y="267" fill="#7c8aa0" font-size="8.4" text-decoration="line-through">"Yes, this could be pneumonia, atelectasis, or aspiration."</text>
+        <text x="34" y="284" fill="#f87171" font-size="8" font-style="italic">→ discarded entirely ✕</text>
+
+        <rect x="20" y="308" width="540" height="80" rx="8" fill="#0c0c0c" stroke="#4b5563" stroke-width="1.6" stroke-dasharray="4 3"/>
+        <text x="34" y="324" fill="#94a3b8" font-size="7.6" font-weight="800" letter-spacing="0.1em">NORMAL</text>
+        <text x="34" y="338" fill="#6b8299" font-size="7.4" font-style="italic">Means: confirms "within normal limits"</text>
+        <text x="34" y="355" fill="#7c8aa0" font-size="8.4" text-decoration="line-through">"The cardiac silhouette appears to be within normal limits."</text>
+        <text x="34" y="372" fill="#f87171" font-size="8" font-style="italic">→ discarded — no added clinical value ✕</text>
+      </g>
+
+      <!-- ═══════════ STEP 3 EXAMPLE: origin report + filtered QA → GPT-4o → final report ═══════════ -->
+      <g class="g-step3" id="gStep3">
+
+        <rect x="20" y="14" width="540" height="112" rx="10"
+              fill="#030d1f" stroke="#3b82f6" stroke-width="2"/>
+        <text x="34" y="31" fill="#60a5fa" font-size="9" font-weight="700"
+              letter-spacing="0.1em">初始報告（MEDGEMMA）· ORIGIN REPORT</text>
+        <text x="34" y="48" fill="#cbd5e1" font-size="8">The patient is status post sternotomy with multiple lines and tubes in place. A right-sided</text>
+        <text x="34" y="62" fill="#cbd5e1" font-size="8">chest tube is present. There is a moderate left pleural effusion with associated atelectasis.</text>
+        <text x="34" y="76" fill="#cbd5e1" font-size="8">There is patchy opacity in the right lower lung field, suggestive of pneumonia. The heart size</text>
+        <text x="34" y="90" fill="#cbd5e1" font-size="8">is normal. The mediastinum is unremarkable. No pneumothorax is seen.</text>
+        <text x="34" y="107" fill="#3a5f8a" font-size="7.4" font-style="italic">highest priority — never overwritten</text>
+
+        <line x1="290" y1="126" x2="290" y2="144" stroke="#f59e0b" stroke-width="1.8" marker-end="url(#arr-amber)"/>
+
+        <rect x="20" y="146" width="540" height="76" rx="10"
+              fill="#0a0700" stroke="#f59e0b" stroke-width="2"/>
+        <text x="34" y="163" fill="#fbbf24" font-size="9" font-weight="700"
+              letter-spacing="0.1em">ＱＡ 問答結果（篩選後保留 YES）· FILTERED QA</text>
+        <text x="34" y="181" fill="#d1a85a" font-size="8">Yes. There is subsegmental atelectasis in the lower lung fields, particularly on the left side.</text>
+        <text x="34" y="195" fill="#d1a85a" font-size="8">Yes. There is evidence of parapneumonic effusion.</text>
+        <text x="34" y="212" fill="#8a6a30" font-size="7.4" font-style="italic">may only supplement — never introduce a "no X" statement</text>
+
+        <line x1="290" y1="228" x2="290" y2="244" stroke="#8b5cf6" stroke-width="1.8" marker-end="url(#arr-blue)"/>
+
+        <rect x="190" y="246" width="200" height="34" rx="17"
+              fill="#0d0a1f" stroke="#8b5cf6" stroke-width="2"/>
+        <text x="290" y="268" fill="#c4b5fc" font-size="11" font-weight="700"
+              text-anchor="middle" letter-spacing="0.06em">GPT-4O</text>
+
+        <line x1="290" y1="280" x2="290" y2="298" stroke="#22c55e" stroke-width="1.8" marker-end="url(#arr-green)"/>
+
+        <rect x="20" y="300" width="540" height="150" rx="10"
+              fill="#020d08" stroke="#22c55e" stroke-width="2"/>
+        <text x="34" y="317" fill="#4ade80" font-size="9" font-weight="700"
+              letter-spacing="0.1em">最終報告（GPT-4O 整合輸出）· FINAL REPORT</text>
+        <text x="34" y="334" fill="#94a3b8" font-size="8">The patient is status post sternotomy with multiple lines and tubes in place. A right-sided</text>
+        <text x="34" y="348" fill="#94a3b8" font-size="8">chest tube is present. There is a moderate left pleural effusion with associated atelectasis.</text>
+        <text x="34" y="362" fill="#4ade80" font-size="8" font-weight="700">Subsegmental atelectasis is noted in the lower lung fields, particularly on the left side.</text>
+        <text x="34" y="376" fill="#94a3b8" font-size="8">There is patchy opacity in the right lower lung field, suggestive of pneumonia.</text>
+        <text x="34" y="390" fill="#4ade80" font-size="8" font-weight="700">Evidence of parapneumonic effusion is present.</text>
+        <text x="34" y="404" fill="#94a3b8" font-size="8">The heart size is normal. The mediastinum is unremarkable. No pneumothorax is seen.</text>
+        <text x="34" y="424" fill="#3a7a58" font-size="7.4" font-style="italic">Bold = supplemented from QA · everything else preserved verbatim from the origin report</text>
+      </g>
+
+    </svg>
+  </div>
+
+</div>
+
+<script type="module">
+  import { initSlideController } from './tool/slide-controller.js';
+  import './tool/slide-scale.js';
+
+  const maxSteps = 3;
+
+  function updateSlide(step) {
+    document.querySelectorAll('.active').forEach(el => el.classList.remove('active'));
+
+    // Left panel: cumulative (earlier steps stay visible as you progress)
+    if (step >= 1) {
+      document.getElementById('step1').classList.add('active');
+    }
+    if (step >= 2) {
+      document.getElementById('sep1').classList.add('active');
+      document.getElementById('step2').classList.add('active');
+    }
+    if (step >= 3) {
+      document.getElementById('sep2').classList.add('active');
+      document.getElementById('step3').classList.add('active');
+    }
+
+    // Right panel: exclusive (each step shows its own dedicated worked example)
+    if (step === 1) document.getElementById('gStep1').classList.add('active');
+    if (step === 2) document.getElementById('gStep2').classList.add('active');
+    if (step >= 3)  document.getElementById('gStep3').classList.add('active');
+  }
+
+  initSlideController({
+    maxSteps,
+    nextSlideUrl: 'experiment_result.html',
+    prevSlideUrl: 'visual_question_answering_inference.html',
+    onUpdate: updateSlide
+  });
+</script>
+</body>
+</html>

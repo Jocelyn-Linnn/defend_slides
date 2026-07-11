@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Inference-time Pipeline - Initial Report Generation &amp; Structured Extraction</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 1280px; height: 720px;
+      overflow: hidden;
+      background: #050d1a;
+      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+      color: #e2e8f0;
+    }
+
+    .slide { width: 1280px; height: 720px; position: relative; display: flex; cursor: pointer; }
+
+    /* ── Header ── */
+    .header {
+      position: absolute; top: 0; left: 0; right: 0; height: 90px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+      border-bottom: 2px solid #0d1f38;
+    }
+    .h-kicker {
+      font-size: 0.6rem; font-weight: 700;
+      letter-spacing: 0.24em; text-transform: uppercase;
+      color: #2c4a6e;
+      opacity: 0; animation: a-fade-in 0.7s ease 0.1s forwards;
+    }
+    .h-title {
+      font-size: 0.92rem; font-weight: 700;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: #60a5fa;
+      opacity: 0; animation: a-fade-in 0.7s ease 0.1s forwards;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      position: absolute; left: 600px; top: 110px; bottom: 36px; width: 2px;
+      background: linear-gradient(to bottom, transparent 0%, #152840 15%, #152840 85%, transparent 100%);
+    }
+
+    /* ── Left Panel ── */
+    .panel-left {
+      width: 600px;
+      display: flex; flex-direction: column;
+      align-items: flex-start; justify-content: center;
+      padding: 110px 64px 36px;
+    }
+
+    .step { display: flex; align-items: flex-start; margin-bottom: 20px; width: 100%; opacity: 0; transition: opacity 0.4s ease, transform 0.4s ease; transform: translateY(6px); }
+    .step.active { opacity: 1; transform: translateY(0); }
+
+    .step-num {
+      width: 42px; height: 42px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; font-weight: 700;
+      flex-shrink: 0; margin-right: 20px; margin-top: 2px;
+    }
+    .step-body { flex: 1; }
+    .step-title { font-size: 1.28rem; font-weight: 700; letter-spacing: 0.03em; margin-bottom: 9px; }
+    .step-desc { font-size: 0.95rem; color: #94a3b8; line-height: 1.55; }
+    .step-desc ul { margin: 8px 0 0 0; padding-left: 1.15em; list-style: disc; }
+    .step-desc li { margin-bottom: 3px; }
+
+    .weight-rationale { margin-top: 10px; padding: 8px 11px; border-radius: 7px; background: rgba(59,130,246,0.06); border: 1px solid rgba(59,130,246,0.18); }
+    .weight-rationale-text { font-size: 0.74rem; color: #8a96a8; line-height: 1.5; }
+    .weight-rationale-text b { color: #60a5fa; }
+    .rationale-list { margin: 4px 0 0 0; padding-left: 1.1em; list-style: disc; }
+    .rationale-list li { font-size: 0.74rem; color: #8a96a8; line-height: 1.5; margin-bottom: 2px; }
+
+    .sep { width: 100%; height: 2px; background: linear-gradient(to right, #0d2040, transparent); margin: 20px 0; opacity: 0; transition: opacity 0.4s ease; }
+    .sep.active { opacity: 1; }
+
+    /* ── Right Panel ── */
+    .panel-right {
+      width: 680px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 90px 24px 36px;
+    }
+    .right-svg {
+      opacity: 0; transform: scale(0.9);
+      animation: a-zoom 0.8s cubic-bezier(.16,1,.3,1) 0.5s forwards;
+    }
+
+    /* ── SVG group visibility ── */
+    .medgemma-group { opacity: 0; transition: opacity 0.5s ease; }
+    .medgemma-group.active { opacity: 1; }
+
+    .filter-group { opacity: 0; transition: opacity 0.5s ease; }
+    .filter-group.active { opacity: 1; }
+
+    .imp-label { fill: #cbd5e1; transition: fill 0.4s ease; }
+    .imp-label.struck { fill: #64748b; }
+    .imp-text { fill: #94a3b8; transition: fill 0.4s ease; }
+    .imp-text.struck { fill: #475569; }
+
+    .radgraph-group { opacity: 0; transition: opacity 0.5s ease; }
+    .radgraph-group.active { opacity: 1; }
+
+    /* ── Keyframes ── */
+    @keyframes a-fade-in  { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes a-zoom     { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    /* ── Responsive scaling: fit fixed-size canvas to any viewport ── */
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #slideContainer { flex-shrink: 0; }
+      /* ── Gallery nav button (global) ── */
+    .gallery-nav-btn {
+      position: absolute; top: 14px; right: 14px; z-index: 30;
+      width: 30px; height: 30px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.09);
+      color: #60a5fa; text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    }
+    .gallery-nav-btn:hover {
+      background: rgba(96,165,250,0.14); border-color: rgba(96,165,250,0.35);
+      transform: scale(1.06);
+    }
+  </style>
+</head>
+<body>
+<div class="slide" id="slideContainer">
+  <a class="gallery-nav-btn" href="all_slides.html" title="All Slides" onclick="event.stopPropagation()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+  </a>
+
+
+  <div class="header">
+    <span class="h-kicker">Inference Time Pipeline</span>
+    <span class="h-title">Initial Report Generation &amp; Structured Extraction</span>
+  </div>
+  <div class="divider"></div>
+
+  <div class="panel-left">
+
+    <div class="step" id="step1Header">
+      <div class="step-num" style="background:#0c2a4a;border:2px solid #3b82f6;color:#60a5fa;">1</div>
+      <div class="step-body">
+        <div class="step-title" style="color:#60a5fa;">MedGemma Report Generation</div>
+        <div class="step-desc">MedGemma generates a Findings + Impression report from a fixed prompt — training-free, no fine-tuning.</div>
+        <div class="weight-rationale">
+          <span class="weight-rationale-text"><b>Why MedGemma</b></span>
+          <ul class="rationale-list">
+            <li>Reused later for visual QA (Step 5) — no extra model</li>
+            <li>SOTA among similarly-sized open-source models</li>
+            <li>Open-source &amp; locally deployable</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="sep" id="sep1"></div>
+
+    <div class="step" id="step2Header">
+      <div class="step-num" style="background:#2a0c0c;border:2px solid #ef4444;color:#f87171;">2</div>
+      <div class="step-body">
+        <div class="step-title" style="color:#f87171;">Filter Out Impression</div>
+        <div class="step-desc">Only Findings is kept — Impression is filtered out to avoid skewing extraction.</div>
+      </div>
+    </div>
+
+    <div class="sep" id="sep2"></div>
+
+    <div class="step" id="step3Header">
+      <div class="step-num" style="background:#051a1a;border:2px solid #14b8a6;color:#2dd4bf;">3</div>
+      <div class="step-body">
+        <div class="step-title" style="color:#2dd4bf;">RadGraph Structured Extraction</div>
+        <div class="step-desc">RadGraph converts the Findings text into an entity-relation graph for retrieval.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="panel-right">
+    <svg width="620" height="520" viewBox="0 0 620 520" fill="none" class="right-svg">
+      <defs>
+        <marker id="arr-amber" markerWidth="10" markerHeight="10" refX="7" refY="4" orient="auto">
+          <path d="M0,0 L9,4 L0,8 Z" fill="#d97706" opacity="0.9"/>
+        </marker>
+        <marker id="arr-blue" markerWidth="10" markerHeight="10" refX="7" refY="4" orient="auto">
+          <path d="M0,0 L9,4 L0,8 Z" fill="#3b82f6" opacity="0.9"/>
+        </marker>
+        <marker id="arr-green" markerWidth="10" markerHeight="10" refX="7" refY="4" orient="auto">
+          <path d="M0,0 L9,4 L0,8 Z" fill="#22c55e" opacity="0.9"/>
+        </marker>
+        <marker id="arr-teal" markerWidth="10" markerHeight="10" refX="7" refY="4" orient="auto">
+          <path d="M0,0 L9,4 L0,8 Z" fill="#14b8a6" opacity="0.9"/>
+        </marker>
+        <marker id="arr-graph-blue" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,2 L8,5 L0,8 Z" fill="#3b82f6" opacity="0.7"/>
+        </marker>
+      </defs>
+
+      <!-- ── Chest X-ray input (always visible) ── -->
+      <rect x="210" y="8" width="200" height="58" rx="10"
+            fill="#1e1b12" stroke="#f59e0b" stroke-width="2"/>
+      <text x="310" y="34" fill="#fbbf24" font-size="12" font-weight="700"
+            letter-spacing="0.12em" text-anchor="middle">CHEST X-RAY</text>
+      <text x="310" y="50" fill="#d97706" font-size="7.5" font-weight="700"
+            letter-spacing="0.1em" text-anchor="middle">INPUT IMAGE</text>
+
+      <g class="medgemma-group" id="medgemmaGroup">
+        <line x1="310" y1="66" x2="310" y2="92"
+              stroke="#d97706" stroke-width="2.5" stroke-opacity="0.8"
+              marker-end="url(#arr-amber)"/>
+
+        <rect x="180" y="94" width="260" height="55" rx="10"
+              fill="#051026" stroke="#3b82f6" stroke-width="2"/>
+        <text x="310" y="126" fill="#60a5fa" font-size="15" font-weight="700"
+              text-anchor="middle">MedGemma</text>
+
+        <line x1="310" y1="149" x2="310" y2="175"
+              stroke="#3b82f6" stroke-width="2" stroke-opacity="0.7"
+              marker-end="url(#arr-blue)"/>
+
+        <rect x="110" y="177" width="400" height="92" rx="8"
+              fill="#030f06" stroke="#22c55e" stroke-width="1.8"/>
+        <text x="310" y="198" fill="#4ade80" font-size="11" font-weight="700"
+              letter-spacing="0.1em" text-anchor="middle">FINDINGS</text>
+        <text x="310" y="215" fill="#d1fae5" font-size="9.5"
+              text-anchor="middle" font-family="Consolas,Monaco,monospace">"The lungs are clear without focal consolidation."</text>
+
+        <line x1="150" y1="227" x2="470" y2="227" stroke="#14351f" stroke-width="1"/>
+        <text id="impressionLabel" class="imp-label" x="310" y="246" font-size="11" font-weight="700"
+              letter-spacing="0.1em" text-anchor="middle">IMPRESSION</text>
+        <text id="impressionText" class="imp-text" x="310" y="262" font-size="9.5"
+              text-anchor="middle" font-family="Consolas,Monaco,monospace">"No acute cardiopulmonary process."</text>
+      </g>
+
+      <g class="filter-group" id="filterGroup">
+        <line id="strikeLabel" class="strike-line" x1="255" y1="242" x2="365" y2="242" stroke="#f87171" stroke-width="1.5"/>
+        <line id="strikeText" class="strike-line" x1="205" y1="258" x2="415" y2="258" stroke="#f87171" stroke-width="1.5"/>
+      </g>
+
+      <g class="radgraph-group" id="radgraphGroup">
+        <line x1="310" y1="269" x2="310" y2="294"
+              stroke="#22c55e" stroke-width="2" stroke-opacity="0.7"
+              marker-end="url(#arr-green)"/>
+
+        <rect x="180" y="296" width="260" height="55" rx="10"
+              fill="#021a16" stroke="#14b8a6" stroke-width="2"/>
+        <text x="310" y="328" fill="#2dd4bf" font-size="15" font-weight="700"
+              text-anchor="middle">RadGraph</text>
+
+        <line x1="310" y1="351" x2="310" y2="376"
+              stroke="#14b8a6" stroke-width="2" stroke-opacity="0.7"
+              marker-end="url(#arr-teal)"/>
+
+        <rect x="110" y="378" width="400" height="112" rx="10"
+              fill="#030d1f" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="310" y="396" fill="#475569" font-size="8" font-weight="700"
+              letter-spacing="0.14em" text-anchor="middle">ENTITIES &amp; RELATIONS</text>
+
+        <line x1="258" y1="440" x2="362" y2="440"
+              stroke="#3b82f6" stroke-width="1.5" stroke-opacity="0.7"
+              marker-end="url(#arr-graph-blue)"/>
+        <text x="310" y="430" fill="#3b82f6" font-size="7.5" font-weight="600"
+              letter-spacing="0.05em" text-anchor="middle">LOCATED_AT</text>
+
+        <circle cx="230" cy="440" r="28" fill="#2a0c0c" stroke="#ef4444" stroke-width="1.8"/>
+        <text x="230" y="437" fill="#fecaca" font-size="9" font-weight="600" text-anchor="middle">consolidation</text>
+        <text x="230" y="448" fill="#f87171" font-size="7.5" text-anchor="middle">OBS-DA-E</text>
+
+        <circle cx="390" cy="440" r="28" fill="#33291c" stroke="#c2a67f" stroke-width="1.8"/>
+        <text x="390" y="437" fill="#ebd6ba" font-size="9" font-weight="600" text-anchor="middle">lungs</text>
+        <text x="390" y="448" fill="#9e8460" font-size="7.5" text-anchor="middle">ANAT-E</text>
+      </g>
+
+    </svg>
+  </div>
+
+</div>
+
+<script type="module">
+  import { initSlideController } from './tool/slide-controller.js';
+  import './tool/slide-scale.js';
+
+  const maxSteps = 3; // 本頁共有 3 步動畫
+
+  function updateSlide(step) {
+    const activeElements = document.querySelectorAll('.active');
+    activeElements.forEach(el => el.classList.remove('active'));
+    document.getElementById('impressionLabel').classList.remove('struck');
+    document.getElementById('impressionText').classList.remove('struck');
+
+    // 步驟 1: MedGemma 生成初步報告（Findings + Impression 一併顯示，尚未過濾）
+    if (step >= 1) {
+      document.getElementById('step1Header').classList.add('active');
+      document.getElementById('medgemmaGroup').classList.add('active');
+    }
+    // 步驟 2: 過濾 Impression — 劃掉線淡入，文字同時變暗
+    if (step >= 2) {
+      document.getElementById('sep1').classList.add('active');
+      document.getElementById('step2Header').classList.add('active');
+      document.getElementById('filterGroup').classList.add('active');
+      document.getElementById('impressionLabel').classList.add('struck');
+      document.getElementById('impressionText').classList.add('struck');
+    }
+    // 步驟 3: RadGraph 結構化抽取
+    if (step >= 3) {
+      document.getElementById('sep2').classList.add('active');
+      document.getElementById('step3Header').classList.add('active');
+      document.getElementById('radgraphGroup').classList.add('active');
+    }
+  }
+
+  initSlideController({
+    maxSteps: maxSteps,
+    nextSlideUrl: 'retrieve_preprocess.html',
+    prevSlideUrl: 'build_radiology_association_graph_knowledge_graph_at_scale.html',
+    onUpdate: updateSlide
+  });
+</script>
+</body>
+</html>
