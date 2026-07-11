@@ -46,7 +46,7 @@ function renderPageNumber(containerId) {
   badge.className = 'slide-pagenum';
   badge.textContent = `${pageIdx + 1} / ${numberedSlides.length}`;
   badge.style.cssText = [
-    'position:absolute', 'bottom:14px', 'right:16px', 'z-index:30',
+    'position:absolute', 'bottom:14px', 'left:50%', 'transform:translateX(-50%)', 'z-index:30',
     'padding:4px 10px', 'border-radius:8px',
     'background:rgba(255,255,255,0.035)', 'border:1px solid rgba(255,255,255,0.09)',
     'color:#4e729a', 'font-size:0.68rem', 'font-weight:700', 'letter-spacing:0.03em',
@@ -54,6 +54,63 @@ function renderPageNumber(containerId) {
     'pointer-events:none', 'user-select:none'
   ].join(';');
   container.appendChild(badge);
+}
+
+/**
+ * 上／下一頁按鈕 (Prev / Next Nav Buttons)
+ *
+ * 分別放在畫面左下角、右下角，點擊時呼叫傳入的 nextStep / prevStep，
+ * 並阻止事件冒泡到容器層級的點擊監聽（避免疊加觸發兩次換頁/換步）。
+ */
+function ensureNavButtonStyles() {
+  if (document.getElementById('slide-nav-btn-styles')) return;
+  const style = document.createElement('style');
+  style.id = 'slide-nav-btn-styles';
+  style.textContent = `
+    .slide-nav-btn {
+      position: absolute; bottom: 14px; z-index: 30;
+      width: 32px; height: 32px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.09);
+      color: #60a5fa; cursor: pointer; padding: 0;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    }
+    .slide-nav-btn:hover { background: rgba(96,165,250,0.14); border-color: rgba(96,165,250,0.35); transform: scale(1.06); }
+    .slide-nav-btn:active { transform: scale(0.96); }
+    .slide-nav-prev { left: 16px; }
+    .slide-nav-next { right: 16px; }
+  `;
+  document.head.appendChild(style);
+}
+
+function renderNavButtons(containerId, { nextStep, prevStep }) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  ensureNavButtonStyles();
+
+  const prevBtn = document.createElement('button');
+  prevBtn.type = 'button';
+  prevBtn.className = 'slide-nav-btn slide-nav-prev';
+  prevBtn.setAttribute('aria-label', 'Previous');
+  prevBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
+  prevBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    prevStep();
+  });
+
+  const nextBtn = document.createElement('button');
+  nextBtn.type = 'button';
+  nextBtn.className = 'slide-nav-btn slide-nav-next';
+  nextBtn.setAttribute('aria-label', 'Next');
+  nextBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
+  nextBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    nextStep();
+  });
+
+  container.appendChild(prevBtn);
+  container.appendChild(nextBtn);
 }
 
 export function initSlideController({
@@ -98,6 +155,9 @@ export function initSlideController({
     currentStep--;
     if (typeof onUpdate === 'function') onUpdate(currentStep);
   }
+
+  // 畫面左下／右下的上一頁／下一頁按鈕
+  renderNavButtons(containerId, { nextStep, prevStep });
 
   // 監聽滑鼠點擊前進
   if (container) {
