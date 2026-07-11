@@ -94,20 +94,21 @@
 
     /* Mini table */
     .mm-table-title { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #1e3a5f; margin-top: 2px; }
-    .mm-table { width: 100%; display: flex; flex-direction: column; }
-    .mm-table-row {
-      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    .mm-table { width: 100%; display: grid; grid-template-columns: 1fr auto 52px; column-gap: 12px; }
+    .mm-table-row { display: contents; }
+    .mm-table-row > * {
+      display: flex; align-items: center;
       padding: 6px 0; border-bottom: 1px dashed #0d1f38;
       font-size: 0.76rem;
     }
-    .mm-table-row:last-child { border-bottom: none; }
+    .mm-table-row:last-child > * { border-bottom: none; }
     .mm-cond { color: #94a3b8; }
     .mm-cond .freq { color: #3c5878; font-size: 0.66rem; margin-left: 4px; }
-    .mm-vals { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+    .mm-vals { gap: 8px; white-space: nowrap; }
     .mm-vals .from { color: #475569; font-size: 0.72rem; }
     .mm-vals .arrow { color: #1a3356; font-size: 0.68rem; }
     .mm-vals .to { color: #cbd5e1; font-size: 0.76rem; font-weight: 600; }
-    .mm-d { font-weight: 700; font-size: 0.72rem; min-width: 44px; text-align: right; }
+    .mm-d { font-weight: 700; font-size: 0.72rem; text-align: right; justify-content: flex-end; }
     .d-up { color: #4ade80; }
     .d-down { color: #f87171; }
     .d-flat { color: #64748b; }
