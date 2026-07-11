@@ -24,6 +24,38 @@ function resolveNeighborUrls(fallbackNext, fallbackPrev) {
   };
 }
 
+/**
+ * 頁碼徽章 (Page Number Badge)
+ *
+ * 頁碼一律從 slide-order.js 即時算出（排除 all_slides.html 縮圖目錄頁本身，
+ * 因為它是導覽用的索引頁，不計入頁數）。之後新增、刪除或調整順序時，所有
+ * 頁面的頁碼會自動一起更新——不需要手動修改任何 slide 檔案。
+ */
+function renderPageNumber(containerId) {
+  const currentFile = window.location.pathname.split('/').pop();
+  if (currentFile === 'all_slides.html') return; // 索引頁本身不編頁碼
+
+  const numberedSlides = slideOrder.filter((f) => f !== 'all_slides.html');
+  const pageIdx = numberedSlides.indexOf(currentFile);
+  if (pageIdx === -1) return; // 檔案不在清單中，無法判斷頁碼，略過
+
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const badge = document.createElement('div');
+  badge.className = 'slide-pagenum';
+  badge.textContent = `${pageIdx + 1} / ${numberedSlides.length}`;
+  badge.style.cssText = [
+    'position:absolute', 'bottom:14px', 'right:16px', 'z-index:30',
+    'padding:4px 10px', 'border-radius:8px',
+    'background:rgba(255,255,255,0.035)', 'border:1px solid rgba(255,255,255,0.09)',
+    'color:#4e729a', 'font-size:0.68rem', 'font-weight:700', 'letter-spacing:0.03em',
+    "font-family:-apple-system,'Segoe UI',system-ui,sans-serif",
+    'pointer-events:none', 'user-select:none'
+  ].join(';');
+  container.appendChild(badge);
+}
+
 export function initSlideController({
   maxSteps,
   nextSlideUrl: fallbackNextSlideUrl,
@@ -33,6 +65,8 @@ export function initSlideController({
 }) {
   const { next: nextSlideUrl, prev: prevSlideUrl } = resolveNeighborUrls(fallbackNextSlideUrl, fallbackPrevSlideUrl);
   const container = document.getElementById(containerId);
+
+  renderPageNumber(containerId);
 
   // 初始化偵測：若網址帶有 #last 暗號則直接跳至最後一步，否則從第 0 步開始
   let currentStep = window.location.hash === '#last' ? maxSteps : 0;

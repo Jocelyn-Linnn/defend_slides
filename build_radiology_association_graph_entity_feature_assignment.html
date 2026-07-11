@@ -76,6 +76,32 @@
     .feat-e { color: #34d399; font-weight: 700; }
     .feat-m { color: #fbbf24; font-weight: 700; }
 
+    /* ── Why this step (rationale box) ── */
+    .why-box {
+      width: 100%;
+      max-width: 470px;
+      margin-top: 16px;
+      padding: 11px 16px;
+      border-radius: 6px;
+      background: rgba(13, 27, 49, 0.4);
+      border: 1px solid rgba(52, 211, 153, 0.22);
+      opacity: 0;
+      transition: opacity 0.5s ease 0.15s;
+    }
+    .why-box.active { opacity: 1; }
+    .why-title {
+      font-size: 0.66rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+      color: #34d399; margin-bottom: 6px;
+    }
+    .why-list { list-style: none; }
+    .why-item {
+      font-size: 0.74rem; color: #94a3b8; line-height: 1.5;
+      position: relative; padding-left: 14px; margin-bottom: 4px;
+    }
+    .why-item:last-child { margin-bottom: 0; }
+    .why-item::before { content: "•"; position: absolute; left: 0; color: #34d399; }
+    .why-item b { color: #cbd5e1; }
+
     /* ── Right Panel ── */
     .panel-right {
       width: 680px;
@@ -192,6 +218,16 @@
       <li class="logic-item">Otherwise:<br>Assign <span class="feat-e">label + "-E"</span></li>
     </ul>
 
+    <div class="why-box" id="whyBox">
+      <div class="why-title">Why This Step</div>
+      <ul class="why-list">
+        <li class="why-item">Same text, <b>different role</b> depending on the report</li>
+        <li class="why-item"><b>"low"</b> as observation: "lung volume is low" → OBS-U-<b>E</b></li>
+        <li class="why-item"><b>"low"</b> as modifier: "low lung volume" → OBS-U-<b>M</b></li>
+        <li class="why-item">Lets retrieval tell a <b>finding</b> apart from its <b>descriptor</b></li>
+      </ul>
+    </div>
+
   </div>
 
   <div class="panel-right">
@@ -293,6 +329,7 @@
       // 步驟 1: 顯現左側標題與功能敘述
       document.getElementById('step1Header').classList.add('active');
       document.getElementById('step1List').classList.add('active');
+      document.getElementById('whyBox').classList.add('active');
     }
     
     if (step >= 2) {

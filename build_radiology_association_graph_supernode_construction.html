@@ -58,6 +58,28 @@
     .sep { width: 100%; height: 1px; background: linear-gradient(to right, #0d2040, transparent); margin: 22px 0; opacity: 0; transition: opacity 0.4s ease; }
     .sep.active { opacity: 1; }
 
+    /* ── Why Supernodes (rationale box) ── */
+    .why-box {
+      width: 100%; max-width: 430px; box-sizing: border-box;
+      margin-top: 12px; padding: 10px 14px; border-radius: 6px;
+      background: rgba(13, 27, 49, 0.4);
+      border: 1px solid rgba(52, 211, 153, 0.22);
+      opacity: 0; transition: opacity 0.4s ease;
+    }
+    .why-box.active { opacity: 1; }
+    .why-title {
+      font-size: 0.64rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+      color: #34d399; margin-bottom: 5px;
+    }
+    .why-list { list-style: none; }
+    .why-item {
+      font-size: 0.72rem; color: #94a3b8; line-height: 1.5;
+      position: relative; padding-left: 13px; margin-bottom: 3px;
+    }
+    .why-item:last-child { margin-bottom: 0; }
+    .why-item::before { content: "•"; position: absolute; left: 0; color: #34d399; }
+    .why-item b { color: #cbd5e1; }
+
     .panel-right {
       width: 760px; display: flex; flex-direction: column;
       align-items: center; justify-content: center;
@@ -159,6 +181,15 @@
         <div id="list-item-2">• Link Entities to corresponding Supernodes via PART_OF</div>
         <div id="list-item-3">• Establish SUGGESTIVE_OF relation between Supernodes</div>
       </div>
+    </div>
+
+    <div class="why-box" id="whyBox">
+      <div class="why-title">Why Supernodes</div>
+      <ul class="why-list">
+        <li class="why-item">A finding = <b>observation</b> + <b>location</b> + <b>severity</b></li>
+        <li class="why-item">Raw <b>SUGGESTIVE_OF</b>: observation-only — location &amp; severity left behind</li>
+        <li class="why-item">Supernode = all three, fused <b>as one</b> — then linked via SUGGESTIVE_OF</li>
+      </ul>
     </div>
   </div>
 
@@ -341,6 +372,7 @@
     if (step >= 5) {
       document.getElementById('list-item-3').classList.add('active-item');
       document.getElementById('sugEdgeGroup').classList.add('active');
+      document.getElementById('whyBox').classList.add('active');
     }
   }
 

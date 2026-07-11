@@ -24,7 +24,9 @@ export const slideOrder = [
   'methodology.html',
   'system_design_motivation.html',
   'system_flow.html',
-  'build_radiology_association_graph_radgraph.html',
+  'graph_design_goals.html',
+  'build_radiology_association_graph_input.html',
+  'build_radiology_association_graph_comparative_filtering.html',
   'build_radiology_association_graph_token_preprocessing.html',
   'build_radiology_association_graph_entity_feature_assignment.html',
   'build_radiology_association_graph_node_deduplication.html',
@@ -53,4 +55,5 @@ export const slideOrder = [
   'contribution_conclusion.html',
   'research_summary.html',
   'research_limitations_and_future_directions.html',
+  'thank_you.html',
 ];

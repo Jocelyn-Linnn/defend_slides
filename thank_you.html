@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>Thank You - Chest X-ray Report Refinement System</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 1280px;
+      height: 720px;
+      overflow: hidden;
+      background: #050d1a;
+      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+      color: #e2e8f0;
+    }
+
+    .slide {
+      width: 1280px;
+      height: 720px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    /* ── Background decoration ── */
+    .bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(21,40,64,0.28) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(21,40,64,0.28) 1px, transparent 1px);
+      background-size: 64px 64px;
+      pointer-events: none;
+    }
+
+    .bg-glow {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 860px; height: 520px;
+      background: radial-gradient(ellipse at center, rgba(34,197,94,0.06) 0%, transparent 68%);
+      pointer-events: none;
+    }
+
+    .bg-nodes {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    /* ── Top / bottom accent bars ── */
+    .bar-top {
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(to right, transparent 0%, #1e3a5f 20%, #3b82f6 50%, #1e3a5f 80%, transparent 100%);
+    }
+
+    .bar-bottom {
+      position: absolute;
+      bottom: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(to right, transparent 0%, #0d1f38 30%, #1e3a5f 50%, #0d1f38 70%, transparent 100%);
+    }
+
+    /* ── Thesis tag ── */
+    .thesis-tag {
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: #3b82f6;
+      border: 1px solid rgba(59,130,246,0.35);
+      padding: 5px 18px;
+      border-radius: 999px;
+      background: rgba(59,130,246,0.07);
+      margin-bottom: 30px;
+    }
+
+    /* ── Main title ── */
+    .main-title {
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1.35;
+      color: #cbd5e1;
+      letter-spacing: 0.01em;
+      text-align: center;
+      max-width: 880px;
+    }
+
+    .accent { color: #60a5fa; }
+
+    /* ── Horizontal divider ── */
+    .h-divider {
+      width: 360px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, #1a3356, #3b82f6 50%, #1a3356, transparent);
+      margin: 30px 0;
+    }
+
+    /* ── Q&A pill ── */
+    .qa-pill {
+      display: inline-flex; align-items: center; gap: 9px;
+      padding: 8px 22px 8px 18px; border-radius: 999px;
+      background: linear-gradient(90deg, rgba(34,197,94,0.1), rgba(59,130,246,0.07));
+      border: 1px solid rgba(74,222,128,0.28);
+      box-shadow: 0 0 26px -14px rgba(74,222,128,0.55);
+      margin-bottom: 36px;
+    }
+    .qa-pill-icon { width: 15px; height: 15px; flex-shrink: 0; color: #4ade80; display: flex; }
+    .qa-pill-text { font-size: 0.78rem; font-weight: 600; color: #a7f3d0; letter-spacing: 0.02em; }
+
+    /* ── Info block ── */
+    .info-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .info-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+
+    .info-label {
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #2c4a6e;
+      width: 72px;
+      text-align: right;
+      padding-right: 14px;
+    }
+
+    .info-sep {
+      width: 1px;
+      height: 28px;
+      background: #0d1f38;
+    }
+
+    .info-value {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #93c5fd;
+      letter-spacing: 0.06em;
+      padding-left: 14px;
+    }
+
+    /* ── Date ── */
+    .date-badge {
+      margin-top: 28px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.28em;
+      color: #334e6e;
+    }
+    /* ── Responsive scaling: fit fixed-size canvas to any viewport ── */
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #slideContainer { flex-shrink: 0; }
+      /* ── Gallery nav button (global) ── */
+    .gallery-nav-btn {
+      position: absolute; top: 14px; right: 14px; z-index: 30;
+      width: 30px; height: 30px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.09);
+      color: #60a5fa; text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    }
+    .gallery-nav-btn:hover {
+      background: rgba(96,165,250,0.14); border-color: rgba(96,165,250,0.35);
+      transform: scale(1.06);
+    }
+  </style>
+</head>
+<body>
+<div class="slide" id="slideContainer">
+  <a class="gallery-nav-btn" href="all_slides.html" title="All Slides" onclick="event.stopPropagation()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+  </a>
+
+  <!-- Background -->
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+
+  <!-- Decorative graph nodes in background (mirrors cover.html for a bookend feel) -->
+  <svg class="bg-nodes" width="1280" height="720" viewBox="0 0 1280 720" fill="none">
+    <!-- Left cluster -->
+    <circle cx="108" cy="190" r="36" fill="none" stroke="#0d1f38" stroke-width="1.5"/>
+    <circle cx="108" cy="190" r="5" fill="#0d1f38"/>
+    <circle cx="210" cy="320" r="25" fill="none" stroke="#0d1f38" stroke-width="1.2"/>
+    <circle cx="210" cy="320" r="4" fill="#0d1f38"/>
+    <circle cx="78" cy="468" r="18" fill="none" stroke="#0d1f38" stroke-width="1"/>
+    <line x1="108" y1="190" x2="210" y2="320" stroke="#0d1f38" stroke-width="1.2" opacity="0.8"/>
+    <line x1="210" y1="320" x2="78" y2="468" stroke="#0d1f38" stroke-width="1" opacity="0.5"/>
+    <line x1="108" y1="190" x2="78" y2="468" stroke="#0d1f38" stroke-width="0.8" stroke-dasharray="5 4" opacity="0.3"/>
+
+    <!-- Right cluster -->
+    <circle cx="1172" cy="220" r="32" fill="none" stroke="#0d1f38" stroke-width="1.5"/>
+    <circle cx="1172" cy="220" r="5" fill="#0d1f38"/>
+    <circle cx="1072" cy="360" r="24" fill="none" stroke="#0d1f38" stroke-width="1.2"/>
+    <circle cx="1072" cy="360" r="4" fill="#0d1f38"/>
+    <circle cx="1195" cy="490" r="17" fill="none" stroke="#0d1f38" stroke-width="1"/>
+    <line x1="1172" y1="220" x2="1072" y2="360" stroke="#0d1f38" stroke-width="1.2" opacity="0.8"/>
+    <line x1="1072" y1="360" x2="1195" y2="490" stroke="#0d1f38" stroke-width="1" opacity="0.5"/>
+
+    <!-- Top faint connectors -->
+    <circle cx="390" cy="54" r="12" fill="none" stroke="#0a1a30" stroke-width="1"/>
+    <circle cx="890" cy="68" r="10" fill="none" stroke="#0a1a30" stroke-width="1"/>
+    <line x1="390" y1="54" x2="890" y2="68" stroke="#0a1a30" stroke-width="0.8" stroke-dasharray="8 6" opacity="0.6"/>
+
+    <!-- Bottom faint nodes -->
+    <circle cx="290" cy="664" r="13" fill="none" stroke="#0a1a30" stroke-width="1"/>
+    <circle cx="990" cy="655" r="11" fill="none" stroke="#0a1a30" stroke-width="1"/>
+    <line x1="290" y1="664" x2="990" y2="655" stroke="#0a1a30" stroke-width="0.8" stroke-dasharray="8 6" opacity="0.5"/>
+  </svg>
+
+  <div class="bar-top"></div>
+  <div class="bar-bottom"></div>
+
+  <!-- Content -->
+  <div class="thesis-tag">Thank You</div>
+
+  <h1 class="main-title">
+    Thank You for Your Time,<br>
+    <span class="accent">Questions</span>, and <span class="accent">Guidance</span>
+  </h1>
+
+  <div class="h-divider"></div>
+
+  <div class="qa-pill">
+    <svg class="qa-pill-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.09 9a3 3 0 1 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/><circle cx="12" cy="12" r="9"/></svg>
+    <span class="qa-pill-text">Questions &amp; Discussion Welcome</span>
+  </div>
+
+  <div class="info-block">
+    <div class="info-row">
+      <span class="info-label">Advisor</span>
+      <div class="info-sep"></div>
+      <span class="info-value">Yuh-Jzer Joung, Ph.D.</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Student</span>
+      <div class="info-sep"></div>
+      <span class="info-value">YI CHUN LIN</span>
+    </div>
+  </div>
+
+  <div class="date-badge">2026 · 07</div>
+
+</div>
+
+<script type="module">
+  import { initSlideController } from './tool/slide-controller.js';
+  import './tool/slide-scale.js';
+
+  initSlideController({
+    maxSteps: 0,
+    nextSlideUrl: null,
+    prevSlideUrl: 'research_limitations_and_future_directions.html',
+    onUpdate: () => {}
+  });
+</script>
+</body>
+</html>

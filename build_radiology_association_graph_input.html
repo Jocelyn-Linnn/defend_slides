@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <title>Build Radiology Association Graph - RadGraph · Slide 1</title>
+  <title>Build Radiology Association Graph - Input · Slide 1</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -40,8 +40,6 @@
       letter-spacing: 0.35em;
       text-transform: uppercase;
       color: #60a5fa;
-      opacity: 0;
-      animation: a-fade 0.7s ease 0.1s forwards;
     }
 
     /* ── Center divider ── */
@@ -73,12 +71,6 @@
       margin-bottom: 12px;
     }
 
-    /* 手動觸發類別 (.active) */
-    .a-lsub.active, .a-lrep.active, .a-larr.active, 
-    .a-rsub.active, .a-rdocs.active, .a-rarr.active, .a-rgraphs.active {
-      animation: a-fade 0.5s ease 0s forwards;
-    }
-
     /* Report text block */
     .report-box {
       width: 420px;
@@ -100,10 +92,6 @@
       align-items: center;
       gap: 9px;
       margin-top: 32px;
-      opacity: 0;
-    }
-    .mimic-wrap.active {
-      animation: a-fade 0.7s ease 0s forwards;
     }
 
     .mimic-pill {
@@ -136,10 +124,6 @@
       background: rgba(10, 25, 47, 0.4);
       border: 1px solid #0f2440;
       border-radius: 6px;
-      opacity: 0;
-    }
-    .left-legend.active {
-      animation: a-fade 0.5s ease 0s forwards;
     }
 
     .leg-group {
@@ -186,49 +170,6 @@
       flex-shrink: 0;
     }
 
-    /* ── Animations ── */
-    @keyframes a-fade {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes a-pop {
-      0%   { opacity: 0; transform: scale(0.3); }
-      65%  { transform: scale(1.12); }
-      100% { opacity: 1; transform: scale(1); }
-    }
-
-    @keyframes a-draw { to { stroke-dashoffset: 0; } }
-
-    /* Left panel elements initialization */
-    .a-lsub, .a-lrep, .a-larr { opacity: 0; }
-    .a-lgraph { opacity: 0; }
-    .a-lgraph.active { opacity: 1; }
-
-    /* Graph nodes */
-    .gn1, .gn2, .gn3, .gn4, .gn5, .gn6 { transform-box: fill-box; transform-origin: center; opacity: 0; transform: scale(0); }
-    .gn1.active { animation: a-pop 0.4s cubic-bezier(.34,1.56,.64,1) 0.1s forwards; }
-    .gn2.active { animation: a-pop 0.4s cubic-bezier(.34,1.56,.64,1) 0.2s forwards; }
-    .gn3.active { animation: a-pop 0.4s cubic-bezier(.34,1.56,.64,1) 0.3s forwards; }
-    .gn4.active { animation: a-pop 0.4s cubic-bezier(.34,1.56,.64,1) 0.4s forwards; }
-    .gn5.active { animation: a-pop 0.4s cubic-bezier(.34,1.56,.64,1) 0.5s forwards; }
-    .gn6.active { animation: a-pop 0.4s cubic-bezier(.34,1.56,.64,1) 0.6s forwards; }
-
-    /* Graph edges */
-    .ge1 { stroke-dasharray: 140; stroke-dashoffset: 140; }
-    .ge2 { stroke-dasharray: 140; stroke-dashoffset: 140; }
-    .ge3 { stroke-dasharray: 140; stroke-dashoffset: 140; }
-    .ge4 { stroke-dasharray: 140; stroke-dashoffset: 140; }
-    .ge5 { stroke-dasharray: 140; stroke-dashoffset: 140; }
-    
-    .ge1.active { animation: a-draw 0.35s ease 0.15s forwards; }
-    .ge2.active { animation: a-draw 0.35s ease 0.25s forwards; }
-    .ge3.active { animation: a-draw 0.35s ease 0.35s forwards; }
-    .ge4.active { animation: a-draw 0.35s ease 0.45s forwards; }
-    .ge5.active { animation: a-draw 0.35s ease 0.55s forwards; }
-
-    /* Right panel elements initialization */
-    .a-rsub, .a-rdocs, .a-rarr, .a-rgraphs { opacity: 0; }
     /* ── Responsive scaling: fit fixed-size canvas to any viewport ── */
     html, body {
       width: 100%;
@@ -262,7 +203,7 @@
 
 
   <div class="header">
-    <span class="h-title">Build Radiology Association Graph - RadGraph</span>
+    <span class="h-title">Build Radiology Association Graph - Input</span>
   </div>
 
   <div class="divider"></div>
@@ -443,39 +384,12 @@
   import { initSlideController } from './tool/slide-controller.js';
   import './tool/slide-scale.js';
 
-  // 4 步流程對應的元素選擇器群組
-  const steps = [
-    ['.a-lsub', '.a-lrep'],
-    ['.a-larr', '.a-lgraph', '.gn1', '.gn2', '.gn3', '.gn4', '.gn5', '.gn6', '.ge1', '.ge2', '.ge3', '.ge4', '.ge5', '.legend'],
-    ['.a-rsub', '.a-rdocs', '.a-rarr'],
-    ['.a-rgraphs', '.mimic-wrap']
-  ];
-
-  // 核心更新函式：套件會將當前步數 (step) 傳入此處
-  function updateSlide(step) {
-    // 1. 清除所有元素的 active 狀態
-    steps.flat().forEach(selector => {
-      const elements = document.querySelectorAll(selector);
-      elements.forEach(el => el.classList.remove('active'));
-    });
-
-    // 2. 根據目前步數，堆疊累積 active 效果
-    for (let i = 0; i < step; i++) {
-      if (steps[i]) {
-        steps[i].forEach(selector => {
-          const elements = document.querySelectorAll(selector);
-          elements.forEach(el => el.classList.add('active'));
-        });
-      }
-    }
-  }
-
-  // 初始化控制器
+  // 靜態呈現最終畫面，無需逐步動畫
   initSlideController({
-    maxSteps: steps.length, // 總共有 4 步
-    nextSlideUrl: 'build_radiology_association_graph_token_preprocessing.html',
-    prevSlideUrl: 'system_flow.html',
-    onUpdate: updateSlide
+    maxSteps: 0,
+    nextSlideUrl: 'build_radiology_association_graph_comparative_filtering.html',
+    prevSlideUrl: 'graph_design_goals.html',
+    onUpdate: () => {}
   });
 </script>
 </body>
