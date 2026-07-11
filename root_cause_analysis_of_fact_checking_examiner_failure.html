@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <title>Extended Experiment &amp; Improvement-Limitation Analysis - Chest X-ray Report Refinement System</title>
+  <title>Root Cause Analysis of Fact-Checking Examiner Failure - Chest X-ray Report Refinement System</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -34,32 +34,6 @@
       display: flex; flex-direction: column;
     }
 
-    /* ── Intro line ── */
-    .ee-intro {
-      flex-shrink: 0; padding: 14px 56px 8px 56px;
-      font-size: 0.78rem; color: #64748b; line-height: 1.55; text-align: center;
-    }
-    .ee-intro b { color: #94a3b8; }
-
-    /* ── Results table ── */
-    .ee-table-wrap { flex-shrink: 0; padding: 4px 56px 10px 56px; }
-    .ee-table-title { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #1e3a5f; text-align: center; margin-bottom: 8px; }
-
-    table.ee-table { width: 100%; border-collapse: collapse; }
-    .ee-table thead th {
-      padding: 6px 10px; text-align: center;
-      font-size: 0.66rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
-      color: #2c4a6e; border-bottom: 1px solid #0d1f38;
-    }
-    .ee-table thead th:first-child { text-align: left; }
-    .ee-table tbody tr { border-bottom: 1px solid #080f1e; }
-    .ee-table tbody tr:last-child { border-bottom: none; }
-    .ee-table tbody td { padding: 7px 10px; text-align: center; font-size: 0.82rem; color: #64748b; }
-    .ee-table tbody td:first-child { text-align: left; color: #94a3b8; font-weight: 600; }
-    .ee-table .best { color: #4ade80; font-weight: 700; }
-    .ee-table .decline { color: #f87171; }
-    .ee-note { margin-top: 8px; font-size: 0.7rem; color: #f87171; text-align: center; }
-
     /* ── Cause row ── */
     .cause-row { flex: 1; display: flex; }
 
@@ -80,22 +54,22 @@
     .num-red    { color: rgba(248,113,113,0.09); }
     .num-purple { color: rgba(167,139,250,0.09); }
 
-    .cc-body { position: relative; display: flex; flex-direction: column; gap: 9px; width: 100%; max-width: 340px; }
+    .cc-body { position: relative; display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 380px; }
 
     .cc-icon {
-      width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+      width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
     }
     .icon-blue   { background: rgba(96,165,250,0.08); border: 1px solid rgba(96,165,250,0.28); color: #60a5fa; }
     .icon-red    { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.28); color: #f87171; }
     .icon-purple { background: rgba(167,139,250,0.08); border: 1px solid rgba(167,139,250,0.28); color: #a78bfa; }
 
-    .cc-title { font-size: 0.86rem; font-weight: 700; color: #e2e8f0; line-height: 1.35; }
+    .cc-title { font-size: 1.02rem; font-weight: 700; color: #e2e8f0; line-height: 1.35; }
 
-    .cc-bullets { display: flex; flex-direction: column; gap: 4px; width: 100%; }
+    .cc-bullets { display: flex; flex-direction: column; gap: 5px; width: 100%; }
     .cc-bullet { display: flex; align-items: flex-start; }
-    .cc-bullet .bt { font-size: 0.68rem; color: #64748b; line-height: 1.55; }
-    .cc-bullet .bt b { color: #94a3b8; }
+    .cc-bullet .bt { font-size: 0.82rem; color: #94a3b8; line-height: 1.55; }
+    .cc-bullet .bt b { color: #cbd5e1; }
 
     .cc-example {
       width: 100%; padding: 7px 9px; border-radius: 7px;
@@ -104,19 +78,19 @@
     .ex-blue   { background: rgba(96,165,250,0.05);  border: 1px solid rgba(96,165,250,0.14); }
     .ex-red    { background: rgba(248,113,113,0.05); border: 1px solid rgba(248,113,113,0.14); }
     .ex-purple { background: rgba(167,139,250,0.05); border: 1px solid rgba(167,139,250,0.14); }
-    .cc-ex-tag { font-size: 0.5rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+    .cc-ex-tag { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
     .ex-blue .cc-ex-tag { color: #60a5fa; }
     .ex-red .cc-ex-tag { color: #f87171; }
     .ex-purple .cc-ex-tag { color: #a78bfa; }
-    .cc-ex-line { font-size: 0.62rem; color: #64748b; line-height: 1.45; }
-    .cc-ex-line b { color: #94a3b8; }
+    .cc-ex-line { font-size: 0.74rem; color: #94a3b8; line-height: 1.5; }
+    .cc-ex-line b { color: #cbd5e1; }
 
     /* ── Conclusion bar ── */
     .ee-conclusion {
-      flex-shrink: 0; height: 58px; margin: 0 40px 16px 40px;
+      flex-shrink: 0; min-height: 64px; margin: 0 40px 16px 40px;
       border-radius: 10px; border: 1px solid rgba(96,165,250,0.18);
       background: rgba(96,165,250,0.05);
-      display: flex; align-items: center; gap: 14px; padding: 0 22px;
+      display: flex; align-items: center; gap: 14px; padding: 12px 22px;
       opacity: 0;
     }
     .ee-conclusion.active { animation: a-in 0.55s ease forwards; }
@@ -125,7 +99,7 @@
       background: rgba(96,165,250,0.1); border: 1px solid rgba(96,165,250,0.3); color: #60a5fa;
       display: flex; align-items: center; justify-content: center;
     }
-    .ee-c-text { font-size: 0.76rem; color: #cbd5e1; line-height: 1.5; }
+    .ee-c-text { font-size: 0.88rem; color: #cbd5e1; line-height: 1.5; }
     .ee-c-text b { color: #60a5fa; }
 
     @keyframes a-in {
@@ -165,62 +139,9 @@
 
 
   <div class="bg-grid"></div>
-  <div class="header"><span class="h-title">Extended Experiment &amp; Improvement-Limitation Analysis</span></div>
+  <div class="header"><span class="h-title">Root Cause Analysis of Fact-Checking Examiner Failure</span></div>
 
   <div class="content">
-
-    <div class="ee-intro">Can a downstream <b>Fact-Checking Examiner</b> remove the QA-induced hallucinations found above — without retraining the core pipeline?</div>
-
-    <div class="ee-table-wrap">
-      <div class="ee-table-title">v4 + Fact-Checking Examiner Across Removal Thresholds (MIMIC-CXR, n=500)</div>
-      <table class="ee-table">
-        <thead>
-          <tr>
-            <th>Metric</th>
-            <th>MedGemma</th>
-            <th>v4</th>
-            <th>+Checker&nbsp;0.3</th>
-            <th>+Checker&nbsp;0.5</th>
-            <th>+Checker&nbsp;0.8</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>RG F1 (partial)</td>
-            <td class="best">0.2859</td>
-            <td>0.2819</td>
-            <td class="decline">0.2782</td>
-            <td class="decline">0.2719</td>
-            <td class="decline">0.2298</td>
-          </tr>
-          <tr>
-            <td>GREEN</td>
-            <td class="best">0.3821</td>
-            <td>0.3726</td>
-            <td class="decline">0.3677</td>
-            <td class="decline">0.3640</td>
-            <td class="decline">0.3195</td>
-          </tr>
-          <tr>
-            <td>CheXBert Macro</td>
-            <td>0.3442</td>
-            <td class="best">0.3535</td>
-            <td class="decline">0.3317</td>
-            <td class="decline">0.2928</td>
-            <td class="decline">0.1826</td>
-          </tr>
-          <tr>
-            <td>CheXBert Micro</td>
-            <td>0.5179</td>
-            <td class="best">0.5206</td>
-            <td class="decline">0.5063</td>
-            <td class="decline">0.4789</td>
-            <td class="decline">0.3453</td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="ee-note">At every threshold, v4 + Checker fails to beat both v4 and the MedGemma baseline</div>
-    </div>
 
     <div class="cause-row">
 
@@ -309,7 +230,7 @@
   initSlideController({
     maxSteps: steps.length,
     nextSlideUrl: 'contribution_conclusion.html',
-    prevSlideUrl: 'improvement_motivation_and_design_logic.html',
+    prevSlideUrl: 'extended_experiment_fact_checking_examiner_results.html',
     onUpdate: updateSlide
   });
 </script>

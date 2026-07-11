@@ -49,29 +49,29 @@
       pointer-events: none; user-select: none;
     }
 
-    .lf-block { width: 100%; max-width: 340px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .lf-block { width: 100%; max-width: 380px; display: flex; flex-direction: column; align-items: center; gap: 9px; }
 
-    .lf-head { display: flex; align-items: center; gap: 8px; }
+    .lf-head { display: flex; align-items: center; gap: 9px; }
     .lf-icon {
-      width: 30px; height: 30px; border-radius: 9px; flex-shrink: 0;
+      width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
     }
     .icon-limit  { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.28); color: #f87171; }
     .icon-future { background: rgba(96,165,250,0.1);  border: 1px solid rgba(96,165,250,0.28);  color: #60a5fa; }
 
-    .lf-tag { font-size: 0.56rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+    .lf-tag { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; }
     .tag-limit  { color: #f87171; }
     .tag-future { color: #60a5fa; }
 
-    .lf-title { font-size: 0.86rem; font-weight: 700; color: #e2e8f0; line-height: 1.35; text-align: center; }
+    .lf-title { font-size: 1.02rem; font-weight: 700; color: #e2e8f0; line-height: 1.35; text-align: center; }
 
-    .lf-desc { font-size: 0.68rem; color: #64748b; line-height: 1.55; text-align: center; }
-    .lf-desc b { color: #94a3b8; }
+    .lf-desc { font-size: 0.82rem; color: #94a3b8; line-height: 1.6; text-align: center; }
+    .lf-desc b { color: #dbeafe; }
 
-    .lf-connector { display: flex; flex-direction: column; align-items: center; gap: 2px; margin: 10px 0; }
+    .lf-connector { display: flex; flex-direction: column; align-items: center; gap: 3px; margin: 10px 0; }
     .lf-connector-line { width: 1px; height: 16px; background: linear-gradient(to bottom, rgba(248,113,113,0.4), rgba(96,165,250,0.4)); }
-    .lf-connector-label { font-size: 0.54rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #2c4a6e; }
-    .lf-connector-arrow { color: #1a3356; font-size: 0.85rem; line-height: 1; }
+    .lf-connector-label { font-size: 0.64rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #3a5a80; }
+    .lf-connector-arrow { color: #2c4a6e; font-size: 1rem; line-height: 1; }
 
     @keyframes a-in {
       from { opacity: 0; transform: translateY(10px); }
@@ -121,7 +121,7 @@
       <div class="lf-block">
         <div class="lf-head">
           <div class="lf-icon icon-limit">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           </div>
           <span class="lf-tag tag-limit">Limitation</span>
         </div>
@@ -138,7 +138,7 @@
       <div class="lf-block">
         <div class="lf-head">
           <div class="lf-icon icon-future">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg>
           </div>
           <span class="lf-tag tag-future">Future Work</span>
         </div>
@@ -154,7 +154,7 @@
       <div class="lf-block">
         <div class="lf-head">
           <div class="lf-icon icon-limit">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="14" width="6" height="6" rx="1.2"/><rect x="9" y="8" width="6" height="6" rx="1.2"/><rect x="14" y="2" width="6" height="6" rx="1.2"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="14" width="6" height="6" rx="1.2"/><rect x="9" y="8" width="6" height="6" rx="1.2"/><rect x="14" y="2" width="6" height="6" rx="1.2"/></svg>
           </div>
           <span class="lf-tag tag-limit">Limitation</span>
         </div>
@@ -171,7 +171,7 @@
       <div class="lf-block">
         <div class="lf-head">
           <div class="lf-icon icon-future">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v6l4 4"/><circle cx="12" cy="13" r="9"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v6l4 4"/><circle cx="12" cy="13" r="9"/></svg>
           </div>
           <span class="lf-tag tag-future">Future Work</span>
         </div>
@@ -187,7 +187,7 @@
       <div class="lf-block">
         <div class="lf-head">
           <div class="lf-icon icon-limit">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
           </div>
           <span class="lf-tag tag-limit">Limitation</span>
         </div>
@@ -204,7 +204,7 @@
       <div class="lf-block">
         <div class="lf-head">
           <div class="lf-icon icon-future">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           </div>
           <span class="lf-tag tag-future">Future Work</span>
         </div>

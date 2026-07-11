@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>Extended Experiment: Fact-Checking Examiner Results - Chest X-ray Report Refinement System</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 1280px; height: 720px;
+      overflow: hidden;
+      background: #050d1a;
+      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+      color: #e2e8f0;
+    }
+
+    .slide { width: 1280px; height: 720px; position: relative; display: flex; cursor: pointer; }
+
+    .header {
+      position: absolute; top: 0; left: 0; right: 0; height: 90px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+      border-bottom: 2px solid #0d1f38;
+    }
+    .h-kicker {
+      font-size: 0.6rem; font-weight: 700;
+      letter-spacing: 0.24em; text-transform: uppercase;
+      color: #2c4a6e;
+    }
+    .h-title {
+      font-size: 1rem; font-weight: 700;
+      letter-spacing: 0.3em; text-transform: uppercase;
+      color: #60a5fa;
+    }
+
+    .divider {
+      position: absolute; left: 460px; top: 110px; bottom: 36px; width: 2px;
+      background: linear-gradient(to bottom, transparent 0%, #152840 15%, #152840 85%, transparent 100%);
+    }
+
+    /* ── Left panel: what changed ── */
+    .panel-left {
+      width: 460px;
+      display: flex; flex-direction: column;
+      align-items: flex-start; justify-content: center;
+      padding: 110px 42px 36px;
+      gap: 14px;
+    }
+
+    .rt-eyebrow {
+      font-size: 0.66rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+      color: #3b6ea5; margin-bottom: -2px;
+    }
+
+    .rt-block {
+      width: 100%; border-radius: 12px; padding: 14px 16px;
+      background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.06);
+    }
+    .rt-block-a { border-left: 3px solid #64748b; }
+    .rt-block-b { border-left: 3px solid #3b82f6; box-shadow: 0 0 30px -18px rgba(59,130,246,0.5); }
+
+    .rt-tag {
+      font-size: 0.64rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      margin-bottom: 9px;
+    }
+    .rt-block-a .rt-tag { color: #94a3b8; }
+    .rt-block-b .rt-tag { color: #60a5fa; }
+
+    .rt-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 5px; }
+    .rt-row:last-child { margin-bottom: 0; }
+    .rt-label {
+      flex-shrink: 0; width: 54px;
+      font-size: 0.64rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+      color: #4a6480;
+    }
+    .rt-val { font-size: 0.78rem; color: #cbd5e1; line-height: 1.45; }
+
+    .rt-arrow-row {
+      display: flex; align-items: center; gap: 8px; width: 100%;
+      font-size: 0.7rem; color: #3b82f6; font-style: italic;
+      padding-left: 2px;
+    }
+    .rt-arrow-row svg { flex-shrink: 0; }
+
+    .rt-question {
+      margin-top: 4px; width: 100%; padding: 12px 16px; border-radius: 10px;
+      background: rgba(96,165,250,0.06); border: 1px solid rgba(96,165,250,0.18);
+      font-size: 0.8rem; color: #94a3b8; line-height: 1.55;
+    }
+    .rt-question b { color: #dbeafe; }
+
+    /* ── Right panel: the evidence ── */
+    .panel-right {
+      flex: 1;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 94px 44px 28px;
+      gap: 20px;
+    }
+
+    .ee-table-wrap { flex-shrink: 0; width: 100%; max-width: 720px; }
+    .ee-table-title { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #1e3a5f; text-align: center; margin-bottom: 14px; }
+
+    table.ee-table { width: 100%; border-collapse: collapse; }
+    .ee-table thead th {
+      padding: 9px 10px; text-align: center;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+      color: #2c4a6e; border-bottom: 1px solid #0d1f38;
+    }
+    .ee-table thead th:first-child { text-align: left; }
+    .ee-table tbody tr { border-bottom: 1px solid #080f1e; }
+    .ee-table tbody tr:last-child { border-bottom: none; }
+    .ee-table tbody td { padding: 12px 10px; text-align: center; font-size: 0.94rem; color: #64748b; }
+    .ee-table tbody td:first-child { text-align: left; color: #94a3b8; font-weight: 600; }
+    .ee-table .best { color: #4ade80; font-weight: 700; }
+    .ee-table .decline { color: #f87171; }
+
+    .ee-note {
+      flex-shrink: 0; width: 100%; max-width: 720px; opacity: 0;
+      padding: 14px 24px; border-radius: 10px;
+      background: rgba(248,113,113,0.07); border: 1px solid rgba(248,113,113,0.25);
+      box-shadow: 0 0 34px -18px rgba(248,113,113,0.5);
+      font-size: 0.9rem; font-weight: 600; color: #f87171; text-align: center;
+    }
+    .ee-note.active { animation: a-in 0.55s ease forwards; }
+
+    @keyframes a-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    /* ── Responsive scaling: fit fixed-size canvas to any viewport ── */
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #slideContainer { flex-shrink: 0; }
+      /* ── Gallery nav button (global) ── */
+    .gallery-nav-btn {
+      position: absolute; top: 14px; right: 14px; z-index: 30;
+      width: 30px; height: 30px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.09);
+      color: #60a5fa; text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    }
+    .gallery-nav-btn:hover {
+      background: rgba(96,165,250,0.14); border-color: rgba(96,165,250,0.35);
+      transform: scale(1.06);
+    }
+  </style>
+</head>
+<body>
+<div class="slide" id="slideContainer">
+  <a class="gallery-nav-btn" href="all_slides.html" title="All Slides" onclick="event.stopPropagation()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+  </a>
+
+  <div class="header">
+    <span class="h-kicker">Extended Experiment</span>
+    <span class="h-title">Fact-Checking Examiner Results</span>
+  </div>
+  <div class="divider"></div>
+
+  <!-- ── Left Panel: Retrain Examiner ── -->
+  <div class="panel-left">
+    <div class="rt-eyebrow">Retrain Examiner</div>
+
+    <div class="rt-block rt-block-a">
+      <div class="rt-tag">Original · Mahmood et al.</div>
+      <div class="rt-row"><span class="rt-label">Data</span><span class="rt-val">Indiana University — 2,557 reports</span></div>
+      <div class="rt-row"><span class="rt-label">Encoder</span><span class="rt-val">Generic CLIP ViT-B/32 joint encoder</span></div>
+    </div>
+
+    <div class="rt-arrow-row">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="6 13 12 19 18 13"/></svg>
+      retrained for this study
+    </div>
+
+    <div class="rt-block rt-block-b">
+      <div class="rt-tag">This Study · Retrained</div>
+      <div class="rt-row"><span class="rt-label">Data</span><span class="rt-val">MIMIC-CXR — 29,884 samples (60/20/20 split)</span></div>
+      <div class="rt-row"><span class="rt-label">Encoder</span><span class="rt-val">BioViL-T (image) + CXR-BERT (text)</span></div>
+    </div>
+
+    <div class="rt-question">Question: with a stronger, <b>domain-retrained</b> Examiner, can downstream fact-checking finally remove the QA-bias hallucinations — without retraining the core pipeline?</div>
+  </div>
+
+  <!-- ── Right Panel: the evidence ── -->
+  <div class="panel-right">
+    <div class="ee-table-wrap">
+      <div class="ee-table-title">v4 + Fact-Checking Examiner Across Removal Thresholds (MIMIC-CXR, n=500)</div>
+      <table class="ee-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>MedGemma</th>
+            <th>v4</th>
+            <th>+Checker&nbsp;0.3</th>
+            <th>+Checker&nbsp;0.5</th>
+            <th>+Checker&nbsp;0.8</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>RG F1 (partial)</td>
+            <td class="best">0.2859</td>
+            <td>0.2819</td>
+            <td class="decline">0.2782</td>
+            <td class="decline">0.2719</td>
+            <td class="decline">0.2298</td>
+          </tr>
+          <tr>
+            <td>GREEN</td>
+            <td class="best">0.3821</td>
+            <td>0.3726</td>
+            <td class="decline">0.3677</td>
+            <td class="decline">0.3640</td>
+            <td class="decline">0.3195</td>
+          </tr>
+          <tr>
+            <td>CheXBert Macro</td>
+            <td>0.3442</td>
+            <td class="best">0.3535</td>
+            <td class="decline">0.3317</td>
+            <td class="decline">0.2928</td>
+            <td class="decline">0.1826</td>
+          </tr>
+          <tr>
+            <td>CheXBert Micro</td>
+            <td>0.5179</td>
+            <td class="best">0.5206</td>
+            <td class="decline">0.5063</td>
+            <td class="decline">0.4789</td>
+            <td class="decline">0.3453</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="ee-note note">At every threshold, v4 + Checker fails to beat both v4 and the MedGemma baseline</div>
+  </div>
+
+</div>
+
+<script type="module">
+  import { initSlideController } from './tool/slide-controller.js';
+  import './tool/slide-scale.js';
+
+  const steps = [['.note']];
+
+  function updateSlide(step) {
+    steps.flat().forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.remove('active')));
+    for (let i = 0; i < step; i++) {
+      if (steps[i]) steps[i].forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.add('active')));
+    }
+  }
+
+  initSlideController({
+    maxSteps: steps.length,
+    nextSlideUrl: 'root_cause_analysis_of_fact_checking_examiner_failure.html',
+    prevSlideUrl: 'improvement_motivation_and_design_logic.html',
+    onUpdate: updateSlide
+  });
+</script>
+</body>
+</html>

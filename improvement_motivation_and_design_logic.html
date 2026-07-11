@@ -133,13 +133,6 @@
       <div class="step-num" style="background:#2a0c0c;border:2px solid #ef4444;color:#f87171;">1</div>
       <div class="step-body">
         <div class="step-title" style="color:#f87171;">The Problem — Supplementing Adds Hallucinations</div>
-        <div class="step-desc">
-          <ul>
-            <li>Core pipeline's direction is <b>"supplement what's missing"</b> — retrieval + QA add findings the initial report omitted</li>
-            <li>Same mechanism introduces <b>QA-bias hallucinations</b></li>
-            <li>False positives (v4 vs. baseline): <b>529 → 817 (+54.4%)</b> — now the dominant quality bottleneck</li>
-          </ul>
-        </div>
       </div>
     </div>
 
@@ -151,9 +144,7 @@
         <div class="step-title" style="color:#4ade80;">The Design Logic — A Complementary Examiner</div>
         <div class="step-desc">
           <ul>
-            <li>Mahmood et al.'s <b>Fact-Checking Examiner</b> works in the opposite direction: given report + image, classify each sentence real/fake, delete the fake ones</li>
-            <li>Encode image + sentence jointly → classifier scores <b>P(Real)</b> → below-threshold sentences removed</li>
-            <li><b>Two-stage framework:</b> this system supplements omissions, the Examiner removes fabrications — balancing false negatives and false positives</li>
+            <li>Mahmood et al.'s <b>Fact-Checking Examiner</b></li>
           </ul>
         </div>
       </div>
@@ -172,34 +163,31 @@
       <!-- STEP 1: original system block -->
       <g class="g-step1" id="gStep1">
         <rect x="20" y="20" width="540" height="120" rx="10" fill="#0a1220" stroke="#3b82f6" stroke-width="2"/>
-        <text x="36" y="42" fill="#60a5fa" font-size="10" font-weight="700" letter-spacing="0.08em">① ORIGINAL SYSTEM · LOCAL GRAPH PIPELINE</text>
-        <text x="36" y="64" fill="#93c5fd" font-size="8.6" font-weight="700">校正者 (CORRECTOR) — catches missed findings</text>
-        <text x="36" y="84" fill="#94a3b8" font-size="8.2">Retrieval + QA supplement clinical findings the initial report omitted</text>
-        <text x="36" y="104" fill="#f87171" font-size="8" font-style="italic">→ but the same mechanism can introduce hallucinated false positives</text>
-        <text x="36" y="122" fill="#f87171" font-size="8" font-style="italic">   (false positives: 529 → 817, +54.4%)</text>
+        <text x="36" y="42" fill="#60a5fa" font-size="10" font-weight="700" letter-spacing="0.08em">① ORIGINAL SYSTEM</text>
+        <text x="36" y="64" fill="#93c5fd" font-size="8.6"><tspan font-weight="700">Role:</tspan> Corrector — catches missed findings</text>
+        <text x="36" y="84" fill="#93c5fd" font-size="8.6"><tspan font-weight="700">Method:</tspan> Retrieval + QA supplement omitted findings</text>
+        <text x="36" y="104" fill="#93c5fd" font-size="8.6"><tspan font-weight="700">Trait:</tspan> only adds, never removes</text>
 
         <line x1="290" y1="142" x2="290" y2="168" stroke="#ef4444" stroke-width="1.8" marker-end="url(#arr-red)"/>
-        <text x="308" y="160" fill="#f87171" font-size="7.6" font-style="italic">adds hallucinated FP</text>
+        <text x="308" y="160" fill="#f87171" font-size="7.6" font-style="italic">catches missed findings, but also increases FP</text>
       </g>
 
       <!-- STEP 2: new module + final report -->
       <g class="g-step2" id="gStep2">
-        <rect x="20" y="172" width="540" height="120" rx="10" fill="#071a10" stroke="#22c55e" stroke-width="2"/>
+        <rect x="20" y="172" width="540" height="100" rx="10" fill="#071a10" stroke="#22c55e" stroke-width="2"/>
         <text x="36" y="194" fill="#4ade80" font-size="10" font-weight="700" letter-spacing="0.08em">② NEW MODULE · FACT-CHECKING EXAMINER</text>
-        <text x="36" y="216" fill="#86efac" font-size="8.6" font-weight="700">審核者 (REVIEWER) — removes false positives</text>
-        <text x="36" y="236" fill="#94a3b8" font-size="8.2">Jointly encodes image + sentence → classifier scores P(Real)</text>
-        <text x="36" y="254" fill="#94a3b8" font-size="8.2">Sentences below the threshold are deleted</text>
-        <text x="36" y="274" fill="#4ade80" font-size="8" font-style="italic">→ targets exactly the failure mode Block ① introduces</text>
+        <text x="36" y="216" fill="#86efac" font-size="8.6"><tspan font-weight="700">Role:</tspan> Reviewer — removes false positives</text>
+        <text x="36" y="236" fill="#86efac" font-size="8.6"><tspan font-weight="700">Method:</tspan> Encode image + sentence → P(Real) score → below threshold deleted</text>
+        <text x="36" y="254" fill="#86efac" font-size="8.6"><tspan font-weight="700">Trait:</tspan> only removes, never adds</text>
 
-        <line x1="290" y1="294" x2="290" y2="320" stroke="#22c55e" stroke-width="1.8" marker-end="url(#arr-green)"/>
-        <text x="308" y="312" fill="#4ade80" font-size="7.6" font-style="italic">removes fabricated sentences</text>
+        <line x1="290" y1="282" x2="290" y2="308" stroke="#22c55e" stroke-width="1.8" marker-end="url(#arr-green)"/>
+        <text x="308" y="300" fill="#4ade80" font-size="7.6" font-style="italic">removes fabricated sentences</text>
 
-        <rect x="20" y="322" width="540" height="112" rx="10" fill="#0d0a1f" stroke="#8b5cf6" stroke-width="2"/>
-        <text x="36" y="344" fill="#c4b5fc" font-size="10" font-weight="700" letter-spacing="0.08em">③ FINAL CORRECTED REPORT</text>
-        <text x="36" y="366" fill="#cbd5e1" font-size="8.4">Missing findings supplemented (Block ①) <tspan fill="#94a3b8">+</tspan> false positives</text>
-        <text x="36" y="384" fill="#cbd5e1" font-size="8.4">removed (Block ②)</text>
-        <text x="36" y="406" fill="#a78bfa" font-size="8.2" font-weight="700">→ balanced report: fewer missed findings, fewer hallucinations</text>
-        <text x="36" y="424" fill="#7c6aa8" font-size="7.6" font-style="italic">Both false negatives and false positives are addressed together</text>
+        <rect x="20" y="310" width="540" height="112" rx="10" fill="#0d0a1f" stroke="#8b5cf6" stroke-width="2"/>
+        <text x="36" y="332" fill="#c4b5fc" font-size="10" font-weight="700" letter-spacing="0.08em">③ FINAL CORRECTED REPORT</text>
+        <text x="36" y="354" fill="#cbd5e1" font-size="8.4">Missing findings supplemented (Block ①) <tspan fill="#94a3b8">+</tspan> false positives</text>
+        <text x="36" y="372" fill="#cbd5e1" font-size="8.4">removed (Block ②)</text>
+        <text x="36" y="394" fill="#a78bfa" font-size="8.2" font-weight="700">→ balanced report: fewer missed findings, fewer hallucinations</text>
       </g>
 
     </svg>
@@ -229,7 +217,7 @@
 
   initSlideController({
     maxSteps,
-    nextSlideUrl: 'extended_experiment_and_improvement_limitations.html',
+    nextSlideUrl: 'extended_experiment_fact_checking_examiner_results.html',
     prevSlideUrl: 'failure_mode_analysis_of_metric_regression.html',
     onUpdate: updateSlide
   });
