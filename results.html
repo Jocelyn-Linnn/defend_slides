@@ -74,6 +74,49 @@
 
     .note { margin-top: 18px; font-size: 0.75rem; color: #1e3a5f; line-height: 1.6; text-align: center; }
 
+    /* ── Column / row highlight boxes (per analysis-guide step) ── */
+    table.rtable.hl-root tbody tr:nth-child(n+2) td {
+      outline: 1.5px solid rgba(167,139,250,0.55); outline-offset: -1px;
+      background: rgba(167,139,250,0.06); border-radius: 4px;
+    }
+    /* Divergent trends: RadGraph F1 + GREEN + CheXBert Macro F1 */
+    table.rtable.hl-trend thead th:nth-child(2), table.rtable.hl-trend thead th:nth-child(3), table.rtable.hl-trend thead th:nth-child(4),
+    table.rtable.hl-trend tbody td:nth-child(2), table.rtable.hl-trend tbody td:nth-child(3), table.rtable.hl-trend tbody td:nth-child(4) {
+      outline: 1.5px solid rgba(251,191,36,0.55); outline-offset: -1px;
+      background: rgba(251,191,36,0.07); border-radius: 4px;
+    }
+    /* Macro/Micro asymmetry: CheXBert Macro F1 + CheXBert Micro F1 */
+    table.rtable.hl-asym thead th:nth-child(4), table.rtable.hl-asym thead th:nth-child(5),
+    table.rtable.hl-asym tbody td:nth-child(4), table.rtable.hl-asym tbody td:nth-child(5) {
+      outline: 1.5px solid rgba(96,165,250,0.55); outline-offset: -1px;
+      background: rgba(96,165,250,0.07); border-radius: 4px;
+    }
+    /* Failure mode: RadGraph F1 + GREEN */
+    table.rtable.hl-fail thead th:nth-child(2), table.rtable.hl-fail thead th:nth-child(3),
+    table.rtable.hl-fail tbody td:nth-child(2), table.rtable.hl-fail tbody td:nth-child(3) {
+      outline: 1.5px solid rgba(248,113,113,0.6); outline-offset: -1px;
+      background: rgba(248,113,113,0.08); border-radius: 4px;
+    }
+
+    /* ── Analysis guide (below table) ── */
+    .analysis-guide { margin-top: 20px; display: flex; flex-direction: column; gap: 11px; width: 100%; }
+    .ag-item {
+      display: flex; align-items: center; gap: 12px;
+      opacity: 0; transform: translateY(4px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .ag-item.active { opacity: 1; transform: translateY(0); }
+    .ag-num {
+      flex-shrink: 0; width: 26px; height: 26px; border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.76rem; font-weight: 800;
+    }
+    .ag-num.n1 { background: rgba(167,139,250,0.12); color: #a78bfa; border: 1px solid rgba(167,139,250,0.3); }
+    .ag-num.n2 { background: rgba(251,191,36,0.12);  color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
+    .ag-num.n3 { background: rgba(96,165,250,0.12);  color: #60a5fa; border: 1px solid rgba(96,165,250,0.3); }
+    .ag-num.n4 { background: rgba(248,113,113,0.12); color: #f87171; border: 1px solid rgba(248,113,113,0.3); }
+    .ag-text { font-size: 0.94rem; color: #b3c2d6; }
+
     @keyframes a-in {
       from { opacity: 0; transform: translateY(8px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -111,14 +154,14 @@
 
 
   <div class="bg-grid"></div>
-  <div class="header"><span class="h-title">Results</span></div>
+  <div class="header" style="opacity:0; animation: a-in 0.5s ease forwards;"><span class="h-title">Results</span></div>
 
   <div class="content">
 
     <!-- Results table -->
     <div class="right-col rc">
       <div class="table-wrap">
-        <table>
+        <table class="rtable">
           <thead>
             <tr>
               <th>Version</th>
@@ -168,6 +211,25 @@
         </table>
         <div class="row-final-border"></div>
         <div class="note">Tested on 500 MIMIC-CXR samples</div>
+
+        <div class="analysis-guide">
+          <div class="ag-item ag1">
+            <span class="ag-num n1">01</span>
+            <span class="ag-text">Root-Cause Analysis of Version Performance Differences</span>
+          </div>
+          <div class="ag-item ag2">
+            <span class="ag-num n2">02</span>
+            <span class="ag-text">Divergent Trends Across the Three Metrics</span>
+          </div>
+          <div class="ag-item ag3">
+            <span class="ag-num n3">03</span>
+            <span class="ag-text">Asymmetry in Macro F1 vs. Micro F1 Improvement</span>
+          </div>
+          <div class="ag-item ag4">
+            <span class="ag-num n4">04</span>
+            <span class="ag-text">Failure Mode Analysis of Metric Regression</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -178,13 +240,20 @@
   import { initSlideController } from './tool/slide-controller.js';
   import './tool/slide-scale.js';
 
-  const steps = [['.rc']];
+  const steps = [['.ag1'], ['.ag2'], ['.ag3'], ['.ag4']];
+  const stepHighlight = { 1: 'hl-root', 2: 'hl-trend', 3: 'hl-asym', 4: 'hl-fail' };
 
   function updateSlide(step) {
+    // 表格與標題一起立即顯示，不需要點擊
+    document.querySelector('.rc').classList.add('active');
+
     steps.flat().forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.remove('active')));
     for (let i = 0; i < step; i++) {
       if (steps[i]) steps[i].forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.add('active')));
     }
+    const table = document.querySelector('.rtable');
+    table.classList.remove('hl-root', 'hl-trend', 'hl-asym', 'hl-fail');
+    if (stepHighlight[step]) table.classList.add(stepHighlight[step]);
   }
 
   initSlideController({
@@ -193,6 +262,7 @@
     prevSlideUrl: 'experiment_settings.html',
     onUpdate: updateSlide
   });
+
 </script>
 </body>
 </html>

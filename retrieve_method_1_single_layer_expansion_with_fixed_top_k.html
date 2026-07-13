@@ -31,6 +31,14 @@
       opacity: 0; animation: a-fade-in 0.7s ease 0.1s forwards;
     }
 
+    .h-title-row { display: flex; align-items: baseline; gap: 10px; }
+    .h-step {
+      font-size: 0.58rem; font-weight: 700; letter-spacing: 0.08em;
+      color: #4a6480; padding: 2px 8px; border-radius: 999px;
+      border: 1px solid rgba(96,165,250,0.25); background: rgba(96,165,250,0.06);
+      text-transform: uppercase; white-space: nowrap; flex-shrink: 0;
+    }
+
     .divider {
       position: absolute; left: 480px; top: 110px; bottom: 36px; width: 2px;
       background: linear-gradient(to bottom, transparent 0%, #152840 15%, #152840 85%, transparent 100%);
@@ -136,7 +144,10 @@
 
   <div class="header">
     <span class="h-kicker">Inference Time Pipeline</span>
-    <span class="h-title">Retrieve Method 1 · Single-Layer Expansion with Fixed Top-K</span>
+    <div class="h-title-row">
+      <span class="h-title">Retrieve Method 1 · Single-Layer Expansion with Fixed Top-K</span>
+      <span class="h-step">Step 4 / 7</span>
+    </div>
   </div>
   <div class="divider"></div>
 
@@ -146,10 +157,10 @@
     <div class="step" id="step1">
       <div class="step-num" style="background:#0d0f2e;border:2px solid #6366f1;color:#818cf8;">1</div>
       <div class="step-body">
-        <div class="step-title" style="color:#818cf8;">Match Corenode</div>
+        <div class="step-title" style="color:#818cf8;">Corenode Match → Component Node</div>
         <div class="step-desc"><ul>
           <li>Construct <code style="color:#a5b4fc;font-size:0.88rem;">entity_id = text_feature</code>.</li>
-          <li>Match to the corresponding Entity node in the DB as the retrieval anchor.</li>
+          <li>Match to the Component node in DB as anchor.</li>
         </ul></div>
       </div>
     </div>
@@ -157,13 +168,12 @@
     <div class="sep" id="sep1"></div>
 
     <div class="step" id="step2">
-      <div class="step-num" style="background:#1a1100;border:2px solid #f59e0b;color:#fbbf24;">2</div>
+      <div class="step-num" style="background:#1c1130;border:2px solid #8b5cf6;color:#c4b5fd;">2</div>
       <div class="step-body">
-        <div class="step-title" style="color:#fbbf24;">Embedding Match</div>
+        <div class="step-title" style="color:#c4b5fd;">Expand PART_OF</div>
         <div class="step-desc"><ul>
-          <li>Query DB supernodes sharing the same core entity.</li>
-          <li>Compute cosine similarity and select the best match.</li>
-          <li>If best <code style="color:#fcd34d;font-size:0.88rem;">sim &lt; 0.95</code>, skip — no relevant entry exists in DB.</li>
+          <li>Expand via outgoing <code style="color:#ddd6fe;font-size:0.88rem;">PART_OF</code> from the Component node.</li>
+          <li>Find which Supernodes it belongs to.</li>
         </ul></div>
       </div>
     </div>
@@ -171,11 +181,13 @@
     <div class="sep" id="sep2"></div>
 
     <div class="step" id="step3">
-      <div class="step-num" style="background:#001a18;border:2px solid #14b8a6;color:#2dd4bf;">3</div>
+      <div class="step-num" style="background:#1a1100;border:2px solid #f59e0b;color:#fbbf24;">3</div>
       <div class="step-body">
-        <div class="step-title" style="color:#2dd4bf;">L1 Outgoing Traversal</div>
+        <div class="step-title" style="color:#fbbf24;">Embedding Match</div>
         <div class="step-desc"><ul>
-          <li>From matched DB supernode, follow all outgoing <code style="color:#5eead4;font-size:0.88rem;">SUGGESTIVE_OF</code> edges to retrieve L1 neighbors with edge weights.</li>
+          <li>Query DB supernodes sharing the core entity.</li>
+          <li>Compute cosine similarity; keep best match.</li>
+          <li>If <code style="color:#fcd34d;font-size:0.88rem;">sim &lt; 0.95</code>, skip — no match in DB.</li>
         </ul></div>
       </div>
     </div>
@@ -183,13 +195,25 @@
     <div class="sep" id="sep3"></div>
 
     <div class="step" id="step4">
-      <div class="step-num" style="background:#061a0a;border:2px solid #22c55e;color:#4ade80;">4</div>
+      <div class="step-num" style="background:#001a18;border:2px solid #14b8a6;color:#2dd4bf;">4</div>
+      <div class="step-body">
+        <div class="step-title" style="color:#2dd4bf;">L1 Outgoing Traversal</div>
+        <div class="step-desc"><ul>
+          <li>Follow outgoing <code style="color:#5eead4;font-size:0.88rem;">SUGGESTIVE_OF</code> edges to get L1 neighbors + weights.</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <div class="sep" id="sep4"></div>
+
+    <div class="step" id="step5">
+      <div class="step-num" style="background:#061a0a;border:2px solid #22c55e;color:#4ade80;">5</div>
       <div class="step-body">
         <div class="step-title" style="color:#4ade80;">Top-5 Selection &amp; Union</div>
         <div class="step-desc"><ul>
           <li>Sort L1 neighbors by weight, keep top 5.</li>
           <li>Union across all supernodes.</li>
-          <li>Fetch stored questions as output.</li>
+          <li>Fetch stored questions.</li>
         </ul></div>
       </div>
     </div>
@@ -223,12 +247,14 @@
       <g id="g-base" class="svg-group">
 
         <!-- Query Supernode pill -->
-        <rect x="30" y="52" width="190" height="50" rx="25"
+        <rect x="30" y="52" width="190" height="60" rx="30"
               fill="#1e1b12" stroke="#f59e0b" stroke-width="2.5"/>
         <text x="125" y="74" fill="#fbbf24" font-size="11" font-weight="700"
               text-anchor="middle" letter-spacing="0.06em">QUERY SUPERNODE</text>
         <text x="125" y="91" fill="#e2e8f0" font-size="13" font-weight="600"
               text-anchor="middle" font-family="Consolas,Monaco,monospace">"opacity left lung"</text>
+        <text x="125" y="107" fill="#d9b877" font-size="13"
+              text-anchor="middle">左肺陰影</text>
 
 
       </g>
@@ -239,7 +265,7 @@
       <g id="g-step1" class="svg-group">
 
         <!-- vertical dashed line from query pill down to core node -->
-        <line x1="125" y1="102" x2="125" y2="148"
+        <line x1="125" y1="112" x2="125" y2="148"
               stroke="#6366f1" stroke-width="1.8" stroke-dasharray="4 3" stroke-opacity="0.7"/>
 
         <!-- Core entity node circle -->
@@ -249,6 +275,8 @@
               text-anchor="middle">opacity</text>
         <text x="125" y="183" fill="#818cf8" font-size="8" font-weight="700"
               text-anchor="middle">OBS-DP-E</text>
+        <text x="125" y="195" fill="#a5b4fc" font-size="9.5"
+              text-anchor="middle">陰影</text>
 
         <!-- entity_id label -->
         <line x1="151" y1="175" x2="195" y2="175"
@@ -272,6 +300,14 @@
               text-anchor="middle">opacity</text>
         <text x="590" y="183" fill="#2dd4bf" font-size="8" font-weight="700"
               text-anchor="middle">OBS-DP-E</text>
+        <text x="590" y="195" fill="#5eead4" font-size="9.5"
+              text-anchor="middle">陰影</text>
+
+        <!-- DB box around supernodes + DB Entity (moved here so it appears together with the DB Entity node) -->
+        <rect x="393" y="40" width="384" height="178" rx="8"
+              fill="none" stroke="#334155" stroke-width="1.5" stroke-dasharray="6 3"/>
+        <text x="772" y="37" fill="#475569" font-size="8.5" font-weight="700"
+              letter-spacing="0.12em" text-anchor="end">DATABASE</text>
 
       </g>
 
@@ -279,18 +315,52 @@
            OPACITY LUNG SUPERNODE — shown in step2 and step3 focused view
       ═══════════════════════════════════════════════ -->
       <g id="g-opacity-lung" class="svg-group">
-        <rect x="405" y="52" width="190" height="50" rx="25"
+        <rect x="405" y="52" width="190" height="60" rx="30"
               fill="#0d1c1a" stroke="#14b8a6" stroke-width="2.5"/>
         <text x="500" y="74" fill="#2dd4bf" font-size="11" font-weight="700"
               text-anchor="middle" letter-spacing="0.06em">DB SUPERNODE</text>
         <text x="500" y="91" fill="#e2e8f0" font-size="13" font-weight="600"
               text-anchor="middle" font-family="Consolas,Monaco,monospace">"opacity lung"</text>
+        <text x="500" y="107" fill="#5fb5a5" font-size="13"
+              text-anchor="middle">肺陰影</text>
       </g>
 
       <!-- ═══════════════════════════════════════════════
-           STEP 2 GROUP — embedding similarity match
+           STEP 2 GROUP — expand PART_OF: which supernodes does the
+           matched Component node belong to
       ═══════════════════════════════════════════════ -->
-      <g id="g-step2" class="svg-group">
+      <g id="g-partof" class="svg-group">
+
+        <!-- PART_OF: DB Entity → DB Supernode -->
+        <line x1="572" y1="156" x2="500" y2="113"
+              stroke="#14b8a6" stroke-width="1.5" stroke-dasharray="4 3" stroke-opacity="0.8"
+              marker-end="url(#arr-teal-sm)"/>
+        <text x="530" y="139" fill="#14b8a6" font-size="8" font-weight="600"
+              text-anchor="middle">PART_OF</text>
+
+        <!-- DB Supernode pill — pleural opacity -->
+        <rect x="600" y="52" width="175" height="58" rx="29"
+              fill="#0d1c1a" stroke="#14b8a6" stroke-width="2.5"/>
+        <text x="688" y="72" fill="#2dd4bf" font-size="10" font-weight="700"
+              text-anchor="middle" letter-spacing="0.06em">DB SUPERNODE</text>
+        <text x="688" y="89" fill="#e2e8f0" font-size="11" font-weight="600"
+              text-anchor="middle" font-family="Consolas,Monaco,monospace">"pleural opacity"</text>
+        <text x="688" y="104" fill="#5fb5a5" font-size="11"
+              text-anchor="middle">肋膜陰影</text>
+
+        <!-- PART_OF: DB Entity → rejected supernode -->
+        <line x1="608" y1="157" x2="688" y2="110"
+              stroke="#14b8a6" stroke-width="1.5" stroke-dasharray="4 3" stroke-opacity="0.6"
+              marker-end="url(#arr-teal-sm)"/>
+        <text x="656" y="140" fill="#14b8a6" font-size="8" font-weight="600"
+              text-anchor="start">PART_OF</text>
+
+      </g>
+
+      <!-- ═══════════════════════════════════════════════
+           STEP 3 GROUP — embedding similarity match
+      ═══════════════════════════════════════════════ -->
+      <g id="g-embed" class="svg-group">
 
         <!-- Arrow from query pill right edge → DB pill left edge -->
         <line x1="220" y1="77" x2="400" y2="77"
@@ -300,34 +370,6 @@
         <!-- sim label above arrow -->
         <text x="310" y="67" fill="#fbbf24" font-size="10" font-weight="700"
               text-anchor="middle">sim = 0.97 ✓</text>
-
-        <!-- DB box around supernodes + DB Entity -->
-        <rect x="393" y="40" width="384" height="178" rx="8"
-              fill="none" stroke="#334155" stroke-width="1.5" stroke-dasharray="6 3"/>
-        <text x="772" y="37" fill="#475569" font-size="8.5" font-weight="700"
-              letter-spacing="0.12em" text-anchor="end">DATABASE</text>
-
-        <!-- PART_OF: DB Entity → DB Supernode -->
-        <line x1="572" y1="156" x2="500" y2="103"
-              stroke="#14b8a6" stroke-width="1.5" stroke-dasharray="4 3" stroke-opacity="0.8"
-              marker-end="url(#arr-teal-sm)"/>
-        <text x="530" y="125" fill="#14b8a6" font-size="8" font-weight="600"
-              text-anchor="middle">PART_OF</text>
-
-        <!-- DB Supernode pill — pleural opacity -->
-        <rect x="600" y="52" width="175" height="50" rx="25"
-              fill="#0d1c1a" stroke="#14b8a6" stroke-width="2.5"/>
-        <text x="688" y="72" fill="#2dd4bf" font-size="10" font-weight="700"
-              text-anchor="middle" letter-spacing="0.06em">DB SUPERNODE</text>
-        <text x="688" y="89" fill="#e2e8f0" font-size="11" font-weight="600"
-              text-anchor="middle" font-family="Consolas,Monaco,monospace">"pleural opacity"</text>
-
-        <!-- PART_OF: DB Entity → rejected supernode -->
-        <line x1="608" y1="157" x2="688" y2="103"
-              stroke="#14b8a6" stroke-width="1.5" stroke-dasharray="4 3" stroke-opacity="0.6"
-              marker-end="url(#arr-teal-sm)"/>
-        <text x="656" y="126" fill="#14b8a6" font-size="8" font-weight="600"
-              text-anchor="start">PART_OF</text>
 
         <!-- arch from query "opacity left lung" over to rejected "pleural opacity" -->
         <path d="M 125 52 C 125 20 688 20 688 52"
@@ -339,47 +381,47 @@
       </g>
 
       <!-- ═══════════════════════════════════════════════
-           STEP 3 GROUP — L1 outgoing traversal
+           STEP 4 GROUP — L1 outgoing traversal
       ═══════════════════════════════════════════════ -->
-      <g id="g-step3" class="svg-group">
+      <g id="g-l1" class="svg-group">
 
         <!-- 6 edges from DB supernode (cx=500, cy=77) fan-out to neighbors at y≈320 -->
         <!-- edge 1 → n1 cx=80 -->
-        <line x1="440" y1="102" x2="105" y2="298"
+        <line x1="440" y1="112" x2="105" y2="298"
               stroke="#2dd4bf" stroke-width="1.8" stroke-opacity="0.75"
               marker-end="url(#arr-teal-sm)" class="edge-draw" id="e1"/>
         <text x="250" y="204" fill="#64748b" font-size="9.5" font-weight="600"
               text-anchor="middle" transform="rotate(-28 250 204)">0.71</text>
 
         <!-- edge 2 → n2 cx=210 -->
-        <line x1="460" y1="102" x2="222" y2="298"
+        <line x1="460" y1="112" x2="222" y2="298"
               stroke="#2dd4bf" stroke-width="1.8" stroke-opacity="0.75"
               marker-end="url(#arr-teal-sm)" class="edge-draw" id="e2"/>
         <text x="347" y="200" fill="#64748b" font-size="9.5" font-weight="600"
               text-anchor="middle" transform="rotate(-18 347 200)">0.64</text>
 
         <!-- edge 3 → n3 cx=370 -->
-        <line x1="485" y1="103" x2="375" y2="298"
+        <line x1="485" y1="113" x2="375" y2="298"
               stroke="#2dd4bf" stroke-width="1.8" stroke-opacity="0.75"
               marker-end="url(#arr-teal-sm)" class="edge-draw" id="e3"/>
         <text x="432" y="202" fill="#64748b" font-size="9.5" font-weight="600"
               text-anchor="middle" transform="rotate(-8 432 202)">0.58</text>
 
         <!-- edge 4 → n4 cx=510 -->
-        <line x1="510" y1="103" x2="510" y2="298"
+        <line x1="510" y1="113" x2="510" y2="298"
               stroke="#2dd4bf" stroke-width="1.8" stroke-opacity="0.75"
               marker-end="url(#arr-teal-sm)" class="edge-draw" id="e4"/>
         <text x="518" y="200" fill="#64748b" font-size="9.5" font-weight="600">0.52</text>
 
         <!-- edge 5 → n5 cx=630 -->
-        <line x1="535" y1="103" x2="618" y2="298"
+        <line x1="535" y1="113" x2="618" y2="298"
               stroke="#2dd4bf" stroke-width="1.8" stroke-opacity="0.75"
               marker-end="url(#arr-teal-sm)" class="edge-draw" id="e5"/>
         <text x="583" y="200" fill="#64748b" font-size="9.5" font-weight="600"
               transform="rotate(10 583 200)">0.48</text>
 
         <!-- edge 6 → n6 cx=730 (dim, will fade in step4) -->
-        <line x1="550" y1="102" x2="718" y2="298"
+        <line x1="550" y1="112" x2="718" y2="298"
               stroke="#2dd4bf" stroke-width="1.8" stroke-opacity="0.75"
               marker-end="url(#arr-teal-sm)" class="edge-draw" id="e6"/>
         <text x="643" y="199" fill="#64748b" font-size="9.5" font-weight="600"
@@ -387,81 +429,93 @@
 
         <!-- 6 neighbor pills at y≈300 -->
         <!-- n1 -->
-        <rect x="16" y="300" width="128" height="38" rx="19"
+        <rect x="16" y="300" width="128" height="46" rx="23"
               fill="#0d1c1a" stroke="#14b8a6" stroke-width="1.8" id="n1-pill"/>
         <text x="80" y="314" fill="#2dd4bf" font-size="9" font-weight="700"
               text-anchor="middle">bibasilar</text>
         <text x="80" y="327" fill="#2dd4bf" font-size="8.5" font-weight="600"
               text-anchor="middle">atelectasis</text>
+        <text x="80" y="340" fill="#5fb5a5" font-size="9"
+              text-anchor="middle">兩側肺底肺不張</text>
 
         <!-- n2 -->
-        <rect x="148" y="300" width="128" height="38" rx="19"
+        <rect x="148" y="300" width="128" height="46" rx="23"
               fill="#1e1b12" stroke="#f59e0b" stroke-width="1.8" id="n2-pill"/>
         <text x="212" y="314" fill="#fbbf24" font-size="9" font-weight="700"
               text-anchor="middle">poor</text>
         <text x="212" y="327" fill="#fbbf24" font-size="8.5" font-weight="600"
               text-anchor="middle">inspiration</text>
+        <text x="212" y="340" fill="#d9b877" font-size="9"
+              text-anchor="middle">吸氣不足</text>
 
         <!-- n3 -->
-        <rect x="310" y="300" width="128" height="38" rx="19"
+        <rect x="310" y="300" width="128" height="46" rx="23"
               fill="#0d1c1a" stroke="#14b8a6" stroke-width="1.8" id="n3-pill"/>
         <text x="374" y="314" fill="#2dd4bf" font-size="9" font-weight="700"
               text-anchor="middle">bronchovascular</text>
         <text x="374" y="327" fill="#2dd4bf" font-size="8.5" font-weight="600"
               text-anchor="middle">marking</text>
+        <text x="374" y="340" fill="#5fb5a5" font-size="9"
+              text-anchor="middle">支氣管血管紋理</text>
 
         <!-- n4 -->
-        <rect x="446" y="300" width="128" height="38" rx="19"
+        <rect x="446" y="300" width="128" height="46" rx="23"
               fill="#1e1b12" stroke="#f59e0b" stroke-width="1.8" id="n4-pill"/>
         <text x="510" y="314" fill="#fbbf24" font-size="9" font-weight="700"
               text-anchor="middle">low lung</text>
         <text x="510" y="327" fill="#fbbf24" font-size="8.5" font-weight="600"
               text-anchor="middle">volume</text>
+        <text x="510" y="340" fill="#d9b877" font-size="9"
+              text-anchor="middle">肺容積偏低</text>
 
         <!-- n5 -->
-        <rect x="556" y="300" width="128" height="38" rx="19"
+        <rect x="556" y="300" width="128" height="46" rx="23"
               fill="#0d1c1a" stroke="#14b8a6" stroke-width="1.8" id="n5-pill"/>
         <text x="620" y="314" fill="#2dd4bf" font-size="9" font-weight="700"
               text-anchor="middle">retrocardiac</text>
         <text x="620" y="327" fill="#2dd4bf" font-size="8.5" font-weight="600"
               text-anchor="middle">opacity</text>
+        <text x="620" y="340" fill="#5fb5a5" font-size="9"
+              text-anchor="middle">心臟後方陰影</text>
 
         <!-- n6 (will be dimmed in step4) -->
-        <rect x="660" y="300" width="128" height="38" rx="19"
+        <rect x="660" y="300" width="128" height="46" rx="23"
               fill="#0c1117" stroke="#334155" stroke-width="1.8" id="n6-pill"/>
         <text x="724" y="314" fill="#475569" font-size="9" font-weight="700"
               text-anchor="middle">early</text>
         <text x="724" y="327" fill="#475569" font-size="8.5" font-weight="600"
               text-anchor="middle">pneumonia</text>
+        <text x="724" y="340" fill="#475569" font-size="9"
+              text-anchor="middle">早期肺炎</text>
 
       </g>
 
       <!-- ═══════════════════════════════════════════════
-           STEP 4 GROUP — top-5 highlight + union pool
+           STEP 5 GROUP — top-5 highlight + union pool
       ═══════════════════════════════════════════════ -->
-      <g id="g-step4" class="svg-group">
+      <g id="g-top5" class="svg-group">
 
         <!-- Dim edge 6 overlay -->
-        <line x1="550" y1="102" x2="718" y2="298"
+        <line x1="550" y1="112" x2="718" y2="298"
               stroke="#050d1a" stroke-width="4" stroke-opacity="0.82"/>
         <!-- Dim n6 overlay -->
-        <rect x="660" y="300" width="128" height="38" rx="19"
+        <rect x="660" y="300" width="128" height="46" rx="23"
               fill="#050d1a" opacity="0.78"/>
 
         <!-- Brighten top-5 edges (redraw on top) -->
-        <line x1="440" y1="102" x2="105" y2="298"
+        <line x1="440" y1="112" x2="105" y2="298"
               stroke="#4ade80" stroke-width="2.5" stroke-opacity="0.9"
               marker-end="url(#arr-green)"/>
-        <line x1="460" y1="102" x2="222" y2="298"
+        <line x1="460" y1="112" x2="222" y2="298"
               stroke="#4ade80" stroke-width="2.5" stroke-opacity="0.9"
               marker-end="url(#arr-green)"/>
-        <line x1="485" y1="103" x2="375" y2="298"
+        <line x1="485" y1="113" x2="375" y2="298"
               stroke="#4ade80" stroke-width="2.5" stroke-opacity="0.9"
               marker-end="url(#arr-green)"/>
-        <line x1="510" y1="103" x2="510" y2="298"
+        <line x1="510" y1="113" x2="510" y2="298"
               stroke="#4ade80" stroke-width="2.5" stroke-opacity="0.9"
               marker-end="url(#arr-green)"/>
-        <line x1="535" y1="103" x2="618" y2="298"
+        <line x1="535" y1="113" x2="618" y2="298"
               stroke="#4ade80" stroke-width="2.5" stroke-opacity="0.9"
               marker-end="url(#arr-green)"/>
 
@@ -492,19 +546,19 @@
               text-anchor="middle" class="rank-badge" id="rb5t" style="transition-delay:0.4s">⑤</text>
 
         <!-- Dashed lines from top-5 pills down to union pool -->
-        <line x1="80"  y1="338" x2="170" y2="435"
+        <line x1="80"  y1="346" x2="170" y2="435"
               stroke="#22c55e" stroke-width="1.2" stroke-dasharray="4 3" stroke-opacity="0.55"
               marker-end="url(#arr-gray)"/>
-        <line x1="212" y1="338" x2="230" y2="435"
+        <line x1="212" y1="346" x2="230" y2="435"
               stroke="#22c55e" stroke-width="1.2" stroke-dasharray="4 3" stroke-opacity="0.55"
               marker-end="url(#arr-gray)"/>
-        <line x1="374" y1="338" x2="340" y2="435"
+        <line x1="374" y1="346" x2="340" y2="435"
               stroke="#22c55e" stroke-width="1.2" stroke-dasharray="4 3" stroke-opacity="0.55"
               marker-end="url(#arr-gray)"/>
-        <line x1="510" y1="338" x2="430" y2="435"
+        <line x1="510" y1="346" x2="430" y2="435"
               stroke="#22c55e" stroke-width="1.2" stroke-dasharray="4 3" stroke-opacity="0.55"
               marker-end="url(#arr-gray)"/>
-        <line x1="620" y1="338" x2="510" y2="435"
+        <line x1="620" y1="346" x2="510" y2="435"
               stroke="#22c55e" stroke-width="1.2" stroke-dasharray="4 3" stroke-opacity="0.55"
               marker-end="url(#arr-gray)"/>
 
@@ -525,7 +579,7 @@
         <text x="698" y="462" fill="#4ade80" font-size="10" font-weight="700"
               text-anchor="middle">questions.json</text>
         <text x="698" y="477" fill="#334155" font-size="8.5" font-weight="600"
-              text-anchor="middle">[ "Is there opacity…?", … ]</text>
+              text-anchor="middle">[ "Is there opacity（陰影）…?", … ]</text>
 
       </g>
 
@@ -538,29 +592,31 @@
   import { initSlideController } from './tool/slide-controller.js';
   import './tool/slide-scale.js';
 
-  const maxSteps = 4;
+  const maxSteps = 5;
 
   function updateSlide(step) {
     // clear all active states
     document.querySelectorAll('.active').forEach(el => el.classList.remove('active'));
 
-    if (step >= 3) {
-      // Focused view from step 3+: only "opacity lung" supernode + L1 neighbors
+    if (step >= 4) {
+      // Focused view from step 4+: only "opacity lung" supernode + L1 neighbors
       document.getElementById('step1').classList.add('active');
       document.getElementById('sep1').classList.add('active');
       document.getElementById('step2').classList.add('active');
       document.getElementById('sep2').classList.add('active');
       document.getElementById('step3').classList.add('active');
+      document.getElementById('sep3').classList.add('active');
+      document.getElementById('step4').classList.add('active');
       document.getElementById('g-opacity-lung').classList.add('active');
-      document.getElementById('g-step3').classList.add('active');
+      document.getElementById('g-l1').classList.add('active');
       ['e1','e2','e3','e4','e5','e6'].forEach((id, i) => {
         const el = document.getElementById(id);
         if (el) setTimeout(() => el.classList.add('active'), i * 90);
       });
-      if (step >= 4) {
-        document.getElementById('sep3').classList.add('active');
-        document.getElementById('step4').classList.add('active');
-        document.getElementById('g-step4').classList.add('active');
+      if (step >= 5) {
+        document.getElementById('sep4').classList.add('active');
+        document.getElementById('step5').classList.add('active');
+        document.getElementById('g-top5').classList.add('active');
         ['rb1','rb1t','rb2','rb2t','rb3','rb3t','rb4','rb4t','rb5','rb5t'].forEach(id => {
           const el = document.getElementById(id);
           if (el) el.classList.add('active');
@@ -577,8 +633,13 @@
     if (step >= 2) {
       document.getElementById('sep1').classList.add('active');
       document.getElementById('step2').classList.add('active');
-      document.getElementById('g-step2').classList.add('active');
       document.getElementById('g-opacity-lung').classList.add('active');
+      document.getElementById('g-partof').classList.add('active');
+    }
+    if (step >= 3) {
+      document.getElementById('sep2').classList.add('active');
+      document.getElementById('step3').classList.add('active');
+      document.getElementById('g-embed').classList.add('active');
     }
   }
 

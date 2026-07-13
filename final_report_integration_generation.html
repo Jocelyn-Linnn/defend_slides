@@ -32,6 +32,14 @@
       color: #60a5fa;
     }
 
+    .h-title-row { display: flex; align-items: baseline; gap: 10px; }
+    .h-step {
+      font-size: 0.58rem; font-weight: 700; letter-spacing: 0.08em;
+      color: #4a6480; padding: 2px 8px; border-radius: 999px;
+      border: 1px solid rgba(96,165,250,0.25); background: rgba(96,165,250,0.06);
+      text-transform: uppercase; white-space: nowrap; flex-shrink: 0;
+    }
+
     .divider {
       position: absolute; left: 480px; top: 110px; bottom: 36px; width: 2px;
       background: linear-gradient(to bottom, transparent 0%, #152840 15%, #152840 85%, transparent 100%);
@@ -122,7 +130,10 @@
 
   <div class="header">
     <span class="h-kicker">Inference Time Pipeline</span>
-    <span class="h-title">Final Report Integration &amp; Generation</span>
+    <div class="h-title-row">
+      <span class="h-title">Final Report Integration &amp; Generation</span>
+      <span class="h-step">Step 7 / 7</span>
+    </div>
   </div>
   <div class="divider"></div>
 
@@ -168,7 +179,7 @@
         <div class="step-desc">
           <ul>
             <li><b>Initial report has highest priority</b> — QA may only supplement, never overwrite</li>
-            <li><b>Rule exemption</b> when image quality limits QA: severely damaged (e.g. large effusion, collapse) or completely normal</li>
+            <li><b>Rule exemption</b> when image quality limits QA: severely damaged (e.g. large effusion（大量積液）, collapse（肺塌陷）) or completely normal</li>
             <li><b>Negative statements</b> ("no X") may only come from the initial report, never introduced by QA</li>
           </ul>
         </div>
@@ -191,18 +202,18 @@
         <text x="20" y="14" fill="#2c4a6e" font-size="9" font-weight="700" letter-spacing="0.14em">RAW QA RESULTS (3 QUESTIONS ASKED)</text>
 
         <rect x="20" y="22" width="540" height="56" rx="8" fill="#030d1f" stroke="#22c55e" stroke-width="1.6"/>
-        <text x="34" y="40" fill="#60a5fa" font-size="8.4">Q: Do you see a scar in the right mid lung?</text>
-        <text x="34" y="55" fill="#a7f3d0" font-size="8.4">A: Yes — linear opacity, right mid-lung, c/w scar</text>
+        <text x="34" y="40" fill="#60a5fa" font-size="8.4">Q: Do you see a scar（疤痕）in the right mid lung（右肺中部）?</text>
+        <text x="34" y="55" fill="#a7f3d0" font-size="8.4">A: Yes — linear opacity（線狀陰影）, right mid-lung（右肺中部）, c/w scar（符合疤痕）</text>
         <text x="524" y="36" fill="#4ade80" font-size="7.2" font-weight="800" text-anchor="end">✓ KEPT</text>
 
         <rect x="20" y="84" width="540" height="56" rx="8" fill="#0c0c0c" stroke="#4b5563" stroke-width="1.6" stroke-dasharray="4 3"/>
-        <text x="34" y="102" fill="#7c8aa0" font-size="8.4">Q: Do you see any sign of pneumonia?</text>
-        <text x="34" y="117" fill="#7c8aa0" font-size="8.4" text-decoration="line-through">A: No — no clear signs of pneumonia</text>
+        <text x="34" y="102" fill="#7c8aa0" font-size="8.4">Q: Do you see any sign of pneumonia（肺炎）?</text>
+        <text x="34" y="117" fill="#7c8aa0" font-size="8.4" text-decoration="line-through">A: No — no clear signs of pneumonia（肺炎）</text>
         <text x="524" y="98" fill="#f87171" font-size="7.2" font-weight="800" text-anchor="end">✕ NOT "YES"</text>
 
         <rect x="20" y="146" width="540" height="56" rx="8" fill="#030d1f" stroke="#22c55e" stroke-width="1.6"/>
-        <text x="34" y="164" fill="#60a5fa" font-size="8.4">Q: Do you see any sign of pleural effusion?</text>
-        <text x="34" y="179" fill="#a7f3d0" font-size="8.4">A: Yes — small pleural effusion, left costophrenic angle</text>
+        <text x="34" y="164" fill="#60a5fa" font-size="8.4">Q: Do you see any sign of pleural effusion（肋膜積液）?</text>
+        <text x="34" y="179" fill="#a7f3d0" font-size="8.4">A: Yes — small pleural effusion（肋膜積液）, left costophrenic angle（左肋膈角）</text>
         <text x="524" y="160" fill="#4ade80" font-size="7.2" font-weight="800" text-anchor="end">✓ KEPT</text>
 
         <line x1="290" y1="210" x2="290" y2="238" stroke="#22c55e" stroke-width="1.8" marker-end="url(#arr-green)"/>
@@ -210,8 +221,8 @@
 
         <rect x="20" y="240" width="540" height="88" rx="10" fill="#020d08" stroke="#22c55e" stroke-width="2"/>
         <text x="38" y="260" fill="#4ade80" font-size="9" font-weight="700" letter-spacing="0.1em">FILTERED QA (2 OF 3 KEPT)</text>
-        <text x="38" y="278" fill="#a7f3d0" font-size="8.6">• Yes — linear opacity, right mid-lung (scar)</text>
-        <text x="38" y="293" fill="#a7f3d0" font-size="8.6">• Yes — small pleural effusion, left costophrenic angle</text>
+        <text x="38" y="278" fill="#a7f3d0" font-size="8.6">• Yes — linear opacity（線狀陰影）, right mid-lung（右肺中部）(scar 疤痕)</text>
+        <text x="38" y="293" fill="#a7f3d0" font-size="8.6">• Yes — small pleural effusion（肋膜積液）, left costophrenic angle（左肋膈角）</text>
         <text x="38" y="314" fill="#3a7a58" font-size="7.5" font-style="italic">→ passed forward to answer classification</text>
       </g>
 
@@ -220,26 +231,26 @@
         <rect x="20" y="16" width="540" height="84" rx="8" fill="#030d1f" stroke="#22c55e" stroke-width="1.6"/>
         <text x="34" y="32" fill="#4ade80" font-size="7.6" font-weight="800" letter-spacing="0.1em">CONFIRMED</text>
         <text x="34" y="46" fill="#6b8299" font-size="7.4" font-style="italic">Means: one confirmed finding, no alternatives</text>
-        <text x="34" y="63" fill="#cbd5e1" font-size="8.4">"Yes. There is a small pleural effusion in the left costophrenic angle."</text>
+        <text x="34" y="63" fill="#cbd5e1" font-size="8.4">"Yes. There is a small pleural effusion（肋膜積液）in the left costophrenic angle（左肋膈角）."</text>
         <text x="34" y="80" fill="#4ade80" font-size="8" font-style="italic">→ kept in full ✓</text>
 
         <rect x="20" y="108" width="540" height="104" rx="8" fill="#0a0700" stroke="#f59e0b" stroke-width="1.6"/>
         <text x="34" y="124" fill="#fbbf24" font-size="7.6" font-weight="800" letter-spacing="0.1em">MIXED</text>
         <text x="34" y="138" fill="#6b8299" font-size="7.4" font-style="italic">Means: confirmed finding + speculative extension</text>
-        <text x="34" y="155" fill="#cbd5e1" font-size="8.4">"Yes. There is patchy opacity in the lung base. <tspan fill="#7c8aa0" text-decoration="line-through">This could be</tspan></text>
-        <text x="34" y="169" fill="#7c8aa0" font-size="8.4" text-decoration="line-through">due to atelectasis, consolidation, or a mass."</text>
+        <text x="34" y="155" fill="#cbd5e1" font-size="8.4">"Yes. There is patchy opacity（片狀陰影）in the lung base（肺底）. <tspan fill="#7c8aa0" text-decoration="line-through">This could be</tspan></text>
+        <text x="34" y="169" fill="#7c8aa0" font-size="8.4" text-decoration="line-through">due to atelectasis（肺不張）, consolidation（肺實變）, or a mass（腫塊）."</text>
         <text x="34" y="192" fill="#fbbf24" font-size="8" font-style="italic">→ trimmed to the confirmed clause only</text>
 
         <rect x="20" y="220" width="540" height="80" rx="8" fill="#0c0c0c" stroke="#4b5563" stroke-width="1.6" stroke-dasharray="4 3"/>
         <text x="34" y="236" fill="#94a3b8" font-size="7.6" font-weight="800" letter-spacing="0.1em">DIFFERENTIAL</text>
         <text x="34" y="250" fill="#6b8299" font-size="7.4" font-style="italic">Means: multiple possible diagnoses, none confirmed</text>
-        <text x="34" y="267" fill="#7c8aa0" font-size="8.4" text-decoration="line-through">"Yes, this could be pneumonia, atelectasis, or aspiration."</text>
+        <text x="34" y="267" fill="#7c8aa0" font-size="8.4" text-decoration="line-through">"Yes, this could be pneumonia（肺炎）, atelectasis（肺不張）, or aspiration（吸入性病變）."</text>
         <text x="34" y="284" fill="#f87171" font-size="8" font-style="italic">→ discarded entirely ✕</text>
 
         <rect x="20" y="308" width="540" height="80" rx="8" fill="#0c0c0c" stroke="#4b5563" stroke-width="1.6" stroke-dasharray="4 3"/>
         <text x="34" y="324" fill="#94a3b8" font-size="7.6" font-weight="800" letter-spacing="0.1em">NORMAL</text>
         <text x="34" y="338" fill="#6b8299" font-size="7.4" font-style="italic">Means: confirms "within normal limits"</text>
-        <text x="34" y="355" fill="#7c8aa0" font-size="8.4" text-decoration="line-through">"The cardiac silhouette appears to be within normal limits."</text>
+        <text x="34" y="355" fill="#7c8aa0" font-size="8.4" text-decoration="line-through">"The cardiac silhouette（心臟輪廓）appears to be within normal limits."</text>
         <text x="34" y="372" fill="#f87171" font-size="8" font-style="italic">→ discarded — no added clinical value ✕</text>
       </g>
 
@@ -250,10 +261,10 @@
               fill="#030d1f" stroke="#3b82f6" stroke-width="2"/>
         <text x="34" y="31" fill="#60a5fa" font-size="9" font-weight="700"
               letter-spacing="0.1em">初始報告（MEDGEMMA）· ORIGIN REPORT</text>
-        <text x="34" y="48" fill="#cbd5e1" font-size="8">The patient is status post sternotomy with multiple lines and tubes in place. A right-sided</text>
-        <text x="34" y="62" fill="#cbd5e1" font-size="8">chest tube is present. There is a moderate left pleural effusion with associated atelectasis.</text>
-        <text x="34" y="76" fill="#cbd5e1" font-size="8">There is patchy opacity in the right lower lung field, suggestive of pneumonia. The heart size</text>
-        <text x="34" y="90" fill="#cbd5e1" font-size="8">is normal. The mediastinum is unremarkable. No pneumothorax is seen.</text>
+        <text x="34" y="48" fill="#cbd5e1" font-size="8">The patient is status post sternotomy（胸骨切開術）with multiple lines and tubes in place. A right-sided</text>
+        <text x="34" y="62" fill="#cbd5e1" font-size="8">chest tube（胸管）is present. There is a moderate left pleural effusion（左側肋膜積液）with associated atelectasis（肺不張）.</text>
+        <text x="34" y="76" fill="#cbd5e1" font-size="8">There is patchy opacity（片狀陰影）in the right lower lung field（右下肺野）, suggestive of pneumonia（肺炎）. The heart size</text>
+        <text x="34" y="90" fill="#cbd5e1" font-size="8">is normal. The mediastinum（縱膈）is unremarkable. No pneumothorax（氣胸）is seen.</text>
         <text x="34" y="107" fill="#3a5f8a" font-size="7.4" font-style="italic">highest priority — never overwritten</text>
 
         <line x1="290" y1="126" x2="290" y2="144" stroke="#f59e0b" stroke-width="1.8" marker-end="url(#arr-amber)"/>
@@ -262,8 +273,8 @@
               fill="#0a0700" stroke="#f59e0b" stroke-width="2"/>
         <text x="34" y="163" fill="#fbbf24" font-size="9" font-weight="700"
               letter-spacing="0.1em">ＱＡ 問答結果（篩選後保留 YES）· FILTERED QA</text>
-        <text x="34" y="181" fill="#d1a85a" font-size="8">Yes. There is subsegmental atelectasis in the lower lung fields, particularly on the left side.</text>
-        <text x="34" y="195" fill="#d1a85a" font-size="8">Yes. There is evidence of parapneumonic effusion.</text>
+        <text x="34" y="181" fill="#d1a85a" font-size="8">Yes. There is subsegmental atelectasis（亞段性肺不張）in the lower lung fields（下肺野）, particularly on the left side.</text>
+        <text x="34" y="195" fill="#d1a85a" font-size="8">Yes. There is evidence of parapneumonic effusion（肺炎旁積液）.</text>
         <text x="34" y="212" fill="#8a6a30" font-size="7.4" font-style="italic">may only supplement — never introduce a "no X" statement</text>
 
         <line x1="290" y1="228" x2="290" y2="244" stroke="#8b5cf6" stroke-width="1.8" marker-end="url(#arr-blue)"/>
@@ -279,12 +290,12 @@
               fill="#020d08" stroke="#22c55e" stroke-width="2"/>
         <text x="34" y="317" fill="#4ade80" font-size="9" font-weight="700"
               letter-spacing="0.1em">最終報告（GPT-4O 整合輸出）· FINAL REPORT</text>
-        <text x="34" y="334" fill="#94a3b8" font-size="8">The patient is status post sternotomy with multiple lines and tubes in place. A right-sided</text>
-        <text x="34" y="348" fill="#94a3b8" font-size="8">chest tube is present. There is a moderate left pleural effusion with associated atelectasis.</text>
-        <text x="34" y="362" fill="#4ade80" font-size="8" font-weight="700">Subsegmental atelectasis is noted in the lower lung fields, particularly on the left side.</text>
-        <text x="34" y="376" fill="#94a3b8" font-size="8">There is patchy opacity in the right lower lung field, suggestive of pneumonia.</text>
-        <text x="34" y="390" fill="#4ade80" font-size="8" font-weight="700">Evidence of parapneumonic effusion is present.</text>
-        <text x="34" y="404" fill="#94a3b8" font-size="8">The heart size is normal. The mediastinum is unremarkable. No pneumothorax is seen.</text>
+        <text x="34" y="334" fill="#94a3b8" font-size="8">The patient is status post sternotomy（胸骨切開術）with multiple lines and tubes in place. A right-sided</text>
+        <text x="34" y="348" fill="#94a3b8" font-size="8">chest tube（胸管）is present. There is a moderate left pleural effusion（左側肋膜積液）with associated atelectasis（肺不張）.</text>
+        <text x="34" y="362" fill="#4ade80" font-size="8" font-weight="700">Subsegmental atelectasis（亞段性肺不張）is noted in the lower lung fields（下肺野）, particularly on the left side.</text>
+        <text x="34" y="376" fill="#94a3b8" font-size="8">There is patchy opacity（片狀陰影）in the right lower lung field（右下肺野）, suggestive of pneumonia（肺炎）.</text>
+        <text x="34" y="390" fill="#4ade80" font-size="8" font-weight="700">Evidence of parapneumonic effusion（肺炎旁積液）is present.</text>
+        <text x="34" y="404" fill="#94a3b8" font-size="8">The heart size is normal. The mediastinum（縱膈）is unremarkable. No pneumothorax（氣胸）is seen.</text>
         <text x="34" y="424" fill="#3a7a58" font-size="7.4" font-style="italic">Bold = supplemented from QA · everything else preserved verbatim from the origin report</text>
       </g>
 

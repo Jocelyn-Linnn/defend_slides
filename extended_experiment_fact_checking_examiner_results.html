@@ -25,11 +25,13 @@
       font-size: 0.6rem; font-weight: 700;
       letter-spacing: 0.24em; text-transform: uppercase;
       color: #2c4a6e;
+      opacity: 0; animation: a-fade-in 0.7s ease 0.1s forwards;
     }
     .h-title {
       font-size: 1rem; font-weight: 700;
       letter-spacing: 0.3em; text-transform: uppercase;
       color: #60a5fa;
+      opacity: 0; animation: a-fade-in 0.7s ease 0.15s forwards;
     }
 
     .divider {
@@ -44,6 +46,8 @@
       align-items: flex-start; justify-content: center;
       padding: 110px 42px 36px;
       gap: 14px;
+      opacity: 0; transform: translateY(14px);
+      animation: a-fade-in 0.7s ease 0.3s forwards;
     }
 
     .rt-eyebrow {
@@ -81,13 +85,6 @@
     }
     .rt-arrow-row svg { flex-shrink: 0; }
 
-    .rt-question {
-      margin-top: 4px; width: 100%; padding: 12px 16px; border-radius: 10px;
-      background: rgba(96,165,250,0.06); border: 1px solid rgba(96,165,250,0.18);
-      font-size: 0.8rem; color: #94a3b8; line-height: 1.55;
-    }
-    .rt-question b { color: #dbeafe; }
-
     /* ── Right panel: the evidence ── */
     .panel-right {
       flex: 1;
@@ -95,6 +92,8 @@
       align-items: center; justify-content: center;
       padding: 94px 44px 28px;
       gap: 20px;
+      opacity: 0; transform: translateY(14px);
+      animation: a-fade-in 0.7s ease 0.4s forwards;
     }
 
     .ee-table-wrap { flex-shrink: 0; width: 100%; max-width: 720px; }
@@ -114,17 +113,8 @@
     .ee-table .best { color: #4ade80; font-weight: 700; }
     .ee-table .decline { color: #f87171; }
 
-    .ee-note {
-      flex-shrink: 0; width: 100%; max-width: 720px; opacity: 0;
-      padding: 14px 24px; border-radius: 10px;
-      background: rgba(248,113,113,0.07); border: 1px solid rgba(248,113,113,0.25);
-      box-shadow: 0 0 34px -18px rgba(248,113,113,0.5);
-      font-size: 0.9rem; font-weight: 600; color: #f87171; text-align: center;
-    }
-    .ee-note.active { animation: a-in 0.55s ease forwards; }
-
-    @keyframes a-in {
-      from { opacity: 0; transform: translateY(10px); }
+    @keyframes a-fade-in {
+      from { opacity: 0; transform: translateY(12px); }
       to   { opacity: 1; transform: translateY(0); }
     }
     /* ── Responsive scaling: fit fixed-size canvas to any viewport ── */
@@ -185,7 +175,6 @@
       <div class="rt-row"><span class="rt-label">Encoder</span><span class="rt-val">BioViL-T (image) + CXR-BERT (text)</span></div>
     </div>
 
-    <div class="rt-question">Question: with a stronger, <b>domain-retrained</b> Examiner, can downstream fact-checking finally remove the QA-bias hallucinations — without retraining the core pipeline?</div>
   </div>
 
   <!-- ── Right Panel: the evidence ── -->
@@ -239,8 +228,6 @@
         </tbody>
       </table>
     </div>
-
-    <div class="ee-note note">At every threshold, v4 + Checker fails to beat both v4 and the MedGemma baseline</div>
   </div>
 
 </div>
@@ -249,20 +236,11 @@
   import { initSlideController } from './tool/slide-controller.js';
   import './tool/slide-scale.js';
 
-  const steps = [['.note']];
-
-  function updateSlide(step) {
-    steps.flat().forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.remove('active')));
-    for (let i = 0; i < step; i++) {
-      if (steps[i]) steps[i].forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.add('active')));
-    }
-  }
-
   initSlideController({
-    maxSteps: steps.length,
+    maxSteps: 0,
     nextSlideUrl: 'root_cause_analysis_of_fact_checking_examiner_failure.html',
     prevSlideUrl: 'improvement_motivation_and_design_logic.html',
-    onUpdate: updateSlide
+    onUpdate: () => {}
   });
 </script>
 </body>

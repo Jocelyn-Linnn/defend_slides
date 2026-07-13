@@ -35,6 +35,14 @@
       opacity: 0; animation: a-fade-in 0.7s ease 0.1s forwards;
     }
 
+    .h-title-row { display: flex; align-items: baseline; gap: 10px; }
+    .h-step {
+      font-size: 0.58rem; font-weight: 700; letter-spacing: 0.08em;
+      color: #4a6480; padding: 2px 8px; border-radius: 999px;
+      border: 1px solid rgba(96,165,250,0.25); background: rgba(96,165,250,0.06);
+      text-transform: uppercase; white-space: nowrap; flex-shrink: 0;
+    }
+
     /* ── Divider ── */
     .divider {
       position: absolute; left: 600px; top: 110px; bottom: 36px; width: 2px;
@@ -137,7 +145,10 @@
 
   <div class="header">
     <span class="h-kicker">Inference Time Pipeline</span>
-    <span class="h-title">Initial Report Generation &amp; Structured Extraction</span>
+    <div class="h-title-row">
+      <span class="h-title">Initial Report Generation &amp; Structured Extraction</span>
+      <span class="h-step">Step 1-2 / 7</span>
+    </div>
   </div>
   <div class="divider"></div>
 
@@ -147,7 +158,7 @@
       <div class="step-num" style="background:#0c2a4a;border:2px solid #3b82f6;color:#60a5fa;">1</div>
       <div class="step-body">
         <div class="step-title" style="color:#60a5fa;">MedGemma Report Generation</div>
-        <div class="step-desc">MedGemma generates a Findings + Impression report from a fixed prompt — training-free, no fine-tuning.</div>
+        <div class="step-desc">MedGemma generates a Findings（影像所見） + Impression（診斷印象）report from a fixed prompt — training-free, no fine-tuning.</div>
         <div class="weight-rationale">
           <span class="weight-rationale-text"><b>Why MedGemma</b></span>
           <ul class="rationale-list">
@@ -164,8 +175,8 @@
     <div class="step" id="step2Header">
       <div class="step-num" style="background:#2a0c0c;border:2px solid #ef4444;color:#f87171;">2</div>
       <div class="step-body">
-        <div class="step-title" style="color:#f87171;">Filter Out Impression</div>
-        <div class="step-desc">Only Findings is kept — Impression is filtered out to avoid skewing extraction.</div>
+        <div class="step-title" style="color:#f87171;">Filter Out Impression（診斷印象）</div>
+        <div class="step-desc">Only Findings（影像所見）is kept — Impression（診斷印象）is filtered out to avoid skewing extraction.</div>
       </div>
     </div>
 
@@ -175,7 +186,7 @@
       <div class="step-num" style="background:#051a1a;border:2px solid #14b8a6;color:#2dd4bf;">3</div>
       <div class="step-body">
         <div class="step-title" style="color:#2dd4bf;">RadGraph Structured Extraction</div>
-        <div class="step-desc">RadGraph converts the Findings text into an entity-relation graph for retrieval.</div>
+        <div class="step-desc">RadGraph converts the Findings（影像所見）text into an entity-relation graph for retrieval.</div>
       </div>
     </div>
 
@@ -202,15 +213,17 @@
       </defs>
 
       <!-- ── Chest X-ray input (always visible) ── -->
-      <rect x="210" y="8" width="200" height="58" rx="10"
+      <rect x="210" y="8" width="200" height="62" rx="10"
             fill="#1e1b12" stroke="#f59e0b" stroke-width="2"/>
       <text x="310" y="34" fill="#fbbf24" font-size="12" font-weight="700"
             letter-spacing="0.12em" text-anchor="middle">CHEST X-RAY</text>
       <text x="310" y="50" fill="#d97706" font-size="7.5" font-weight="700"
             letter-spacing="0.1em" text-anchor="middle">INPUT IMAGE</text>
+      <text x="310" y="65" fill="#d9b877" font-size="12"
+            text-anchor="middle">胸部X光</text>
 
       <g class="medgemma-group" id="medgemmaGroup">
-        <line x1="310" y1="66" x2="310" y2="92"
+        <line x1="310" y1="70" x2="310" y2="92"
               stroke="#d97706" stroke-width="2.5" stroke-opacity="0.8"
               marker-end="url(#arr-amber)"/>
 
@@ -226,20 +239,20 @@
         <rect x="110" y="177" width="400" height="92" rx="8"
               fill="#030f06" stroke="#22c55e" stroke-width="1.8"/>
         <text x="310" y="198" fill="#4ade80" font-size="11" font-weight="700"
-              letter-spacing="0.1em" text-anchor="middle">FINDINGS</text>
-        <text x="310" y="215" fill="#d1fae5" font-size="9.5"
-              text-anchor="middle" font-family="Consolas,Monaco,monospace">"The lungs are clear without focal consolidation."</text>
+              letter-spacing="0.1em" text-anchor="middle">FINDINGS（影像所見）</text>
+        <text x="310" y="215" fill="#d1fae5" font-size="8"
+              text-anchor="middle" font-family="Consolas,Monaco,monospace">"The lungs（肺）are clear without focal consolidation（局部肺實變）."</text>
 
         <line x1="150" y1="227" x2="470" y2="227" stroke="#14351f" stroke-width="1"/>
         <text id="impressionLabel" class="imp-label" x="310" y="246" font-size="11" font-weight="700"
-              letter-spacing="0.1em" text-anchor="middle">IMPRESSION</text>
-        <text id="impressionText" class="imp-text" x="310" y="262" font-size="9.5"
-              text-anchor="middle" font-family="Consolas,Monaco,monospace">"No acute cardiopulmonary process."</text>
+              letter-spacing="0.1em" text-anchor="middle">IMPRESSION（診斷印象）</text>
+        <text id="impressionText" class="imp-text" x="310" y="262" font-size="8"
+              text-anchor="middle" font-family="Consolas,Monaco,monospace">"No acute cardiopulmonary（心肺）process."</text>
       </g>
 
       <g class="filter-group" id="filterGroup">
-        <line id="strikeLabel" class="strike-line" x1="255" y1="242" x2="365" y2="242" stroke="#f87171" stroke-width="1.5"/>
-        <line id="strikeText" class="strike-line" x1="205" y1="258" x2="415" y2="258" stroke="#f87171" stroke-width="1.5"/>
+        <line id="strikeLabel" class="strike-line" x1="215" y1="242" x2="405" y2="242" stroke="#f87171" stroke-width="1.5"/>
+        <line id="strikeText" class="strike-line" x1="160" y1="258" x2="460" y2="258" stroke="#f87171" stroke-width="1.5"/>
       </g>
 
       <g class="radgraph-group" id="radgraphGroup">
@@ -270,10 +283,12 @@
         <circle cx="230" cy="440" r="28" fill="#2a0c0c" stroke="#ef4444" stroke-width="1.8"/>
         <text x="230" y="437" fill="#fecaca" font-size="9" font-weight="600" text-anchor="middle">consolidation</text>
         <text x="230" y="448" fill="#f87171" font-size="7.5" text-anchor="middle">OBS-DA-E</text>
+        <text x="230" y="460" fill="#fca5a5" font-size="9" text-anchor="middle">肺實變</text>
 
         <circle cx="390" cy="440" r="28" fill="#33291c" stroke="#c2a67f" stroke-width="1.8"/>
         <text x="390" y="437" fill="#ebd6ba" font-size="9" font-weight="600" text-anchor="middle">lungs</text>
         <text x="390" y="448" fill="#9e8460" font-size="7.5" text-anchor="middle">ANAT-E</text>
+        <text x="390" y="460" fill="#ebd6ba" font-size="9" text-anchor="middle">肺</text>
       </g>
 
     </svg>

@@ -84,30 +84,6 @@
     .cc-bullet { display: flex; align-items: flex-start; width: 100%; }
     .cc-bullet .bt { font-size: 0.84rem; color: #94a3b8; line-height: 1.55; }
 
-    /* ── Example callout ── */
-    .cc-example {
-      width: 100%; padding: 10px 12px; border-radius: 8px;
-      display: flex; flex-direction: column; gap: 6px;
-    }
-    .cc-example.ex-red    { background: rgba(248,113,113,0.05); border: 1px solid rgba(248,113,113,0.14); }
-    .cc-example.ex-orange { background: rgba(251,146,60,0.05); border: 1px solid rgba(251,146,60,0.14); }
-    .cc-ex-tag {
-      font-size: 0.54rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
-      color: #334155; margin-bottom: 6px; padding-bottom: 6px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
-
-    .cc-ex-field { display: flex; align-items: flex-start; gap: 8px; }
-    .cc-ex-field-label {
-      font-size: 0.66rem; font-weight: 800; letter-spacing: 0.03em;
-      flex-shrink: 0; min-width: 78px; margin-top: 1px;
-    }
-    .ex-red    .cc-ex-field-label { color: #f87171; }
-    .ex-orange .cc-ex-field-label { color: #fb923c; }
-    .cc-ex-field-value { font-size: 0.78rem; color: #64748b; line-height: 1.5; }
-    .cc-ex-field-value b { color: #94a3b8; }
-    .cc-ex-field-value i { font-style: normal; color: #cbd5e1; }
-
     @keyframes a-in {
       from { opacity: 0; transform: translateY(10px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -167,14 +143,6 @@
               <span class="bt">QA can hallucinate answers even when the initial report is correct</span>
             </div>
           </div>
-
-          <div class="cc-example ex-red">
-            <div class="cc-ex-tag">Example</div>
-            <div class="cc-ex-field"><span class="cc-ex-field-label">GT</span><span class="cc-ex-field-value">"The cardiomediastinal silhouette is normal" — no cardiomegaly</span></div>
-            <div class="cc-ex-field"><span class="cc-ex-field-label">MedGemma</span><span class="cc-ex-field-value">Already correct — clear lungs, normal heart size</span></div>
-            <div class="cc-ex-field"><span class="cc-ex-field-label">QA Step</span><span class="cc-ex-field-value">Asked about reduced heart size → answered <i>"Yes... suggesting some resolution of cardiomegaly"</i> — pure hallucination, since no cardiomegaly ever existed</span></div>
-            <div class="cc-ex-field"><span class="cc-ex-field-label">Final Report</span><span class="cc-ex-field-value">Incorporates the fabricated QA answer, introducing a finding absent from both GT and MedGemma's baseline</span></div>
-          </div>
         </div>
       </div>
     </div>
@@ -195,15 +163,6 @@
             <div class="cc-bullet">
               <span class="bt">QA tends to confirm more errors on top of an already-wrong baseline</span>
             </div>
-          </div>
-
-          <div class="cc-example ex-orange">
-            <div class="cc-ex-tag">Example</div>
-            <div class="cc-ex-field"><span class="cc-ex-field-label">GT</span><span class="cc-ex-field-value">Tube position too high; pacemaker/catheter unchanged; lungs otherwise unchanged</span></div>
-            <div class="cc-ex-field"><span class="cc-ex-field-label">MedGemma</span><span class="cc-ex-field-value">Already wrong — falsely lists 4 findings: bilateral (R+L) pleural effusion and bilateral lower-lobe atelectasis</span></div>
-            <div class="cc-ex-field"><span class="cc-ex-field-label">QA Step</span><span class="cc-ex-field-value">Built on that false premise → <i>"lingular atelectasis?"</i> → Yes; <i>"signs of recent CABG?"</i> → Yes (sternal wires present, but GT mentions no recent surgery)</span></div>
-            <div class="cc-ex-field"><span class="cc-ex-field-label">Final Report</span><span class="cc-ex-field-value">Stacks every affirmative answer → 6+ findings inconsistent with GT</span></div>
-            <div class="cc-ex-field"><span class="cc-ex-field-label">GREEN</span><span class="cc-ex-field-value">Drops to <b>0.222</b></span></div>
           </div>
         </div>
       </div>

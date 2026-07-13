@@ -99,17 +99,6 @@
     .cc-ex-line { font-size: 0.72rem; color: #64748b; line-height: 1.5; }
     .cc-ex-line b { color: #94a3b8; }
 
-    /* ── Evaluation-score table ── */
-    .cc-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
-    .cc-table th, .cc-table td { padding: 4px 6px; font-size: 0.72rem; text-align: right; white-space: nowrap; }
-    .cc-table th:first-child, .cc-table td:first-child { text-align: left; white-space: normal; }
-    .cc-table td:first-child { color: #94a3b8; font-weight: 600; }
-    .cc-table th {
-      font-size: 0.6rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;
-      border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 5px;
-    }
-    .cc-table td.from { color: #64748b; }
-    .cc-table td.to { color: #4ade80; font-weight: 700; }
 
     .cc-example.ex-teal { background: rgba(20,184,166,0.05); border-color: rgba(20,184,166,0.14); }
     .cc-example.ex-teal .cc-ex-tag { color: #2dd4bf; }
@@ -188,16 +177,9 @@
           </div>
           <div class="cc-example">
             <div class="cc-ex-tag">Case A</div>
-            <div class="cc-ex-line"><b>GT:</b> mild pulmonary edema — MedGemma missed it, Micro F1 stuck at 0.333</div>
-            <div class="cc-ex-line"><b>v1 (Top-K):</b> asks about bronchovascular crowding → edema untouched</div>
-            <div class="cc-ex-line"><b>v2 (Two-Layer):</b> reaches L2 via "lung volume low" → asks about edema → confirmed</div>
-            <table class="cc-table">
-              <thead><tr><th></th><th>v1</th><th>v2</th></tr></thead>
-              <tbody>
-                <tr><td>RadGraph F1</td><td class="from">0.2319</td><td class="to">0.2899</td></tr>
-                <tr><td>CheXBert Micro F1</td><td class="from">0.333</td><td class="to">0.571</td></tr>
-              </tbody>
-            </table>
+            <div class="cc-ex-line"><b>GT:</b> mild pulmonary edema（輕度肺水腫）— MedGemma missed it, Micro F1 stuck at 0.333</div>
+            <div class="cc-ex-line"><b>v1 (Single-layer):</b> edema（水腫）untouched</div>
+            <div class="cc-ex-line"><b>v2 (Two-Layer):</b> reaches L2 via "lung volume low"（肺容積偏低）→ asks about edema（水腫）→ confirmed</div>
           </div>
         </div>
       </div>
@@ -227,7 +209,7 @@
           <div class="cc-bullets">
             <div class="cc-bullet">
               <div class="cc-bdot"></div>
-              <span class="bt">CP overweights high-frequency findings (e.g. atelectasis) regardless of relevance</span>
+              <span class="bt">CP overweights high-frequency findings (e.g. atelectasis（肺不張）) regardless of relevance</span>
             </div>
             <div class="cc-bullet">
               <div class="cc-bdot"></div>
@@ -236,16 +218,9 @@
           </div>
           <div class="cc-example ex-teal">
             <div class="cc-ex-tag">Case B</div>
-            <div class="cc-ex-line"><b>GT:</b> cardiomegaly, moderate edema, bilateral effusion — MedGemma baseline already correct, GREEN = 1.0</div>
-            <div class="cc-ex-line"><b>v1 (CP):</b> 2 extra atelectasis questions → QA said Yes → hallucinated findings added</div>
-            <div class="cc-ex-line"><b>v3 (NPMI):</b> atelectasis nodes score too low vs. anchor → filtered out → report unchanged, GREEN stays 1.0</div>
-            <table class="cc-table">
-              <thead><tr><th></th><th>v1</th><th>v3</th></tr></thead>
-              <tbody>
-                <tr><td>RadGraph F1</td><td class="from">0.1702</td><td class="to">0.2500</td></tr>
-                <tr><td>GREEN</td><td class="from">0.3333</td><td class="to">1.0000</td></tr>
-              </tbody>
-            </table>
+            <div class="cc-ex-line"><b>GT:</b> cardiomegaly（心臟肥大）, moderate edema（中度水腫）, bilateral effusion（雙側積液）— MedGemma baseline already correct, GREEN = 1.0</div>
+            <div class="cc-ex-line"><b>v1 (CP):</b> 2 extra atelectasis（肺不張）questions → QA said Yes → hallucinated findings added</div>
+            <div class="cc-ex-line"><b>v3 (NPMI):</b> atelectasis（肺不張）nodes score too low vs. anchor → filtered out → report unchanged, GREEN stays 1.0</div>
           </div>
         </div>
       </div>
@@ -288,16 +263,10 @@
           </div>
           <div class="cc-example ex-blue">
             <div class="cc-ex-tag">Case C</div>
-            <div class="cc-ex-line"><b>GT:</b> multifocal pneumonia — v1/v2/v3 stuck at Micro F1 0.333</div>
-            <div class="cc-ex-line"><b>v2 (Two-Hop, CP):</b> reaches L2 but favors high-freq nodes → misses it, hallucinates congestion/edema</div>
-            <div class="cc-ex-line"><b>v3 (Top-K, NPMI):</b> limited to L1 → unreachable, hallucinates rib fracture</div>
+            <div class="cc-ex-line"><b>GT:</b> multifocal pneumonia（多發性肺炎）— v1/v2/v3 stuck at Micro F1 0.333</div>
+            <div class="cc-ex-line"><b>v2 (Two-Hop, CP):</b> reaches L2 but favors high-freq nodes → misses it, hallucinates congestion（肺充血）/edema（水腫）</div>
+            <div class="cc-ex-line"><b>v3 (Top-K, NPMI):</b> limited to L1 → unreachable, hallucinates rib fracture（肋骨骨折）</div>
             <div class="cc-ex-line"><b>v4 (Two-Hop, NPMI):</b> reaches L2 and ranks it top → correctly recovered</div>
-            <table class="cc-table">
-              <thead><tr><th></th><th>v1/v2/v3</th><th>v4</th></tr></thead>
-              <tbody>
-                <tr><td>CheXBert Micro F1</td><td class="from">0.333</td><td class="to">0.571</td></tr>
-              </tbody>
-            </table>
           </div>
         </div>
       </div>

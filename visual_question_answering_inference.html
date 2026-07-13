@@ -31,6 +31,14 @@
       opacity: 0; animation: a-fade-in 0.7s ease 0.1s forwards;
     }
 
+    .h-title-row { display: flex; align-items: baseline; gap: 10px; }
+    .h-step {
+      font-size: 0.58rem; font-weight: 700; letter-spacing: 0.08em;
+      color: #4a6480; padding: 2px 8px; border-radius: 999px;
+      border: 1px solid rgba(96,165,250,0.25); background: rgba(96,165,250,0.06);
+      text-transform: uppercase; white-space: nowrap; flex-shrink: 0;
+    }
+
     .divider {
       position: absolute; left: 480px; top: 110px; bottom: 36px; width: 2px;
       background: linear-gradient(to bottom, transparent 0%, #152840 15%, #152840 85%, transparent 100%);
@@ -120,7 +128,10 @@
 
   <div class="header">
     <span class="h-kicker">Inference Time Pipeline</span>
-    <span class="h-title">Visual Question Answering Inference</span>
+    <div class="h-title-row">
+      <span class="h-title">Visual Question Answering Inference</span>
+      <span class="h-step">Step 6 / 7</span>
+    </div>
   </div>
   <div class="divider"></div>
 
@@ -172,15 +183,17 @@
       </defs>
 
       <!-- Chest X-ray input (always visible) -->
-      <rect x="220" y="10" width="200" height="58" rx="10"
+      <rect x="220" y="10" width="200" height="62" rx="10"
             fill="#1e1b12" stroke="#f59e0b" stroke-width="2"/>
       <text x="320" y="36" fill="#fbbf24" font-size="12" font-weight="700"
             letter-spacing="0.12em" text-anchor="middle">CHEST X-RAY</text>
       <text x="320" y="52" fill="#d97706" font-size="7.5" font-weight="700"
             letter-spacing="0.1em" text-anchor="middle">INPUT IMAGE</text>
+      <text x="320" y="67" fill="#d9b877" font-size="12"
+            text-anchor="middle">胸部X光</text>
 
       <g class="svg-group" id="vqaGroup">
-        <line x1="320" y1="68" x2="320" y2="92"
+        <line x1="320" y1="72" x2="320" y2="92"
               stroke="#d97706" stroke-width="2.5" stroke-opacity="0.8"
               marker-end="url(#arr-amber)"/>
 
@@ -189,7 +202,7 @@
         <text x="320" y="115" fill="#93c5fd" font-size="8.5" font-weight="700"
               letter-spacing="0.14em" text-anchor="middle">RETRIEVED QUESTION</text>
         <text x="320" y="135" fill="#e2e8f0" font-size="10.5"
-              text-anchor="middle" font-family="Consolas,Monaco,monospace">"Do you see any sign of pneumonia in the image?"</text>
+              text-anchor="middle" font-family="Consolas,Monaco,monospace">"Do you see any sign of pneumonia（肺炎）in the image?"</text>
 
         <line x1="320" y1="149" x2="320" y2="172"
               stroke="#3b82f6" stroke-width="2" stroke-opacity="0.7"
@@ -211,7 +224,7 @@
         <text x="320" y="296" fill="#86efac" font-size="10.5" font-weight="700"
               text-anchor="middle" font-family="Consolas,Monaco,monospace">"No."</text>
         <text x="320" y="313" fill="#bbf7d0" font-size="9.5"
-              text-anchor="middle" font-family="Consolas,Monaco,monospace">Lung fields appear clear — no consolidation or infiltrates.</text>
+              text-anchor="middle" font-family="Consolas,Monaco,monospace">Lung fields（肺野）appear clear — no consolidation（肺實變）or infiltrates（浸潤）.</text>
       </g>
 
       <g class="svg-group" id="mergeGroup">

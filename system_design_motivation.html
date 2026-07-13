@@ -59,15 +59,6 @@
     .sdm-col:first-child { border-right: 1px solid #0a1828; }
     .sdm-col.active { animation: a-in 0.6s ease forwards; }
 
-    /* Ghost index number */
-    .sdm-num {
-      position: absolute; top: 18px; left: 50%; transform: translateX(-50%);
-      font-size: 4rem; font-weight: 800; line-height: 1; letter-spacing: -0.02em;
-      pointer-events: none; user-select: none;
-    }
-    .num-blue  { color: rgba(59,130,246,0.08); }
-    .num-green { color: rgba(34,197,94,0.08); }
-
     /* Card */
     .sdm-card {
       position: relative; display: flex; flex-direction: column;
@@ -88,7 +79,7 @@
     .icon-blue  { background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.28); color: #60a5fa; }
     .icon-green { background: rgba(34,197,94,0.08);  border: 1px solid rgba(34,197,94,0.28);  color: #4ade80; }
 
-    .sdm-tag { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #2c4a6e; }
+    .sdm-tag { font-size: 0.95rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: #94a3b8; }
     .sdm-title { font-size: 1.08rem; font-weight: 700; color: #e2e8f0; line-height: 1.35; margin-top: 2px; }
 
     .sdm-desc { font-size: 0.8rem; color: #94a3b8; line-height: 1.55; }
@@ -176,7 +167,6 @@
 
     <!-- Left: The Observation -->
     <div class="sdm-col s1">
-      <div class="sdm-num num-blue">01</div>
       <div class="sdm-card card-blue">
         <div class="sdm-head">
           <div class="sdm-icon icon-blue">
@@ -187,21 +177,20 @@
           <div class="sdm-tag">The Observation</div>
         </div>
         <div class="sdm-title">Generation Omits What the Model Can Verify</div>
-        <div class="sdm-desc">MedGemma's free-text reports sometimes omit findings explicit in the ground truth — even though the model can confirm them when asked directly</div>
+        <div class="sdm-desc">MedGemma sometimes omits findings it can confirm when <b>asked directly</b></div>
 
         <div class="cc-example">
           <div class="cc-ex-tag">Motivating Case</div>
-          <div class="cc-ex-field"><span class="cc-ex-field-label">GT</span><span class="cc-ex-field-value">Records a chest tube</span></div>
-          <div class="cc-ex-field"><span class="cc-ex-field-label">MedGemma</span><span class="cc-ex-field-value">Initial report omits it entirely</span></div>
-          <div class="cc-ex-field"><span class="cc-ex-field-label">Direct Question</span><span class="cc-ex-field-value"><i>"Do you see a tube in the image?"</i></span></div>
-          <div class="cc-ex-field"><span class="cc-ex-field-label">Answer</span><span class="cc-ex-field-value"><b>Yes</b> — correctly confirms it</span></div>
+          <div class="cc-ex-field"><span class="cc-ex-field-label">GT</span><span class="cc-ex-field-value">Records a chest tube（胸管）</span></div>
+          <div class="cc-ex-field"><span class="cc-ex-field-label">MedGemma</span><span class="cc-ex-field-value">Omits it entirely</span></div>
+          <div class="cc-ex-field"><span class="cc-ex-field-label">Direct Question</span><span class="cc-ex-field-value"><i>"Do you see a tube?"</i></span></div>
+          <div class="cc-ex-field"><span class="cc-ex-field-label">Answer</span><span class="cc-ex-field-value"><b>Yes</b> — confirms it</span></div>
         </div>
       </div>
     </div>
 
     <!-- Right: The Design Logic -->
     <div class="sdm-col s2">
-      <div class="sdm-num num-green">02</div>
       <div class="sdm-card card-green">
         <div class="sdm-head">
           <div class="sdm-icon icon-green">
@@ -211,14 +200,14 @@
           </div>
           <div class="sdm-tag">The Design Logic</div>
         </div>
-        <div class="sdm-title">→ Knowledge-Graph-Guided Question-Driven Correction</div>
-        <div class="sdm-desc">A <b>generation gap, not a perception gap</b> — but useful questions must be clinically informed, or they stay superficial</div>
+        <div class="sdm-title">→ Knowledge-Graph-Guided Correction</div>
+        <div class="sdm-desc">A <b>generation gap, not a perception gap</b> — questions must be clinically informed</div>
 
         <div class="step-list">
-          <div class="step-row"><div class="step-badge">1</div><span class="step-text">Generate the <b>initial report</b> (MedGemma)</span></div>
-          <div class="step-row"><div class="step-badge">2</div><span class="step-text">Mine it for <b>potential clinical clues</b></span></div>
-          <div class="step-row"><div class="step-badge">3</div><span class="step-text">Retrieve related questions from the <b>knowledge graph</b> — substituting for a radiologist's domain expertise</span></div>
-          <div class="step-row"><div class="step-badge">4</div><span class="step-text">Re-ask the model on the image to <b>confirm and supplement</b> omissions</span></div>
+          <div class="step-row"><div class="step-badge">1</div><span class="step-text">Generate the <b>initial report</b></span></div>
+          <div class="step-row"><div class="step-badge">2</div><span class="step-text">Mine it for <b>clinical clues</b></span></div>
+          <div class="step-row"><div class="step-badge">3</div><span class="step-text">Retrieve questions from the <b>knowledge graph</b> — as domain expertise</span></div>
+          <div class="step-row"><div class="step-badge">4</div><span class="step-text">Re-ask the model to <b>confirm &amp; supplement</b></span></div>
         </div>
       </div>
     </div>

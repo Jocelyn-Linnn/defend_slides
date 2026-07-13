@@ -207,11 +207,11 @@
 
         <div class="cc-example ex-amber">
           <div class="cc-ex-tag">Example</div>
-          <div class="cc-ex-field"><span class="cc-ex-field-label">GT</span><span class="cc-ex-field-value">"mild pulmonary vascular congestion"</span></div>
+          <div class="cc-ex-field"><span class="cc-ex-field-label">GT</span><span class="cc-ex-field-value">"mild pulmonary vascular congestion (肺血管充血)"</span></div>
           <div class="cc-ex-field"><span class="cc-ex-field-label">MedGemma</span><span class="cc-ex-field-value">Missed it entirely</span></div>
-          <div class="cc-ex-field"><span class="cc-ex-field-label">System</span><span class="cc-ex-field-value">Corrected with "subtle pulmonary edema"</span></div>
-          <div class="cc-ex-field"><span class="cc-ex-field-label">CheXBert</span><span class="cc-ex-field-value">Recognizes both as <b>Edema</b> → Micro F1 +0.190</span></div>
-          <div class="cc-ex-field"><span class="cc-ex-field-label">RadGraph</span><span class="cc-ex-field-value">"edema" ≠ "vascular congestion" as strings → no TP, counted as FP → F1 drops</span></div>
+          <div class="cc-ex-field"><span class="cc-ex-field-label">System</span><span class="cc-ex-field-value">Corrected with "subtle pulmonary edema (肺水腫)"</span></div>
+          <div class="cc-ex-field"><span class="cc-ex-field-label">CheXBert</span><span class="cc-ex-field-value">Recognizes both as <b>Edema</b>（水腫） → Micro F1 +0.190</span></div>
+          <div class="cc-ex-field"><span class="cc-ex-field-label">RadGraph</span><span class="cc-ex-field-value">"edema"（水腫） ≠ "vascular congestion"（血管充血） as strings → no TP, counted as FP → F1 drops</span></div>
         </div>
       </div>
     </div>
@@ -243,11 +243,11 @@
 
         <div class="cc-example ex-blue">
           <div class="cc-ex-tag">Example</div>
-          <div class="cc-ex-field"><span class="cc-ex-field-label">GT</span><span class="cc-ex-field-value">"retrocardiac opacity"</span></div>
+          <div class="cc-ex-field"><span class="cc-ex-field-label">GT</span><span class="cc-ex-field-value">"retrocardiac opacity（心臟後方陰影）"</span></div>
           <div class="cc-ex-field"><span class="cc-ex-field-label">MedGemma</span><span class="cc-ex-field-value">Missed it (not mentioned)</span></div>
-          <div class="cc-ex-field"><span class="cc-ex-field-label">System</span><span class="cc-ex-field-value">Added it correctly, but also hallucinated "linear opacity suggestive of a scar"</span></div>
-          <div class="cc-ex-field"><span class="cc-ex-field-label">CheXBert</span><span class="cc-ex-field-value">Counts it as <b>Lung Opacity</b> TP → Micro F1 → 1.000</span></div>
-          <div class="cc-ex-field"><span class="cc-ex-field-label">GREEN</span><span class="cc-ex-field-value">Penalizes the hallucinated scar → GREEN −0.102</span></div>
+          <div class="cc-ex-field"><span class="cc-ex-field-label">System</span><span class="cc-ex-field-value">Added it correctly, but also hallucinated "linear opacity（線狀陰影） suggestive of a scar（疤痕）"</span></div>
+          <div class="cc-ex-field"><span class="cc-ex-field-label">CheXBert</span><span class="cc-ex-field-value">Counts it as <b>Lung Opacity</b>（肺部陰影） TP → Micro F1 → 1.000</span></div>
+          <div class="cc-ex-field"><span class="cc-ex-field-label">GREEN</span><span class="cc-ex-field-value">Penalizes the hallucinated scar（疤痕） → GREEN −0.102</span></div>
         </div>
       </div>
     </div>

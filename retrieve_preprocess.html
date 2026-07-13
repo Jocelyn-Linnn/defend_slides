@@ -34,6 +34,14 @@
       opacity: 0; animation: a-fade-in 0.7s ease 0.1s forwards;
     }
 
+    .h-title-row { display: flex; align-items: baseline; gap: 10px; }
+    .h-step {
+      font-size: 0.58rem; font-weight: 700; letter-spacing: 0.08em;
+      color: #4a6480; padding: 2px 8px; border-radius: 999px;
+      border: 1px solid rgba(96,165,250,0.25); background: rgba(96,165,250,0.06);
+      text-transform: uppercase; white-space: nowrap; flex-shrink: 0;
+    }
+
     .divider {
       position: absolute; left: 480px; top: 110px; bottom: 36px; width: 2px;
       background: linear-gradient(to bottom, transparent 0%, #152840 15%, #152840 85%, transparent 100%);
@@ -139,7 +147,10 @@
 
   <div class="header">
     <span class="h-kicker">Inference Time Pipeline</span>
-    <span class="h-title">Preprocess</span>
+    <div class="h-title-row">
+      <span class="h-title">Preprocess</span>
+      <span class="h-step">Step 3 / 7</span>
+    </div>
   </div>
   <div class="divider"></div>
 
@@ -186,7 +197,7 @@
         </div>
         <div class="why-box">
           <div class="why-title">Why</div>
-          <div class="why-text">Same Supernode text (e.g. "opacity") can carry <b>different presence states</b> — definitely-present vs. definitely-absent — and these map to <b>different SUGGESTIVE_OF paths</b> in the graph. The core node's text + feature pinpoints exactly which one to retrieve.</div>
+          <div class="why-text">So it can be paired with the correct component node during retrieval.</div>
         </div>
       </div>
     </div>
@@ -247,14 +258,17 @@
       <circle cx="215" cy="60" r="22" fill="#3d2012" stroke="#ea580c" stroke-width="2"/>
       <text x="215" y="56" fill="#c2410c" font-size="7" text-anchor="middle">opacities</text>
       <text x="215" y="66" fill="#ffedd5" font-size="7.5" font-weight="600" text-anchor="middle">OBS_DP</text>
+      <text x="215" y="76" fill="#e8895f" font-size="7" text-anchor="middle">陰影</text>
 
       <circle cx="400" cy="60" r="22" fill="#33291c" stroke="#c2a67f" stroke-width="2"/>
       <text x="400" y="56" fill="#9e8460" font-size="7" text-anchor="middle">lung</text>
       <text x="400" y="66" fill="#ebd6ba" font-size="7.5" font-weight="600" text-anchor="middle">ANAT</text>
+      <text x="400" y="76" fill="#c2a67f" font-size="7" text-anchor="middle">肺</text>
 
       <circle cx="578" cy="60" r="22" fill="#33291c" stroke="#c2a67f" stroke-width="2"/>
       <text x="578" y="56" fill="#9e8460" font-size="7" text-anchor="middle">left&lt;</text>
       <text x="578" y="66" fill="#ebd6ba" font-size="7.5" font-weight="600" text-anchor="middle">ANAT</text>
+      <text x="578" y="76" fill="#c2a67f" font-size="7" text-anchor="middle">左側</text>
 
       <g transform="translate(0, 44)">
       <!-- ═══════════ STEP 1: PREPROCESS ═══════════ -->
@@ -286,14 +300,17 @@
         <circle cx="185" cy="136" r="20" fill="#3d2012" stroke="#ea580c" stroke-width="1.8"/>
         <text x="185" y="132" fill="#c2410c" font-size="7" text-anchor="middle">opacity</text>
         <text x="185" y="142" fill="#ffedd5" font-size="7" font-weight="600" text-anchor="middle">OBS_DP_E</text>
+        <text x="185" y="152" fill="#e8895f" font-size="7" text-anchor="middle">陰影</text>
 
         <circle cx="370" cy="136" r="20" fill="#33291c" stroke="#c2a67f" stroke-width="1.8"/>
         <text x="370" y="132" fill="#9e8460" font-size="7" text-anchor="middle">lung</text>
         <text x="370" y="142" fill="#ebd6ba" font-size="7" font-weight="600" text-anchor="middle">ANAT_E</text>
+        <text x="370" y="152" fill="#c2a67f" font-size="7" text-anchor="middle">肺</text>
 
         <circle cx="560" cy="136" r="20" fill="#33291c" stroke="#c2a67f" stroke-width="1.8"/>
         <text x="560" y="132" fill="#9e8460" font-size="7" text-anchor="middle">left</text>
         <text x="560" y="142" fill="#ebd6ba" font-size="7" font-weight="600" text-anchor="middle">ANAT_M</text>
+        <text x="560" y="152" fill="#c2a67f" font-size="7" text-anchor="middle">左側</text>
       </g>
 
       <g transform="translate(0, -98)">
@@ -308,12 +325,14 @@
               letter-spacing="0.18em">BUILD SUPERNODES</text>
 
         <!-- single merged supernode (shifted left to make room for corenode) -->
-        <ellipse cx="280" cy="344" rx="100" ry="26"
+        <ellipse cx="280" cy="344" rx="100" ry="29"
                  fill="#140e00" stroke="#f59e0b" stroke-width="2"/>
         <text x="280" y="340" fill="#fbbf24" font-size="10"
               text-anchor="middle" font-weight="700">opacity · left · lung</text>
         <text x="280" y="353" fill="#d97706" font-size="9"
               text-anchor="middle">Supernode</text>
+        <text x="280" y="365" fill="#d9b877" font-size="10"
+              text-anchor="middle">左肺陰影</text>
       </g>
 
       <!-- ═══════════ STEP 3: IDENTIFY CORE NODE ═══════════ -->
@@ -329,6 +348,8 @@
               text-anchor="middle">opacity</text>
         <text x="540" y="353" fill="#818cf8" font-size="8" font-weight="700"
               text-anchor="middle">OBS-DP-E</text>
+        <text x="540" y="363" fill="#a5b4fc" font-size="9"
+              text-anchor="middle">陰影</text>
       </g>
 
       <!-- ═══════════ STEP 4: EMBED & EXPORT ═══════════ -->

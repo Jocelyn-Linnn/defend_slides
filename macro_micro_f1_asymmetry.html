@@ -26,6 +26,7 @@
       position: absolute; top: 0; left: 0; right: 0; height: 58px;
       display: flex; align-items: center; justify-content: center;
       border-bottom: 1px solid #0d1f38; z-index: 1;
+      opacity: 0; animation: a-in 0.5s ease forwards;
     }
     .h-title { font-size: 1rem; font-weight: 700; letter-spacing: 0.35em; text-transform: uppercase; color: #60a5fa; }
 
@@ -33,6 +34,7 @@
     .subtitle-bar {
       position: absolute; top: 58px; left: 0; right: 0; height: 50px;
       display: flex; align-items: center; justify-content: center;
+      opacity: 0; animation: a-in 0.5s ease 0.1s forwards;
     }
     .h-subtitle-box {
       display: inline-flex; align-items: center; gap: 9px;
@@ -51,76 +53,80 @@
       display: flex; flex-direction: column;
     }
 
-    .mm-row { flex: 1; display: flex; }
+    .mm-split { flex: 1; display: flex; min-height: 0; }
 
-    .mm-col {
-      flex: 1; position: relative; display: flex; flex-direction: column;
-      gap: 12px; padding: 26px 48px;
-      opacity: 0;
+    /* ── Left: text points ── */
+    .mm-left {
+      width: 460px; flex-shrink: 0;
+      border-right: 1px solid #0a1828;
+      display: flex; flex-direction: column; justify-content: center;
+      gap: 22px; padding: 24px 40px;
     }
-    .mm-col:first-child { border-right: 1px solid #0a1828; }
-    .mm-col.active { animation: a-in 0.6s ease forwards; }
 
-    .mm-num {
-      position: absolute; top: 18px; left: 50%; transform: translateX(-50%);
-      font-size: 4rem; font-weight: 800; line-height: 1; letter-spacing: -0.02em;
-      pointer-events: none; user-select: none;
+    .mm-point {
+      display: flex; align-items: flex-start; gap: 14px;
+      opacity: 0; transform: translateY(8px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
     }
-    .num-purple { color: rgba(139,92,246,0.08); }
-    .num-slate  { color: rgba(100,116,139,0.10); }
+    .mm-point.active { opacity: 1; transform: translateY(0); }
 
-    .mm-body { position: relative; display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 460px; margin: 0 auto; margin-top: 46px; }
-
-    .mm-tag { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #2c4a6e; text-align: center; }
-
-    /* Stat transition */
-    .mm-metric-name { font-size: 0.9rem; font-weight: 700; color: #e2e8f0; text-align: center; }
-    .mm-value-line { display: flex; align-items: baseline; justify-content: center; gap: 10px; }
-    .mm-value-from { font-size: 1.25rem; font-weight: 600; color: #475569; }
-    .mm-value-arrow { font-size: 1rem; color: #1a3356; }
-    .mm-value-to { font-size: 1.55rem; font-weight: 800; }
-    .val-purple { color: #a78bfa; }
-    .val-slate  { color: #94a3b8; }
-    .mm-delta { display: block; text-align: center; font-size: 0.72rem; font-weight: 700; margin-top: 2px; }
-    .delta-purple { color: #a78bfa; }
-    .delta-slate  { color: #64748b; }
-
-    .mm-divider { width: 100%; height: 1px; margin: 2px 0; }
-    .div-purple { background: linear-gradient(90deg, transparent, rgba(139,92,246,0.3), transparent); }
-    .div-slate  { background: linear-gradient(90deg, transparent, rgba(100,116,139,0.3), transparent); }
-
-    .mm-desc { font-size: 0.8rem; color: #94a3b8; line-height: 1.55; text-align: center; }
-    .mm-desc b { color: #cbd5e1; }
-
-    /* Mini table */
-    .mm-table-title { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #1e3a5f; margin-top: 2px; }
-    .mm-table { width: 100%; display: grid; grid-template-columns: 1fr auto 52px; column-gap: 12px; }
-    .mm-table-row { display: contents; }
-    .mm-table-row > * {
-      display: flex; align-items: center;
-      padding: 6px 0; border-bottom: 1px dashed #0d1f38;
-      font-size: 0.76rem;
+    .mm-pt-num {
+      flex-shrink: 0; width: 32px; height: 32px; border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.95rem; font-weight: 800; margin-top: 2px;
     }
-    .mm-table-row:last-child > * { border-bottom: none; }
-    .mm-cond { color: #94a3b8; }
-    .mm-cond .freq { color: #3c5878; font-size: 0.66rem; margin-left: 4px; }
-    .mm-vals { gap: 8px; white-space: nowrap; }
-    .mm-vals .from { color: #475569; font-size: 0.72rem; }
-    .mm-vals .arrow { color: #1a3356; font-size: 0.68rem; }
-    .mm-vals .to { color: #cbd5e1; font-size: 0.76rem; font-weight: 600; }
-    .mm-d { font-weight: 700; font-size: 0.72rem; text-align: right; justify-content: flex-end; }
-    .d-up { color: #4ade80; }
-    .d-down { color: #f87171; }
-    .d-flat { color: #64748b; }
+    .n-purple { background: rgba(167,139,250,0.12); color: #a78bfa; border: 1px solid rgba(167,139,250,0.3); }
+    .n-slate  { background: rgba(148,163,184,0.12); color: #94a3b8; border: 1px solid rgba(148,163,184,0.3); }
 
-    /* Callout strip */
-    .mm-callout {
-      width: 100%; padding: 9px 12px; border-radius: 8px; margin-top: 2px;
-      font-size: 0.74rem; line-height: 1.5;
+    .mm-pt-body { flex: 1; }
+    .mm-pt-title { font-size: 1rem; font-weight: 700; color: #e2e8f0; margin-bottom: 6px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+    .mm-pt-val { font-size: 0.82rem; font-weight: 600; color: #64748b; }
+    .mm-pt-val b { font-weight: 800; }
+    .n-purple ~ .mm-pt-body .mm-pt-val b, .mm-pt-title .val-purple { color: #a78bfa; }
+    .mm-pt-desc { font-size: 0.85rem; color: #94a3b8; line-height: 1.55; }
+    .mm-pt-desc b { color: #cbd5e1; }
+    .mm-pt-list { margin: 2px 0 0 0; padding-left: 1.1em; list-style: disc; }
+    .mm-pt-list li { font-size: 0.83rem; color: #94a3b8; line-height: 1.5; margin-bottom: 3px; }
+    .mm-pt-list li:last-child { margin-bottom: 0; }
+    .mm-pt-list b { color: #cbd5e1; }
+
+    /* ── Right: full Table 4.9 ── */
+    .mm-right {
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 20px 44px;
     }
-    .mm-callout.cal-purple { background: rgba(139,92,246,0.06); border: 1px solid rgba(139,92,246,0.16); color: #c4b5fd; }
-    .mm-callout.cal-slate  { background: rgba(100,116,139,0.06); border: 1px solid rgba(100,116,139,0.16); color: #94a3b8; }
-    .mm-callout b { color: #e2e8f0; }
+    .f1table-wrap { width: 100%; max-width: 720px; }
+    .f1table-title { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #2c4a6e; margin-bottom: 8px; text-align: center; }
+
+    table.f1table { width: 100%; border-collapse: collapse; }
+    .f1table thead th {
+      padding: 3px 8px 7px; text-align: right;
+      font-size: 0.6rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+      color: #2c4a6e; border-bottom: 1px solid #152840;
+    }
+    .f1table thead th:first-child { text-align: left; }
+    .f1table tbody td, .f1table tfoot td {
+      padding: 4.5px 8px; text-align: right; font-size: 0.72rem; color: #64748b;
+    }
+    .f1table tbody td:first-child, .f1table tfoot td:first-child { text-align: left; color: #94a3b8; }
+    .f1table tbody tr { border-bottom: 1px solid #0a1828; }
+    .f1table tfoot tr { border-top: 1.5px solid #152840; }
+    .f1table tfoot td { font-weight: 800; color: #cbd5e1; }
+    .f1table tfoot td:first-child { color: #dbeafe; }
+
+    .d-up   { color: #4ade80 !important; font-weight: 700; }
+    .d-down { color: #f87171 !important; font-weight: 700; }
+    .d-flat { color: #475569 !important; }
+
+    /* Row highlight boxes (per point step) */
+    .f1table tbody tr.hl-p1 td, .f1table tfoot tr.hl-p1 td {
+      outline: 1.5px solid rgba(167,139,250,0.55); outline-offset: -1px;
+      background: rgba(167,139,250,0.07); border-radius: 4px;
+    }
+    .f1table tbody tr.hl-p2 td, .f1table tfoot tr.hl-p2 td {
+      outline: 1.5px solid rgba(148,163,184,0.55); outline-offset: -1px;
+      background: rgba(148,163,184,0.07); border-radius: 4px;
+    }
 
     /* Bottom insight bar */
     .mm-insight {
@@ -188,83 +194,69 @@
 
   <div class="content">
 
-    <div class="mm-row">
+    <div class="mm-split">
 
-      <!-- Macro F1: equal-weighted, sensitive to rare conditions -->
-      <div class="mm-col m1">
-        <div class="mm-num num-purple">01</div>
-        <div class="mm-body">
-          <div class="mm-metric-name">CheXBert Macro F1</div>
-          <div class="mm-value-line">
-            <span class="mm-value-from">0.3442</span>
-            <span class="mm-value-arrow">→</span>
-            <span class="mm-value-to val-purple">0.3535</span>
+      <!-- LEFT: two points -->
+      <div class="mm-left">
+        <div class="mm-point p1">
+          <div class="mm-pt-num n-purple">01</div>
+          <div class="mm-pt-body">
+            <div class="mm-pt-title">CheXBert Macro F1 <span class="mm-pt-val">0.344 → 0.362 <b style="color:#a78bfa;">+0.018</b></span></div>
+            <ul class="mm-pt-list">
+              <li>Equal-weighted average across 14 conditions</li>
+              <li>Highly sensitive to rare-condition detectability</li>
+              <li>Top gains: <b>Fracture</b>, <b>Enlarged Cardiomediastinum</b>, <b>Pneumonia</b> — ~85% of total gain</li>
+            </ul>
           </div>
-          <span class="mm-delta delta-purple">+2.7%</span>
-
-          <div class="mm-divider div-purple"></div>
-
-          <div class="mm-desc"><b>Equal-weighted average</b> across 14 conditions — highly sensitive to rare-condition detectability</div>
-
-          <div class="mm-table-title">Top Contributors to the Gain</div>
-          <div class="mm-table">
-            <div class="mm-table-row">
-              <span class="mm-cond">Fracture<span class="freq">4.0%</span></span>
-              <span class="mm-vals"><span class="from">0.083</span><span class="arrow">→</span><span class="to">0.160</span></span>
-              <span class="mm-d d-up">+0.077</span>
-            </div>
-            <div class="mm-table-row">
-              <span class="mm-cond">Enlarged Cardiomediastinum<span class="freq">23.1%</span></span>
-              <span class="mm-vals"><span class="from">0.000</span><span class="arrow">→</span><span class="to">0.074</span></span>
-              <span class="mm-d d-up">+0.074</span>
-            </div>
-            <div class="mm-table-row">
-              <span class="mm-cond">Pneumonia<span class="freq">12.4%</span></span>
-              <span class="mm-vals"><span class="from">0.125</span><span class="arrow">→</span><span class="to">0.194</span></span>
-              <span class="mm-d d-up">+0.069</span>
-            </div>
+        </div>
+        <div class="mm-point p2">
+          <div class="mm-pt-num n-slate">02</div>
+          <div class="mm-pt-body">
+            <div class="mm-pt-title">CheXBert Micro F1 <span class="mm-pt-val">0.517 → 0.523 <b style="color:#94a3b8;">+0.007</b></span></div>
+            <ul class="mm-pt-list">
+              <li>TP / FP / FN summed globally across all conditions</li>
+              <li>Dominated by high-prevalence labels</li>
+              <li><b>Support Devices</b>, <b>Cardiomegaly</b>, <b>Pleural Effusion</b> already near-saturated — little room left to improve</li>
+            </ul>
           </div>
-
-          <div class="mm-callout cal-purple">These three rare conditions — nearly undetectable at baseline — together account for <b>~85%</b> of the total Macro F1 gain</div>
         </div>
       </div>
 
-      <!-- Micro F1: volume-weighted, dominated by high-frequency labels -->
-      <div class="mm-col m2">
-        <div class="mm-num num-slate">02</div>
-        <div class="mm-body">
-          <div class="mm-metric-name">CheXBert Micro F1</div>
-          <div class="mm-value-line">
-            <span class="mm-value-from">0.5179</span>
-            <span class="mm-value-arrow">→</span>
-            <span class="mm-value-to val-slate">0.5206</span>
-          </div>
-          <span class="mm-delta delta-slate">+0.5%</span>
-
-          <div class="mm-divider div-slate"></div>
-
-          <div class="mm-desc">TP / FP / FN <b>summed globally</b> across all conditions — the result is dominated by high-prevalence labels</div>
-
-          <div class="mm-table-title">High-Frequency Labels (Δ ≈ 0)</div>
-          <div class="mm-table">
-            <div class="mm-table-row">
-              <span class="mm-cond">Support Devices<span class="freq">36.7%</span></span>
-              <span class="mm-vals"><span class="from">0.771</span><span class="arrow">→</span><span class="to">0.777</span></span>
-              <span class="mm-d d-up">+0.006</span>
-            </div>
-            <div class="mm-table-row">
-              <span class="mm-cond">Cardiomegaly<span class="freq">35.9%</span></span>
-              <span class="mm-vals"><span class="from">0.682</span><span class="arrow">→</span><span class="to">0.678</span></span>
-              <span class="mm-d d-down">&minus;0.004</span>
-            </div>
-            <div class="mm-table-row">
-              <span class="mm-cond">Pleural Effusion<span class="freq">31.7%</span></span>
-              <span class="mm-vals"><span class="from">0.682</span><span class="arrow">→</span><span class="to">0.686</span></span>
-              <span class="mm-d d-flat">+0.004</span>
-            </div>
-          </div>
-
-          <div class="mm-callout cal-slate">These high-prevalence conditions already perform well at baseline, leaving <b>little room to improve</b> — capping the overall Micro F1 gain</div>
+      <!-- RIGHT: Table 4.9 -->
+      <div class="mm-right">
+        <div class="f1table-wrap">
+          <div class="f1table-title">Per-Condition CheXBert F1 Comparison (v4 vs. Baseline)</div>
+          <table class="f1table">
+            <thead>
+              <tr>
+                <th>Condition</th>
+                <th>GT %</th>
+                <th>Baseline F1</th>
+                <th>v4 F1</th>
+                <th>Δ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-cond="ecm"><td>Enlarged Cardiomediastinum</td><td>23.1%</td><td>0.000</td><td>0.074</td><td class="d-up">+0.074</td></tr>
+              <tr data-cond="pn"><td>Pneumonia</td><td>12.4%</td><td>0.125</td><td>0.194</td><td class="d-up">+0.069</td></tr>
+              <tr data-cond="fr"><td>Fracture</td><td>4.0%</td><td>0.083</td><td>0.160</td><td class="d-up">+0.077</td></tr>
+              <tr data-cond="cm"><td>Cardiomegaly</td><td>35.9%</td><td>0.682</td><td>0.678</td><td class="d-down">−0.004</td></tr>
+              <tr data-cond="pe"><td>Pleural Effusion</td><td>31.7%</td><td>0.682</td><td>0.686</td><td class="d-up">+0.004</td></tr>
+              <tr data-cond="sd"><td>Support Devices</td><td>36.7%</td><td>0.771</td><td>0.777</td><td class="d-up">+0.006</td></tr>
+              <tr><td>Lung Opacity</td><td>32.1%</td><td>0.423</td><td>0.451</td><td class="d-up">+0.028</td></tr>
+              <tr><td>Lung Lesion</td><td>7.2%</td><td>0.080</td><td>0.039</td><td class="d-down">−0.041</td></tr>
+              <tr><td>Edema</td><td>22.7%</td><td>0.587</td><td>0.593</td><td class="d-up">+0.006</td></tr>
+              <tr><td>Consolidation</td><td>9.0%</td><td>0.180</td><td>0.208</td><td class="d-up">+0.028</td></tr>
+              <tr><td>Atelectasis</td><td>28.3%</td><td>0.481</td><td>0.494</td><td class="d-up">+0.012</td></tr>
+              <tr><td>Pneumothorax</td><td>3.6%</td><td>0.240</td><td>0.240</td><td class="d-flat">±0.000</td></tr>
+              <tr><td>Pleural Other</td><td>4.0%</td><td>0.000</td><td>0.000</td><td class="d-flat">±0.000</td></tr>
+              <tr><td>No Finding</td><td>13.8%</td><td>0.479</td><td>0.479</td><td class="d-flat">±0.000</td></tr>
+            </tbody>
+            <tfoot>
+              <tr data-cond="macro"><td>Macro avg</td><td></td><td>0.344</td><td>0.362</td><td class="d-up">+0.018</td></tr>
+              <tr data-cond="micro"><td>Micro avg</td><td></td><td>0.517</td><td>0.523</td><td class="d-up">+0.007</td></tr>
+            </tfoot>
+          </table>
         </div>
       </div>
 
@@ -276,7 +268,7 @@
           <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
         </svg>
       </div>
-      <div class="mm-i-text">Correction gains are <b>concentrated in rare conditions the baseline could barely detect</b> — not the clinically core, high-frequency ones. For a system aiming at balanced detection across all disease categories, the Macro F1 improvement is the more meaningful signal.</div>
+      <div class="mm-i-text">Gains are <b>concentrated in rare conditions</b>, not high-frequency ones — making <b>Macro F1</b> the more meaningful signal here.</div>
     </div>
 
   </div>
@@ -286,12 +278,25 @@
   import { initSlideController } from './tool/slide-controller.js';
   import './tool/slide-scale.js';
 
-  const steps = [['.m1'], ['.m2'], ['.ins']];
+  const steps = [['.p1'], ['.p2'], ['.ins']];
+  const p1Rows = ['fr', 'ecm', 'pn', 'macro'];
+  const p2Rows = ['sd', 'cm', 'pe', 'micro'];
+
+  function clearRowHighlights() {
+    document.querySelectorAll('.f1table tr[data-cond]').forEach(tr => tr.classList.remove('hl-p1', 'hl-p2'));
+  }
 
   function updateSlide(step) {
     steps.flat().forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.remove('active')));
     for (let i = 0; i < step; i++) {
       if (steps[i]) steps[i].forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.add('active')));
+    }
+
+    clearRowHighlights();
+    if (step === 1) {
+      p1Rows.forEach(c => document.querySelector('.f1table tr[data-cond="' + c + '"]').classList.add('hl-p1'));
+    } else if (step >= 2) {
+      p2Rows.forEach(c => document.querySelector('.f1table tr[data-cond="' + c + '"]').classList.add('hl-p2'));
     }
   }
 

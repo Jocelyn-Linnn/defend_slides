@@ -22,7 +22,7 @@
       background-size: 64px 64px; pointer-events: none;
     }
 
-    .header { position: absolute; top: 0; left: 0; right: 0; height: 58px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #0d1f38; z-index: 1; }
+    .header { position: absolute; top: 0; left: 0; right: 0; height: 58px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #0d1f38; z-index: 1; opacity: 0; animation: a-in 0.45s ease forwards; }
     .h-title { font-size: 1rem; font-weight: 700; letter-spacing: 0.35em; text-transform: uppercase; color: #60a5fa; }
 
     .content { position: absolute; top: 58px; left: 0; right: 0; bottom: 0; display: flex; }
@@ -242,23 +242,14 @@
   import { initSlideController } from './tool/slide-controller.js';
   import './tool/slide-scale.js';
 
-  const steps = [
-    ['.row-baseline'],
-    ['.row-v1'],
-    ['.row-v2'],
-    ['.row-v3'],
-    ['.row-v4', '.fb'],
-  ];
+  const allSelectors = ['.row-baseline', '.row-v1', '.row-v2', '.row-v3', '.row-v4', '.fb'];
 
-  function updateSlide(step) {
-    steps.flat().forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.remove('active')));
-    for (let i = 0; i < step; i++) {
-      if (steps[i]) steps[i].forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.add('active')));
-    }
+  function updateSlide() {
+    allSelectors.forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.add('active')));
   }
 
   initSlideController({
-    maxSteps: steps.length,
+    maxSteps: 0,
     nextSlideUrl: 'results.html',
     prevSlideUrl: 'evaluation_metrics.html',
     onUpdate: updateSlide
