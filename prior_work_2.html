@@ -29,7 +29,7 @@
 
     /* ── Left: VLMs ── */
     .left-col { width: 680px; display: flex; flex-direction: column; justify-content: center; padding: 18px 20px 18px 108px; gap: 16px; }
-    .col-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: #3b82f6; }
+    .col-label { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: #3b82f6; }
 
     .vlm-list { position: relative; display: flex; flex-direction: column; gap: 26px; }
     .vlm-list::before {
@@ -44,7 +44,7 @@
     .vlm-item { position: relative; z-index: 1; display: flex; align-items: flex-start; gap: 18px; opacity: 0; }
     .vlm-item.active { animation: a-in 0.5s ease forwards; }
 
-    .vlm-year { width: 56px; height: 36px; border-radius: 9px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 800; letter-spacing: 0.02em; margin-top: 2px; }
+    .vlm-year { width: 62px; height: 40px; border-radius: 9px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.92rem; font-weight: 800; letter-spacing: 0.02em; margin-top: 2px; }
     .b-blue   { background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.24); color: #3b82f6; }
     .b-indigo { background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.24); color: #818cf8; }
     .b-violet { background: rgba(139,92,246,0.12); border: 1px solid rgba(139,92,246,0.24); color: #a78bfa; }
@@ -52,8 +52,8 @@
     .b-emerald { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.24); color: #34d399; }
 
     .vlm-body { display: flex; flex-direction: column; gap: 4px; }
-    .vlm-name { font-size: 1.02rem; font-weight: 700; color: #cbd5e1; }
-    .vlm-source { font-size: 0.82rem; color: #94a3b8; }
+    .vlm-name { font-size: 1.18rem; font-weight: 700; color: #cbd5e1; }
+    .vlm-source { font-size: 0.94rem; color: #94a3b8; }
 
     /* ── Divider ── */
     .v-div { width: 1px; align-self: stretch; margin: 26px 0; background: linear-gradient(to bottom, transparent 0%, #152840 15%, #152840 85%, transparent 100%); }
@@ -64,10 +64,10 @@
 
     .rh { display: flex; align-items: center; gap: 10px; padding-bottom: 11px; border-bottom: 1px solid #0d1f38; }
     .rh-icon { width: 34px; height: 34px; border-radius: 7px; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.18); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .rh-text { font-size: 1.02rem; font-weight: 700; color: #cbd5e1; }
+    .rh-text { font-size: 1.18rem; font-weight: 700; color: #cbd5e1; }
 
     .iss-group { display: flex; flex-direction: column; gap: 5px; }
-    .iss-gtitle { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; }
+    .iss-gtitle { font-size: 0.84rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; }
     .gt-amber { color: #d97706; }
     .gt-red   { color: #dc2626; }
 
@@ -76,11 +76,11 @@
     .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
     .d-amber { background: #78350f; }
     .d-red   { background: #7f1d1d; }
-    .bl-text { font-size: 0.82rem; color: #94a3b8; line-height: 1.5; }
+    .bl-text { font-size: 0.94rem; color: #94a3b8; line-height: 1.5; }
     .bl-text b { color: #cbd5e1; }
 
     .root-note { display: flex; align-items: flex-start; gap: 9px; padding: 9px 12px; border-radius: 7px; background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.1); }
-    .root-text { font-size: 0.8rem; color: #94a3b8; line-height: 1.5; }
+    .root-text { font-size: 0.92rem; color: #94a3b8; line-height: 1.5; }
     .root-text b { color: #f87171; }
 
     @keyframes a-in {
@@ -214,7 +214,7 @@
   import { initSlideController } from './tool/slide-controller.js';
   import './tool/slide-scale.js';
 
-  const steps = [['.i1'], ['.i2'], ['.i3'], ['.i4'], ['.i5'], ['.rc']];
+  const steps = [['.i1', '.i2', '.i3', '.i4', '.i5'], ['.rc']];
 
   function updateSlide(step) {
     steps.flat().forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.remove('active')));

@@ -57,14 +57,14 @@
       width: 600px;
       display: flex; flex-direction: column;
       align-items: flex-start; justify-content: center;
-      padding: 90px 60px 36px;
+      padding: 92px 60px 24px;
     }
 
     /* Step row */
-    .step-box { opacity: 0; width: 100%; transform: translateY(8px); margin-bottom: 8px; transition: all 0.5s ease; }
+    .step-box { opacity: 0; width: 100%; transform: translateY(8px); margin-bottom: 4px; transition: all 0.5s ease; }
     .step-box.active { opacity: 1; transform: translateY(0); }
 
-    .step { display: flex; align-items: center; margin-bottom: 6px; width: 100%; }
+    .step { display: flex; align-items: center; margin-bottom: 3px; width: 100%; }
 
     .step-num {
       width: 34px; height: 34px; border-radius: 50%;
@@ -82,11 +82,19 @@
 
     .step-sub { font-size: 0.85rem; color: #4e729a; }
 
-    .step-rationale { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
+    .step-rationale { display: flex; flex-direction: column; gap: 2px; margin-top: 5px; }
     .sr-item { display: flex; align-items: flex-start; gap: 7px; }
     .sr-dot { width: 4px; height: 4px; border-radius: 50%; background: #0b5137; flex-shrink: 0; margin-top: 6px; }
     .sr-text { font-size: 0.8rem; color: #5b7a8f; line-height: 1.5; }
     .sr-text b { color: #6ee7b7; }
+
+    .why-box {
+      margin-top: 6px; padding: 7px 12px; border-radius: 7px;
+      background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.22);
+      display: flex; flex-direction: column; gap: 3px;
+    }
+    .why-line { font-size: 0.78rem; color: #5b7a8f; line-height: 1.5; }
+    .why-line b { color: #6ee7b7; }
 
     .step-example {
       font-family: 'Consolas', 'Monaco', monospace;
@@ -102,7 +110,7 @@
     .del { color: #ef4444; }
 
     /* Separator */
-    .sep { width: 100%; height: 1px; background: linear-gradient(to right, #0d2040, transparent); margin: 16px 0; opacity: 0; transition: opacity 0.3s ease; }
+    .sep { width: 100%; height: 1px; background: linear-gradient(to right, #0d2040, transparent); margin: 8px 0; opacity: 0; transition: opacity 0.3s ease; }
     .sep.active { opacity: 1; }
 
     /* ── RIGHT PANEL ── */
@@ -187,7 +195,7 @@
     <span class="h-kicker">Build Radiology Association Graph</span>
     <div class="h-title-row">
       <span class="h-title">Token Preprocessing</span>
-      <span class="h-step">Step 2 / 9</span>
+      <span class="h-step">Step 2 / 8</span>
     </div>
   </div>
 
@@ -215,7 +223,7 @@
           <div class="step-sub">Regex rules</div>
         </div>
       </div>
-      <div style="margin-left:52px; margin-top:14px;">
+      <div style="margin-left:52px; margin-top:8px;">
         <div class="step-example">
           "42" &nbsp;&nbsp;&nbsp;&nbsp;<span class="arr">→</span> <span class="del">✗ pure number</span><br>
           "3:13am" <span class="arr">→</span> <span class="del">✗ time expression</span>
@@ -233,7 +241,7 @@
           <div class="step-sub">LLM-curated spelling-variant table</div>
         </div>
       </div>
-      <div style="margin-left:52px; margin-top:14px;">
+      <div style="margin-left:52px; margin-top:8px;">
         <div class="step-example">
           "emphysem" / "ephysema" <span class="arr">→</span> emphysema（肺氣腫）<br>
           "medistinum" &nbsp;&nbsp;&nbsp;<span class="arr">→</span> mediastinum（縱膈）
@@ -250,8 +258,15 @@
           <div class="step-title" style="color:#34d399;">Embedding merge</div>
           <div class="step-sub">SapBERT · cosine sim ≥ 0.85</div>
           <div class="step-rationale">
-            <div class="sr-item"><div class="sr-dot"></div><span class="sr-text"><b>Why SapBERT</b> — UMLS-pretrained (4M+ biomedical concepts), built for short-text entity matching; fits RadGraph's word-level tokens better than long-text Clinical-BigBird</span></div>
-            <div class="sr-item"><div class="sr-dot"></div><span class="sr-text"><b>Why 0.85</b> — tuned empirically to balance under- vs. over-merging (e.g. atelectasis（肺不張）0.984, opacity（陰影）0.966 → correctly merged)</span></div>
+            <div class="sr-item"><div class="sr-dot"></div><span class="sr-text">Low-freq tokens (<b>count &lt; 10</b>) merged into high-freq targets (<b>count ≥ 10</b>)</span></div>
+            <div class="sr-item"><div class="sr-dot"></div><span class="sr-text"><b>About SapBERT</b></span></div>
+            <div class="sr-item" style="margin-left:18px;"><span class="sr-text">Cambridge University, 2021</span></div>
+            <div class="sr-item" style="margin-left:18px;"><span class="sr-text">BERT-base, built on PubMedBERT</span></div>
+            <div class="sr-item" style="margin-left:18px;"><span class="sr-text">Data: UMLS synonym dictionary</span></div>
+            <div class="why-box">
+              <div class="why-line"><b>Why 10?</b> Below it, context too sparse (&lt;0.005% of reports) for reliable stats</div>
+              <div class="why-line"><b>Why 0.85?</b> Balances under- vs. over-merging</div>
+            </div>
           </div>
         </div>
       </div>

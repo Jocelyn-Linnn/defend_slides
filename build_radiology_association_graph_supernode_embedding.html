@@ -136,7 +136,7 @@
     <span class="h-kicker">Build Radiology Association Graph</span>
     <div class="h-title-row">
       <span class="h-title">Supernode Embedding</span>
-      <span class="h-step">Step 6 / 9</span>
+      <span class="h-step">Step 6 / 8</span>
     </div>
   </div>
   <div class="divider"></div>
@@ -147,12 +147,14 @@
       <div class="step-num" style="background:#0c2a4a;border:2px solid #3b82f6;color:#60a5fa;">1</div>
       <div class="step-body">
         <div class="step-title" style="color:#60a5fa;">Clinical-BigBird Encoding</div>
-        <div class="step-desc">Pass the supernode text content to Clinical-BigBird to compute high-dimensional domain-specific medical text representations.</div>
+        <div class="step-desc">Encode supernode text into a domain-specific embedding via Clinical-BigBird.</div>
         <div class="weight-rationale">
-          <span class="weight-rationale-text"><b>Why Clinical-BigBird</b></span>
+          <span class="weight-rationale-text"><b>About Clinical-BigBird</b></span>
           <ul class="rationale-list">
-            <li>Long-sequence handling — supernode text concatenates multiple entity tokens</li>
-            <li>Clinical-domain pretraining — captures compound medical concept semantics</li>
+            <li>Northwestern University, 2022</li>
+            <li>BigBird base — sparse-attention, long-sequence</li>
+            <li>Trained on MIMIC-III notes</li>
+            <li>Fits long supernode text</li>
           </ul>
         </div>
       </div>

@@ -36,14 +36,14 @@
     }
 
     .divider {
-      position: absolute; left: 640px; top: 102px; bottom: 40px; width: 1px;
+      position: absolute; left: 580px; top: 102px; bottom: 40px; width: 1px;
       background: linear-gradient(to bottom, transparent 0%, #152840 15%, #152840 85%, transparent 100%);
     }
 
     .panel-left {
-      width: 640px; display: flex; flex-direction: column;
+      width: 580px; display: flex; flex-direction: column;
       align-items: flex-start; justify-content: center;
-      padding: 102px 60px 40px;
+      padding: 102px 48px 40px;
     }
 
     /* 將 CSS 動畫改為平滑的 CSS Transition 以利於雙向切換控制 */
@@ -75,9 +75,9 @@
     .sep.active { opacity: 1; }
 
     .panel-right {
-      width: 640px; display: flex; flex-direction: column;
+      width: 700px; display: flex; flex-direction: column;
       align-items: center; justify-content: center;
-      padding: 102px 20px 40px;
+      padding: 94px 4px 10px;
     }
     .right-svg {
       opacity: 0; transform: scale(0.85);
@@ -138,7 +138,7 @@
     <span class="h-kicker">Build Radiology Association Graph</span>
     <div class="h-title-row">
       <span class="h-title">Node Deduplication</span>
-      <span class="h-step">Step 4 / 9</span>
+      <span class="h-step">Step 4 / 8</span>
     </div>
   </div>
 
@@ -182,15 +182,12 @@
       <div class="step-num" style="background:#0b2619;border:1.5px solid #10b981;color:#34d399;">3</div>
       <div class="step-body">
         <div class="step-title" style="color:#34d399;">Deduplicate Relations</div>
-        <div class="step-sub">Identical (src, rel_type, dst) triplets are merged into a single edge.</div>
       </div>
-    </div>
-    <div style="margin-left:50px;width:calc(100% - 50px);">
     </div>
   </div>
 
   <div class="panel-right">
-    <svg width="560" height="500" viewBox="0 0 560 500" fill="none" class="right-svg">
+    <svg width="690" height="616" viewBox="0 0 560 500" fill="none" class="right-svg">
       <defs>
         <marker id="arr-purple" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
           <path d="M0,2 L8,5 L0,8 Z" fill="#a78bfa"/>

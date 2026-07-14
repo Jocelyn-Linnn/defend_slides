@@ -70,7 +70,7 @@
       letter-spacing: 0.22em;
       text-transform: uppercase;
       color: #2c4a6e;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
 
     /* 手動觸發類別 (.active) */
@@ -127,12 +127,12 @@
 
     /* Left Graph Bottom Legend Grid */
     .left-legend {
-      width: 460px;
-      margin-top: 4px;
+      width: 500px;
+      margin-top: 2px;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px 16px;
-      padding: 10px 14px;
+      gap: 8px 16px;
+      padding: 8px 12px;
       background: rgba(10, 25, 47, 0.4);
       border: 1px solid #0f2440;
       border-radius: 6px;
@@ -149,7 +149,7 @@
     }
 
     .leg-group-title {
-      font-size: 0.58rem;
+      font-size: 0.68rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.1em;
@@ -163,9 +163,10 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      font-size: 0.6rem;
+      font-size: 0.74rem;
       letter-spacing: 0.05em;
       color: #4f6e91;
+      white-space: nowrap;
     }
 
     .leg-title-bold {
@@ -174,15 +175,15 @@
     }
 
     .leg-dot {
-      width: 7px;
-      height: 7px;
+      width: 8.5px;
+      height: 8.5px;
       border-radius: 50%;
       flex-shrink: 0;
     }
 
     .leg-line {
-      width: 14px;
-      height: 2px;
+      width: 16px;
+      height: 2.3px;
       flex-shrink: 0;
     }
 
@@ -274,9 +275,9 @@
       retrocardiac（心臟後方）consolidation（實變）<br>likely reflecting partial lower lobe（肺葉）collapse（塌陷）
     </div>
 
-    <div class="a-larr" style="color:#3b82f6;font-size:1.5rem;line-height:1;margin:8px 0;">↓</div>
+    <div class="a-larr" style="color:#3b82f6;font-size:1.5rem;line-height:1;margin:4px 0;">↓</div>
 
-    <svg width="460" height="360" viewBox="0 0 460 360" fill="none" class="a-lgraph">
+    <svg width="540" height="422" viewBox="0 0 460 360" fill="none" class="a-lgraph">
       <defs>
         <marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
           <path d="M0,2 L8,5 L0,8 Z" fill="#3b82f6" opacity="0.8"/>
@@ -303,53 +304,53 @@
       <g class="gn1">
         <circle cx="160" cy="40" r="28" fill="#33291c" stroke="#c2a67f" stroke-width="2"/>
         <text x="160" y="37" fill="#ebd6ba" font-size="9" font-weight="600" text-anchor="middle">retrocardiac</text>
-        <text x="160" y="48" fill="#9e8460" font-size="7.5" text-anchor="middle">ANAT-DP</text>
-        <text x="160" y="59" fill="#94a3b8" font-size="9" text-anchor="middle">心臟後方</text>
+        <text x="160" y="48" fill="#94a3b8" font-size="9" text-anchor="middle">心臟後方</text>
+        <text x="160" y="59" fill="#9e8460" font-size="7.5" text-anchor="middle">ANAT-DP</text>
       </g>
 
       <g class="gn2">
         <circle cx="75" cy="165" r="28" fill="#3d2012" stroke="#ea580c" stroke-width="2"/>
         <text x="75" y="162" fill="#ffedd5" font-size="9" font-weight="600" text-anchor="middle">consolidation</text>
-        <text x="75" y="173" fill="#c2410c" font-size="7.5" text-anchor="middle">OBS-DP</text>
-        <text x="75" y="184" fill="#94a3b8" font-size="9" text-anchor="middle">實變</text>
+        <text x="75" y="173" fill="#94a3b8" font-size="9" text-anchor="middle">實變</text>
+        <text x="75" y="184" fill="#c2410c" font-size="7.5" text-anchor="middle">OBS-DP</text>
       </g>
 
       <g class="gn3">
         <circle cx="165" cy="275" r="28" fill="#132d42" stroke="#38bdf8" stroke-width="2"/>
         <text x="165" y="272" fill="#e0f2fe" font-size="9" font-weight="600" text-anchor="middle">collapse</text>
-        <text x="165" y="283" fill="#0284c7" font-size="7.5" text-anchor="middle">OBS-U</text>
-        <text x="165" y="294" fill="#94a3b8" font-size="9" text-anchor="middle">塌陷</text>
+        <text x="165" y="283" fill="#94a3b8" font-size="9" text-anchor="middle">塌陷</text>
+        <text x="165" y="294" fill="#0284c7" font-size="7.5" text-anchor="middle">OBS-U</text>
       </g>
 
       <g class="gn4">
         <circle cx="265" cy="325" r="28" fill="#132d42" stroke="#38bdf8" stroke-width="2"/>
         <text x="265" y="322" fill="#e0f2fe" font-size="9" font-weight="600" text-anchor="middle">partial</text>
-        <text x="265" y="333" fill="#0284c7" font-size="7.5" text-anchor="middle">OBS-U</text>
-        <text x="265" y="344" fill="#94a3b8" font-size="9" text-anchor="middle">部分性</text>
+        <text x="265" y="333" fill="#94a3b8" font-size="9" text-anchor="middle">部分性</text>
+        <text x="265" y="344" fill="#0284c7" font-size="7.5" text-anchor="middle">OBS-U</text>
       </g>
 
       <g class="gn5">
         <circle cx="285" cy="195" r="28" fill="#33291c" stroke="#c2a67f" stroke-width="2"/>
         <text x="285" y="192" fill="#ebd6ba" font-size="9" font-weight="600" text-anchor="middle">lobe</text>
-        <text x="285" y="203" fill="#9e8460" font-size="7.5" text-anchor="middle">ANAT-DP</text>
-        <text x="285" y="214" fill="#94a3b8" font-size="9" text-anchor="middle">肺葉</text>
+        <text x="285" y="203" fill="#94a3b8" font-size="9" text-anchor="middle">肺葉</text>
+        <text x="285" y="214" fill="#9e8460" font-size="7.5" text-anchor="middle">ANAT-DP</text>
       </g>
 
       <g class="gn6">
         <circle cx="395" cy="135" r="28" fill="#33291c" stroke="#c2a67f" stroke-width="2"/>
         <text x="395" y="132" fill="#ebd6ba" font-size="9" font-weight="600" text-anchor="middle">lower</text>
-        <text x="395" y="143" fill="#9e8460" font-size="7.5" text-anchor="middle">ANAT-DP</text>
-        <text x="395" y="154" fill="#94a3b8" font-size="9" text-anchor="middle">下方</text>
+        <text x="395" y="143" fill="#94a3b8" font-size="9" text-anchor="middle">下方</text>
+        <text x="395" y="154" fill="#9e8460" font-size="7.5" text-anchor="middle">ANAT-DP</text>
       </g>
     </svg>
 
     <div class="left-legend legend">
       <div class="leg-group">
         <span class="leg-group-title">Nodes</span>
-        <div class="leg-item"><div class="leg-dot" style="background:#ea580c;"></div><span class="leg-title-bold">OBS-DP</span>: observation definitely present</div>
-        <div class="leg-item"><div class="leg-dot" style="background:#ef4444;"></div><span class="leg-title-bold">OBS-A</span>: observation definitely absent</div>
-        <div class="leg-item"><div class="leg-dot" style="background:#38bdf8;"></div><span class="leg-title-bold">OBS-U</span>: observation uncertain</div>
-        <div class="leg-item"><div class="leg-dot" style="background:#c2a67f;"></div><span class="leg-title-bold">ANAT-DP</span>: anatomy present</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#ea580c;"></div><span class="leg-title-bold">OBS-DP</span>: present</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#ef4444;"></div><span class="leg-title-bold">OBS-DA</span>: absent</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#38bdf8;"></div><span class="leg-title-bold">OBS-U</span>: uncertain</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#c2a67f;"></div><span class="leg-title-bold">ANAT-DP</span>: present</div>
       </div>
       <div class="leg-group">
         <span class="leg-group-title">Relations</span>
@@ -480,7 +481,7 @@
   initSlideController({
     maxSteps: steps.length, // 總共有 4 步
     nextSlideUrl: 'methodology.html',
-    prevSlideUrl: 'prior_work_3.html',
+    prevSlideUrl: 'prior_work_graph_solution.html',
     onUpdate: updateSlide
   });
 </script>

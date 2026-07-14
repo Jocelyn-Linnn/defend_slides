@@ -20,6 +20,7 @@ export const slideOrder = [
   'prior_work_1.html',
   'prior_work_2.html',
   'prior_work_3.html',
+  'prior_work_graph_solution.html',
   'prior_work_4.html',
   'methodology.html',
   'system_design_motivation.html',

@@ -144,7 +144,7 @@
     <span class="h-kicker">Build Radiology Association Graph</span>
     <div class="h-title-row">
       <span class="h-title">Question Generation</span>
-      <span class="h-step">Step 8 / 9</span>
+      <span class="h-step">Step 8 / 8</span>
     </div>
   </div>
   <div class="divider"></div>
@@ -155,13 +155,13 @@
       <div class="step-num" style="background:#1a1100;border:2px solid #f59e0b;color:#fbbf24;">1</div>
       <div class="step-body">
         <div class="step-title" style="color:#fbbf24;">GPT-4o mini Generation</div>
-        <div class="step-desc">Pass the supernode text content to GPT-4o mini, and use the adjusted prompt to request the model to convert the text into a question.</div>
+        <div class="step-desc">Convert supernode text into a question via GPT-4o mini, using a tailored prompt.</div>
         <div class="prompt-box">
           <span class="prompt-box-text"><b>Prompt</b></span>
           <ul class="prompt-list">
-            <li><b>Role:</b> thoracic（胸部）radiologist</li>
-            <li><b>Task:</b> convert the text into an open question — "Do you see...", "Do you observe...", or "Can you identify...?"</li>
-            <li><b>Preserve:</b> modifiers, severity, anatomical location</li>
+            <li><b>Role:</b> thoracic radiologist</li>
+            <li><b>Task:</b> rephrase as an open question (e.g. "Do you observe...?")</li>
+            <li><b>Preserve:</b> modifiers, severity, location</li>
           </ul>
         </div>
       </div>
