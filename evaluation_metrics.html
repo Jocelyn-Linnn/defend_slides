@@ -97,6 +97,18 @@
 
     .mc-full { font-size: 0.78rem; color: #64748b; font-weight: 500; line-height: 1.65; text-align: center; }
 
+    .mc-formula {
+      width: 100%; margin-top: 4px; padding-top: 12px;
+      border-top: 1px solid rgba(16,185,129,0.14);
+      display: flex; flex-direction: column; align-items: center; gap: 5px;
+      font-family: Consolas, Monaco, monospace; font-size: 0.66rem;
+      color: #6ee7b7; text-align: center;
+    }
+    .frac-label { font-weight: 700; }
+    .fraction { display: flex; flex-direction: column; align-items: center; width: 100%; }
+    .frac-num, .frac-den { line-height: 1.4; }
+    .frac-line { width: 100%; height: 1px; background: #6ee7b7; margin: 3px 0; }
+
     /* ── Sub-metric rows (Macro / Micro F1) ── */
     .mc-metrics {
       display: flex; flex-direction: column; gap: 10px; width: 100%;
@@ -208,6 +220,14 @@
         <div class="mc-name">GREEN</div>
         <div class="mc-divider div-green"></div>
         <div class="mc-full">Generative Radiology Report<br>Evaluation &amp; Error Notation</div>
+        <div class="mc-formula">
+          <span class="frac-label">GREEN =</span>
+          <div class="fraction">
+            <div class="frac-num">correct findings</div>
+            <div class="frac-line"></div>
+            <div class="frac-den">correct findings + Σ clinical errors</div>
+          </div>
+        </div>
       </div>
     </div>
 

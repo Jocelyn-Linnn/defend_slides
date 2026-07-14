@@ -279,6 +279,12 @@
               text-anchor="middle">OBS-DP-E</text>
         <text x="590" y="195" fill="#5eead4" font-size="9.5"
               text-anchor="middle">陰影</text>
+
+        <!-- DB box around supernodes + DB Entity -->
+        <rect x="393" y="40" width="384" height="178" rx="8"
+              fill="none" stroke="#334155" stroke-width="1.5" stroke-dasharray="6 3"/>
+        <text x="772" y="37" fill="#475569" font-size="8.5" font-weight="700"
+              letter-spacing="0.12em" text-anchor="end">DATABASE</text>
       </g>
 
       <!-- ═══════════════════════════════════════════════
@@ -296,27 +302,17 @@
       </g>
 
       <!-- ═══════════════════════════════════════════════
-           STEP 2 GROUP — embedding similarity match
+           STEP 2 GROUP — expand PART_OF: which supernodes does the
+           matched Component node belong to
       ═══════════════════════════════════════════════ -->
-      <g id="g-step2" class="svg-group">
-        <!-- Arrow from query pill → DB pill -->
-        <line x1="220" y1="77" x2="400" y2="77"
-              stroke="#f59e0b" stroke-width="2" stroke-opacity="0.85"
-              marker-end="url(#arr-amber)"/>
-        <!-- sim label -->
-        <text x="310" y="67" fill="#fbbf24" font-size="10" font-weight="700"
-              text-anchor="middle">sim = 0.97 ✓</text>
-        <!-- DB box -->
-        <rect x="393" y="40" width="384" height="178" rx="8"
-              fill="none" stroke="#334155" stroke-width="1.5" stroke-dasharray="6 3"/>
-        <text x="772" y="37" fill="#475569" font-size="8.5" font-weight="700"
-              letter-spacing="0.12em" text-anchor="end">DATABASE</text>
+      <g id="g-partof" class="svg-group">
         <!-- PART_OF: DB Entity → DB Supernode "opacity lung" -->
         <line x1="572" y1="156" x2="500" y2="113"
               stroke="#14b8a6" stroke-width="1.5" stroke-dasharray="4 3" stroke-opacity="0.8"
               marker-end="url(#arr-teal-sm)"/>
-        <text x="530" y="125" fill="#14b8a6" font-size="8" font-weight="600"
+        <text x="530" y="139" fill="#14b8a6" font-size="8" font-weight="600"
               text-anchor="middle">PART_OF</text>
+
         <!-- DB Supernode pill — pleural opacity -->
         <rect x="600" y="52" width="175" height="58" rx="29"
               fill="#0d1c1a" stroke="#14b8a6" stroke-width="2.5"/>
@@ -326,12 +322,27 @@
               text-anchor="middle" font-family="Consolas,Monaco,monospace">"pleural opacity"</text>
         <text x="688" y="104" fill="#5fb5a5" font-size="11"
               text-anchor="middle">肋膜陰影</text>
+
         <!-- PART_OF: DB Entity → rejected supernode -->
         <line x1="608" y1="157" x2="688" y2="110"
               stroke="#14b8a6" stroke-width="1.5" stroke-dasharray="4 3" stroke-opacity="0.6"
               marker-end="url(#arr-teal-sm)"/>
-        <text x="656" y="126" fill="#14b8a6" font-size="8" font-weight="600"
+        <text x="656" y="140" fill="#14b8a6" font-size="8" font-weight="600"
               text-anchor="start">PART_OF</text>
+      </g>
+
+      <!-- ═══════════════════════════════════════════════
+           STEP 3 GROUP — embedding similarity match
+      ═══════════════════════════════════════════════ -->
+      <g id="g-embed" class="svg-group">
+        <!-- Arrow from query pill → DB pill -->
+        <line x1="220" y1="77" x2="400" y2="77"
+              stroke="#f59e0b" stroke-width="2" stroke-opacity="0.85"
+              marker-end="url(#arr-amber)"/>
+        <!-- sim label -->
+        <text x="310" y="67" fill="#fbbf24" font-size="10" font-weight="700"
+              text-anchor="middle">sim = 0.97 ✓</text>
+
         <!-- arch from query → rejected supernode -->
         <path d="M 125 52 C 125 20 688 20 688 52"
               stroke="#ef4444" stroke-width="1.5" stroke-dasharray="5 3"
@@ -564,12 +575,13 @@
     if (step >= 2) {
       document.getElementById('sep1').classList.add('active');
       document.getElementById('step2').classList.add('active');
+      document.getElementById('g-opacity-lung').classList.add('active');
+      document.getElementById('g-partof').classList.add('active');
     }
     if (step >= 3) {
       document.getElementById('sep2').classList.add('active');
       document.getElementById('step3').classList.add('active');
-      document.getElementById('g-step2').classList.add('active');
-      document.getElementById('g-opacity-lung').classList.add('active');
+      document.getElementById('g-embed').classList.add('active');
     }
   }
 

@@ -66,13 +66,13 @@
 
     .cc-transition { display: flex; align-items: center; gap: 6px; }
     .vchip {
-      font-size: 0.74rem; font-weight: 700; padding: 2px 9px; border-radius: 5px;
+      font-size: 0.86rem; font-weight: 700; padding: 2px 9px; border-radius: 5px;
       letter-spacing: 0.02em;
     }
     .vc-base  { background: rgba(100,116,139,0.1); color: #64748b; border: 1px solid rgba(100,116,139,0.18); }
     .vc-mid   { background: rgba(59,130,246,0.1);  color: #60a5fa; border: 1px solid rgba(59,130,246,0.18); }
     .vc-final { background: rgba(34,197,94,0.12);  color: #4ade80; border: 1px solid rgba(34,197,94,0.25); }
-    .vt-arrow { font-size: 0.7rem; color: #1a3356; }
+    .vt-arrow { font-size: 0.82rem; color: #1a3356; }
 
     .cc-title { font-size: 1.12rem; font-weight: 700; color: #e2e8f0; line-height: 1.35; margin-top: 2px; }
 
@@ -86,7 +86,7 @@
     .cc-bullets { display: flex; flex-direction: column; gap: 8px; width: 100%; }
     .cc-bullet { display: flex; align-items: flex-start; gap: 6px; }
     .cc-bdot { width: 4px; height: 4px; border-radius: 50%; flex-shrink: 0; margin-top: 6px; background: #3b1f6e; }
-    .cc-bullet span.bt { font-size: 0.76rem; color: #64748b; line-height: 1.5; }
+    .cc-bullet span.bt { font-size: 0.9rem; color: #64748b; line-height: 1.5; }
     .cc-bullet span.bt b { color: #94a3b8; }
 
     /* ── Example callout ── */
@@ -95,9 +95,16 @@
       background: rgba(139,92,246,0.05); border: 1px solid rgba(139,92,246,0.14);
       display: flex; flex-direction: column; gap: 6px;
     }
-    .cc-ex-tag { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #a78bfa; }
-    .cc-ex-line { font-size: 0.72rem; color: #64748b; line-height: 1.5; }
+    .cc-ex-tag { font-size: 0.74rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #a78bfa; }
+    .cc-ex-line { font-size: 0.86rem; color: #64748b; line-height: 1.5; }
     .cc-ex-line b { color: #94a3b8; }
+
+    /* ── Example table ── */
+    .cc-ex-table { width: 100%; border-collapse: collapse; }
+    .cc-ex-table td { font-size: 0.84rem; color: #64748b; line-height: 1.45; padding: 6px 0; vertical-align: top; }
+    .cc-ex-table tr:not(:last-child) td { border-bottom: 1px dashed rgba(255,255,255,0.07); padding-bottom: 10px; }
+    .cc-ex-table tr:not(:first-child) td { padding-top: 10px; }
+    .cc-ex-table .ex-key { font-weight: 700; color: #94a3b8; white-space: nowrap; padding-right: 10px; width: 1%; }
 
 
     .cc-example.ex-teal { background: rgba(20,184,166,0.05); border-color: rgba(20,184,166,0.14); }
@@ -177,9 +184,12 @@
           </div>
           <div class="cc-example">
             <div class="cc-ex-tag">Case A</div>
-            <div class="cc-ex-line"><b>GT:</b> mild pulmonary edema（輕度肺水腫）— MedGemma missed it, Micro F1 stuck at 0.333</div>
-            <div class="cc-ex-line"><b>v1 (Single-layer):</b> edema（水腫）untouched</div>
-            <div class="cc-ex-line"><b>v2 (Two-Layer):</b> reaches L2 via "lung volume low"（肺容積偏低）→ asks about edema（水腫）→ confirmed</div>
+            <table class="cc-ex-table">
+              <tr><td class="ex-key">GT</td><td>mild pulmonary edema（輕度肺水腫）</td></tr>
+              <tr><td class="ex-key">MedGemma</td><td>missed it</td></tr>
+              <tr><td class="ex-key">v1 (Single-layer)</td><td>edema（水腫）untouched</td></tr>
+              <tr><td class="ex-key">v2 (Two-Layer)</td><td>reaches L2 via "lung volume low"（肺容積偏低）→ asks about edema（水腫）→ confirmed</td></tr>
+            </table>
           </div>
         </div>
       </div>
@@ -209,18 +219,17 @@
           <div class="cc-bullets">
             <div class="cc-bullet">
               <div class="cc-bdot"></div>
-              <span class="bt">CP overweights high-frequency findings (e.g. atelectasis（肺不張）) regardless of relevance</span>
-            </div>
-            <div class="cc-bullet">
-              <div class="cc-bdot"></div>
-              <span class="bt">NPMI corrects via marginal probabilities — keeps only significant associations</span>
+              <span class="bt">CP overweights frequent findings; NPMI keeps only significant associations</span>
             </div>
           </div>
           <div class="cc-example ex-teal">
             <div class="cc-ex-tag">Case B</div>
-            <div class="cc-ex-line"><b>GT:</b> cardiomegaly（心臟肥大）, moderate edema（中度水腫）, bilateral effusion（雙側積液）— MedGemma baseline already correct, GREEN = 1.0</div>
-            <div class="cc-ex-line"><b>v1 (CP):</b> 2 extra atelectasis（肺不張）questions → QA said Yes → hallucinated findings added</div>
-            <div class="cc-ex-line"><b>v3 (NPMI):</b> atelectasis（肺不張）nodes score too low vs. anchor → filtered out → report unchanged, GREEN stays 1.0</div>
+            <table class="cc-ex-table">
+              <tr><td class="ex-key">GT</td><td>cardiomegaly（心臟肥大）, moderate edema（中度水腫）, bilateral effusion（雙側積液）</td></tr>
+              <tr><td class="ex-key">MedGemma</td><td>baseline already correct</td></tr>
+              <tr><td class="ex-key">v1 (CP)</td><td>2 extra atelectasis（肺不張）questions → QA said Yes → hallucinated findings added</td></tr>
+              <tr><td class="ex-key">v3 (NPMI)</td><td>atelectasis（肺不張）nodes score too low vs. anchor → filtered out → report unchanged</td></tr>
+            </table>
           </div>
         </div>
       </div>
@@ -250,10 +259,6 @@
           <div class="cc-bullets">
             <div class="cc-bullet">
               <div class="cc-bdot"></div>
-              <span class="bt">Largest Macro F1 gain of all comparisons: v3→v4 <b>0.3450→0.3535</b></span>
-            </div>
-            <div class="cc-bullet">
-              <div class="cc-bdot"></div>
               <span class="bt">Asymmetry proves synergy: CP→NPMI <b>−0.003</b> under Top-K, <b>+0.011</b> under Two-Hop</span>
             </div>
             <div class="cc-bullet">
@@ -263,10 +268,12 @@
           </div>
           <div class="cc-example ex-blue">
             <div class="cc-ex-tag">Case C</div>
-            <div class="cc-ex-line"><b>GT:</b> multifocal pneumonia（多發性肺炎）— v1/v2/v3 stuck at Micro F1 0.333</div>
-            <div class="cc-ex-line"><b>v2 (Two-Hop, CP):</b> reaches L2 but favors high-freq nodes → misses it, hallucinates congestion（肺充血）/edema（水腫）</div>
-            <div class="cc-ex-line"><b>v3 (Top-K, NPMI):</b> limited to L1 → unreachable, hallucinates rib fracture（肋骨骨折）</div>
-            <div class="cc-ex-line"><b>v4 (Two-Hop, NPMI):</b> reaches L2 and ranks it top → correctly recovered</div>
+            <table class="cc-ex-table">
+              <tr><td class="ex-key">GT</td><td>multifocal pneumonia（多發性肺炎）</td></tr>
+              <tr><td class="ex-key">v2 (Two-Hop, CP)</td><td>reaches L2 but favors high-freq nodes → misses it</td></tr>
+              <tr><td class="ex-key">v3 (Top-K, NPMI)</td><td>limited to L1 → unreachable</td></tr>
+              <tr><td class="ex-key">v4 (Two-Hop, NPMI)</td><td>reaches L2 and ranks it top → correctly recovered</td></tr>
+            </table>
           </div>
         </div>
       </div>
