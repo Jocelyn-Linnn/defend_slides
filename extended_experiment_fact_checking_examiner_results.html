@@ -47,8 +47,9 @@
       padding: 110px 42px 36px;
       gap: 14px;
       opacity: 0; transform: translateY(14px);
-      animation: a-fade-in 0.7s ease 0.3s forwards;
+      transition: opacity 0.6s ease, transform 0.6s ease;
     }
+    .panel-left.active { opacity: 1; transform: translateY(0); }
 
     .rt-eyebrow {
       font-size: 0.66rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
@@ -93,8 +94,9 @@
       padding: 94px 44px 28px;
       gap: 20px;
       opacity: 0; transform: translateY(14px);
-      animation: a-fade-in 0.7s ease 0.4s forwards;
+      transition: opacity 0.6s ease, transform 0.6s ease;
     }
+    .panel-right.active { opacity: 1; transform: translateY(0); }
 
     .ee-table-wrap { flex-shrink: 0; width: 100%; max-width: 720px; }
     .ee-table-title { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #1e3a5f; text-align: center; margin-bottom: 14px; }
@@ -236,11 +238,20 @@
   import { initSlideController } from './tool/slide-controller.js';
   import './tool/slide-scale.js';
 
+  const steps = [['.panel-left'], ['.panel-right']];
+
+  function updateSlide(step) {
+    steps.flat().forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.remove('active')));
+    for (let i = 0; i < step; i++) {
+      if (steps[i]) steps[i].forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.add('active')));
+    }
+  }
+
   initSlideController({
-    maxSteps: 0,
+    maxSteps: steps.length,
     nextSlideUrl: 'root_cause_analysis_of_fact_checking_examiner_failure.html',
     prevSlideUrl: 'improvement_motivation_and_design_logic.html',
-    onUpdate: () => {}
+    onUpdate: updateSlide
   });
 </script>
 </body>

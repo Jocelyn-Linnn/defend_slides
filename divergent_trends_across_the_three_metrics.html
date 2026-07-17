@@ -116,20 +116,43 @@
     .cc-example.ex-amber { background: rgba(245,158,11,0.05); border: 1px solid rgba(245,158,11,0.14); }
     .cc-example.ex-blue  { background: rgba(59,130,246,0.05); border: 1px solid rgba(59,130,246,0.14); }
     .cc-ex-tag {
-      font-size: 0.54rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+      font-size: 0.66rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
       color: #334155; margin-bottom: 6px; padding-bottom: 6px;
       border-bottom: 1px solid rgba(255,255,255,0.06);
     }
 
+    .cc-ex-case { display: flex; flex-direction: column; gap: 6px; width: 100%; }
     .cc-ex-field { display: flex; align-items: flex-start; gap: 8px; }
     .cc-ex-field-label {
-      font-size: 0.66rem; font-weight: 800; letter-spacing: 0.03em;
-      flex-shrink: 0; min-width: 70px; margin-top: 1px;
+      font-size: 0.8rem; font-weight: 800; letter-spacing: 0.03em;
+      flex-shrink: 0; min-width: 84px; margin-top: 1px;
     }
     .ex-amber .cc-ex-field-label { color: #fbbf24; }
     .ex-blue  .cc-ex-field-label { color: #60a5fa; }
-    .cc-ex-field-value { font-size: 0.78rem; color: #64748b; line-height: 1.5; }
+    .cc-ex-field-value { font-size: 0.9rem; color: #64748b; line-height: 1.5; }
     .cc-ex-field-value b { color: #94a3b8; }
+    .cc-ex-field-value i { color: #94a3b8; font-style: italic; }
+
+    /* ── Outcome block (metric result + reason) ── */
+    .cc-ex-divider2 { width: 100%; height: 1px; background: rgba(255,255,255,0.07); margin: 3px 0; }
+    .cc-ex-outcomes { display: flex; flex-direction: column; gap: 9px; width: 100%; }
+    .cc-ex-outcome { display: flex; flex-direction: column; gap: 3px; }
+    .cc-ex-outcome-head { display: flex; align-items: center; gap: 8px; }
+    .cc-ex-outcome-label {
+      font-size: 0.8rem; font-weight: 800; letter-spacing: 0.03em;
+      flex-shrink: 0; min-width: 84px;
+    }
+    .ex-amber .cc-ex-outcome-label { color: #fbbf24; }
+    .ex-blue  .cc-ex-outcome-label { color: #60a5fa; }
+    .cc-ex-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 10px; border-radius: 999px;
+      font-size: 0.8rem; font-weight: 800;
+    }
+    .badge-up   { background: rgba(34,197,94,0.14);  color: #4ade80; }
+    .badge-down { background: rgba(239,68,68,0.14);  color: #f87171; }
+    .cc-ex-reason { font-size: 0.82rem; color: #64748b; line-height: 1.45; padding-left: 92px; }
+    .cc-ex-reason b { color: #94a3b8; }
 
     @keyframes a-in {
       from { opacity: 0; transform: translateY(10px); }
@@ -206,11 +229,28 @@
 
         <div class="cc-example ex-amber">
           <div class="cc-ex-tag">Example</div>
-          <div class="cc-ex-field"><span class="cc-ex-field-label">GT</span><span class="cc-ex-field-value">"mild pulmonary vascular congestion (肺血管充血)"</span></div>
-          <div class="cc-ex-field"><span class="cc-ex-field-label">MedGemma</span><span class="cc-ex-field-value">Missed it entirely</span></div>
-          <div class="cc-ex-field"><span class="cc-ex-field-label">System</span><span class="cc-ex-field-value">Corrected with "subtle pulmonary edema (肺水腫)"</span></div>
-          <div class="cc-ex-field"><span class="cc-ex-field-label">CheXBert</span><span class="cc-ex-field-value">Recognizes both as <b>Edema</b>（水腫） → Micro F1 +0.190</span></div>
-          <div class="cc-ex-field"><span class="cc-ex-field-label">RadGraph</span><span class="cc-ex-field-value">"edema"（水腫） ≠ "vascular congestion"（血管充血） as strings → no TP, counted as FP → F1 drops</span></div>
+          <div class="cc-ex-case">
+            <div class="cc-ex-field"><span class="cc-ex-field-label">GT</span><span class="cc-ex-field-value"><i>mild pulmonary vascular congestion（肺血管充血）</i></span></div>
+            <div class="cc-ex-field"><span class="cc-ex-field-label">MedGemma</span><span class="cc-ex-field-value">Missed it entirely</span></div>
+            <div class="cc-ex-field"><span class="cc-ex-field-label">System</span><span class="cc-ex-field-value">Corrected with <i>"subtle pulmonary edema（肺水腫）"</i></span></div>
+          </div>
+          <div class="cc-ex-divider2"></div>
+          <div class="cc-ex-outcomes">
+            <div class="cc-ex-outcome">
+              <div class="cc-ex-outcome-head">
+                <span class="cc-ex-outcome-label">CheXBert</span>
+                <span class="cc-ex-badge badge-up">Micro F1 ↑</span>
+              </div>
+              <div class="cc-ex-reason">Recognizes both as <b>Edema</b>（水腫） — treated as the same condition</div>
+            </div>
+            <div class="cc-ex-outcome">
+              <div class="cc-ex-outcome-head">
+                <span class="cc-ex-outcome-label">RadGraph</span>
+                <span class="cc-ex-badge badge-down">F1 ↓</span>
+              </div>
+              <div class="cc-ex-reason">"edema"（水腫） ≠ "vascular congestion"（血管充血） as strings — counted as FP</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -241,11 +281,28 @@
 
         <div class="cc-example ex-blue">
           <div class="cc-ex-tag">Example</div>
-          <div class="cc-ex-field"><span class="cc-ex-field-label">GT</span><span class="cc-ex-field-value">"retrocardiac opacity（心臟後方陰影）"</span></div>
-          <div class="cc-ex-field"><span class="cc-ex-field-label">MedGemma</span><span class="cc-ex-field-value">Missed it (not mentioned)</span></div>
-          <div class="cc-ex-field"><span class="cc-ex-field-label">System</span><span class="cc-ex-field-value">Added it correctly, but also hallucinated "linear opacity（線狀陰影） suggestive of a scar（疤痕）"</span></div>
-          <div class="cc-ex-field"><span class="cc-ex-field-label">CheXBert</span><span class="cc-ex-field-value">Counts it as <b>Lung Opacity</b>（肺部陰影） TP → Micro F1 → 1.000</span></div>
-          <div class="cc-ex-field"><span class="cc-ex-field-label">GREEN</span><span class="cc-ex-field-value">Penalizes the hallucinated scar（疤痕） → GREEN −0.102</span></div>
+          <div class="cc-ex-case">
+            <div class="cc-ex-field"><span class="cc-ex-field-label">GT</span><span class="cc-ex-field-value"><i>retrocardiac opacity（心臟後方陰影）</i></span></div>
+            <div class="cc-ex-field"><span class="cc-ex-field-label">MedGemma</span><span class="cc-ex-field-value">Missed it (not mentioned)</span></div>
+            <div class="cc-ex-field"><span class="cc-ex-field-label">System</span><span class="cc-ex-field-value">Added:<br><i>"Increased opacity is observed in the left lung base"</i>（左肺底部陰影增加）<br><i>"linear opacity in the right mid lung field, suggestive of a scar"</i>（右肺中部線狀陰影，符合疤痕）</span></div>
+          </div>
+          <div class="cc-ex-divider2"></div>
+          <div class="cc-ex-outcomes">
+            <div class="cc-ex-outcome">
+              <div class="cc-ex-outcome-head">
+                <span class="cc-ex-outcome-label">CheXBert</span>
+                <span class="cc-ex-badge badge-up">Micro F1 ↑</span>
+              </div>
+              <div class="cc-ex-reason">Counts it as <b>Lung Opacity</b>（肺部陰影） — treated as a match</div>
+            </div>
+            <div class="cc-ex-outcome">
+              <div class="cc-ex-outcome-head">
+                <span class="cc-ex-outcome-label">GREEN</span>
+                <span class="cc-ex-badge badge-down">GREEN ↓</span>
+              </div>
+              <div class="cc-ex-reason">Penalizes the hallucinated scar（疤痕）</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
