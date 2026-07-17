@@ -12,7 +12,7 @@
  */
 export const slideOrder = [
   'all_slides.html',
-  'cover.html',
+  'index.html',
   'table_of_contents.html',
   'motivation_1.html',
   'motivation_2.html',
