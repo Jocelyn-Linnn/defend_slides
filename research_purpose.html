@@ -20,6 +20,7 @@
       height: 720px;
       position: relative;
       display: flex;
+      justify-content: center;
       cursor: pointer;
     }
 
@@ -55,18 +56,13 @@
       color: #60a5fa;
     }
 
-    .divider {
-      position: absolute; left: 700px; top: 110px; bottom: 36px; width: 2px;
-      background: linear-gradient(to bottom, transparent 0%, #152840 15%, #152840 85%, transparent 100%);
-    }
-
-    /* ── Left: objectives ── */
+    /* ── Objectives (single centered column) ── */
     .left-col {
-      width: 700px;
+      width: 980px;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding: 110px 44px 36px 56px;
+      padding: 110px 60px 36px;
       gap: 0;
     }
 
@@ -132,63 +128,6 @@
       max-width: 580px;
     }
 
-    /* ── Right: mini pipeline ── */
-    .panel-right {
-      flex: 1;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 94px 40px 32px;
-    }
-
-    .pl-eyebrow {
-      font-size: 0.64rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
-      color: #3b6ea5; margin-bottom: 22px; align-self: center;
-    }
-
-    .pl-stage {
-      width: 100%; max-width: 380px;
-      display: flex; align-items: center; gap: 14px;
-      padding: 13px 16px; margin-bottom: 4px;
-      border-radius: 11px;
-      background: rgba(255,255,255,0.014); border: 1px solid rgba(255,255,255,0.06);
-      opacity: 0.35; transform: translateX(6px);
-      transition: opacity 0.45s ease, transform 0.45s ease, border-color 0.45s ease, background 0.45s ease;
-    }
-    .pl-stage.active {
-      opacity: 1; transform: translateX(0);
-    }
-    .pl-stage.active.s-blue   { border-color: rgba(59,130,246,0.4);  background: rgba(59,130,246,0.06);  box-shadow: 0 0 26px -16px rgba(59,130,246,0.6); }
-    .pl-stage.active.s-violet { border-color: rgba(139,92,246,0.4); background: rgba(139,92,246,0.06); box-shadow: 0 0 26px -16px rgba(139,92,246,0.6); }
-    .pl-stage.active.s-teal   { border-color: rgba(20,184,166,0.4); background: rgba(20,184,166,0.06); box-shadow: 0 0 26px -16px rgba(20,184,166,0.6); }
-    .pl-stage.active.s-green  { border-color: rgba(34,197,94,0.4);  background: rgba(34,197,94,0.06);  box-shadow: 0 0 26px -16px rgba(34,197,94,0.6); }
-
-    .pl-icon {
-      width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
-      color: #4a6480;
-      transition: color 0.4s ease, border-color 0.4s ease, background 0.4s ease;
-    }
-    .pl-stage.active.s-blue .pl-icon   { color: #60a5fa; border-color: rgba(59,130,246,0.3);  background: rgba(59,130,246,0.1); }
-    .pl-stage.active.s-violet .pl-icon { color: #a78bfa; border-color: rgba(139,92,246,0.3); background: rgba(139,92,246,0.1); }
-    .pl-stage.active.s-teal .pl-icon   { color: #2dd4bf; border-color: rgba(20,184,166,0.3); background: rgba(20,184,166,0.1); }
-    .pl-stage.active.s-green .pl-icon  { color: #4ade80; border-color: rgba(34,197,94,0.3);  background: rgba(34,197,94,0.1); }
-
-    .pl-label { font-size: 0.78rem; font-weight: 700; color: #6b8299; transition: color 0.4s ease; }
-    .pl-stage.active .pl-label { color: #cbd5e1; }
-
-    .pl-connector { width: 1px; height: 16px; background: #12294a; margin-left: 33px; }
-
-    .pl-final {
-      width: 100%; max-width: 380px; margin-top: 14px;
-      display: flex; align-items: center; justify-content: center; gap: 9px;
-      padding: 12px 18px; border-radius: 11px;
-      background: rgba(96,165,250,0.06); border: 1px solid rgba(96,165,250,0.22);
-      opacity: 0; transition: opacity 0.5s ease;
-    }
-    .pl-final.active { opacity: 1; }
-    .pl-final-text { font-size: 0.82rem; font-weight: 700; color: #93c5fd; letter-spacing: 0.02em; }
-
     @keyframes a-in {
       from { opacity: 0; transform: translateY(10px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -230,9 +169,8 @@
     <span class="h-kicker">Chest X-ray Report Refinement System</span>
     <span class="h-title">Research Purpose</span>
   </div>
-  <div class="divider"></div>
 
-  <!-- Left: 4 objectives -->
+  <!-- 4 objectives, single centered column -->
   <div class="left-col">
     <div class="col-label">Research Objectives</div>
 
@@ -243,7 +181,7 @@
         </div>
         <div class="obj-body">
           <span class="obj-title">Integrated Report Generation &amp; Refinement Pipeline</span>
-          <span class="obj-desc">MedGemma as the base VLM with modular design — any medical VLM supporting report generation and visual QA can be plugged in.</span>
+          <span class="obj-desc">Modular pipeline built on MedGemma — swappable with any medical VLM supporting report generation and VQA.</span>
         </div>
       </div>
 
@@ -253,7 +191,7 @@
         </div>
         <div class="obj-body">
           <span class="obj-title">Radiology Association Graph Construction</span>
-          <span class="obj-desc">Build a compact clinical graph from RadGraph via node merging, relation abstraction, and structure compression for dense semantic representation.</span>
+          <span class="obj-desc">Compress RadGraph into a compact clinical graph via node merging and structure abstraction.</span>
         </div>
       </div>
 
@@ -263,7 +201,7 @@
         </div>
         <div class="obj-body">
           <span class="obj-title">Graph Retrieval Module for Clinical Associations</span>
-          <span class="obj-desc">Retrieve key nodes and latent clinical relations from the graph; compare different retrieval strategies on clinical reasoning depth.</span>
+          <span class="obj-desc">Retrieve clinical associations from the graph, comparing strategies for reasoning depth.</span>
         </div>
       </div>
 
@@ -273,49 +211,9 @@
         </div>
         <div class="obj-body">
           <span class="obj-title">LLM-based Clinical QA &amp; Report Refinement</span>
-          <span class="obj-desc">Convert retrieved associations to clinical questions → interactive confirmation with MedGemma → LLM integrates answers into the final refined report.</span>
+          <span class="obj-desc">Turn associations into clinical questions, confirm via QA, then integrate into the final report.</span>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- Right: mini pipeline mirroring the 4 objectives -->
-  <div class="panel-right">
-    <div class="pl-eyebrow">One Pipeline, Four Objectives</div>
-
-    <div class="pl-stage p1 s-blue">
-      <div class="pl-icon">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-      </div>
-      <span class="pl-label">Report Generation Pipeline (MedGemma)</span>
-    </div>
-    <div class="pl-connector"></div>
-
-    <div class="pl-stage p2 s-violet">
-      <div class="pl-icon">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="12" cy="18" r="3"/><line x1="8.6" y1="7.6" x2="15" y2="16"/><line x1="15.4" y1="7.6" x2="9" y2="16"/><line x1="9" y1="6" x2="15" y2="6"/></svg>
-      </div>
-      <span class="pl-label">Radiology Association Graph</span>
-    </div>
-    <div class="pl-connector"></div>
-
-    <div class="pl-stage p3 s-teal">
-      <div class="pl-icon">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.6" y2="16.6"/></svg>
-      </div>
-      <span class="pl-label">Graph Retrieval</span>
-    </div>
-    <div class="pl-connector"></div>
-
-    <div class="pl-stage p4 s-green">
-      <div class="pl-icon">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5 8.4 8.4 0 0 1-4-1L3 21l1.1-5.5a8.4 8.4 0 0 1-1-4A8.5 8.5 0 0 1 11.5 3h.5a8.5 8.5 0 0 1 8 8v.5z"/><line x1="8" y1="10.5" x2="16" y2="10.5"/><line x1="8" y1="14" x2="13" y2="14"/></svg>
-      </div>
-      <span class="pl-label">LLM QA &amp; Refinement</span>
-    </div>
-
-    <div class="pl-final pf">
-      <span class="pl-final-text">→ Refined, Clinically Grounded Report</span>
     </div>
   </div>
 
@@ -326,10 +224,10 @@
   import './tool/slide-scale.js';
 
   const steps = [
-    ['.o1', '.p1'],
-    ['.o2', '.p2'],
-    ['.o3', '.p3'],
-    ['.o4', '.p4', '.pf'],
+    ['.o1'],
+    ['.o2'],
+    ['.o3'],
+    ['.o4'],
   ];
 
   function updateSlide(step) {

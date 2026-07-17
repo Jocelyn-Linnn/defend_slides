@@ -147,7 +147,6 @@
         <div class="step-desc">
           <ul>
             <li>Keep only answers starting with <b>"Yes"</b></li>
-            <li>Discard hedging language (e.g. "difficult to assess")</li>
           </ul>
         </div>
       </div>
@@ -159,14 +158,7 @@
       <div class="step-num" style="background:#1a1100;border:2px solid #f59e0b;color:#fbbf24;">2</div>
       <div class="step-body">
         <div class="step-title" style="color:#fbbf24;">Classify the Answers</div>
-        <div class="step-desc">
-          <ul>
-            <li><b>CONFIRMED</b> — one confirmed finding, no alternatives → kept in full</li>
-            <li><b>MIXED</b> — confirmed finding + speculative extension → trimmed to the confirmed clause</li>
-            <li><b>DIFFERENTIAL</b> — multiple possible diagnoses, none confirmed → discarded entirely</li>
-            <li><b>NORMAL</b> — confirms "within normal limits" → discarded, no added value</li>
-          </ul>
-        </div>
+        <div class="step-desc">Each answer is sorted into one of four categories (see example).</div>
       </div>
     </div>
 
@@ -178,9 +170,9 @@
         <div class="step-title" style="color:#4ade80;">GPT-4o Generate Final Report</div>
         <div class="step-desc">
           <ul>
-            <li><b>Initial report has highest priority</b> — QA may only supplement, never overwrite</li>
-            <li><b>Rule exemption</b> when image quality limits QA: severely damaged (e.g. large effusion（大量積液）, collapse（肺塌陷）) or completely normal</li>
-            <li><b>Negative statements</b> ("no X") may only come from the initial report, never introduced by QA</li>
+            <li>The initial report always takes priority — QA can only supplement, never overwrite it</li>
+            <li>Severely damaged or fully normal images are exempt from QA supplementation</li>
+            <li>Negative statements ("no X") only come from the initial report, never from QA</li>
           </ul>
         </div>
       </div>
