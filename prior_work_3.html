@@ -98,24 +98,6 @@
     <div class="left-col">
       <div class="col-label">Report Correction Methods</div>
 
-      <!-- Group 1: Inference-Time Correction -->
-      <div class="mgroup g1">
-        <div class="mg-head">
-          <div class="mg-icon mi-blue">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          </div>
-          <div>
-            <div class="mg-title">Inference-Time Correction</div>
-            <div class="mg-ref">2024–2025 · IBM Research (Mahmood et al.)</div>
-          </div>
-        </div>
-        <div class="mg-bullets">
-          <div class="mb"><div class="mdot md-blue"></div><span class="mb-text"><b>FC Model</b> (CLIP backbone) takes the CXR image + extracted finding patterns as input</span></div>
-          <div class="mb"><div class="mdot md-blue"></div><span class="mb-text">Predicts each finding's <b>veracity</b> (consistent or not) and its <b>location</b></span></div>
-          <div class="mb"><div class="mdot md-blue"></div><span class="mb-text"><b>LLaMA 3.2</b> rewrites the flagged sentence based on the predicted correction</span></div>
-        </div>
-      </div>
-
       <!-- Group 2: Fact-Checking Filtering -->
       <div class="mgroup g2">
         <div class="mg-head">
@@ -128,9 +110,9 @@
           </div>
         </div>
         <div class="mg-bullets">
-          <div class="mb"><div class="mdot md-amber"></div><span class="mb-text"><b>CLIP</b> encodes each sentence and its paired image separately</span></div>
-          <div class="mb"><div class="mdot md-amber"></div><span class="mb-text">Concatenates both embeddings, feeds into an <b>SVM</b> classifying sentence–image consistency</span></div>
-          <div class="mb"><div class="mdot md-amber"></div><span class="mb-text">Inconsistent sentences <b>deleted</b>; remaining sentences reassembled into the output report</span></div>
+          <div class="mb"><div class="mdot md-amber"></div><span class="mb-text"><b>CLIP</b> encodes each sentence–image pair</span></div>
+          <div class="mb"><div class="mdot md-amber"></div><span class="mb-text"><b>SVM</b> classifies consistency from the embeddings</span></div>
+          <div class="mb"><div class="mdot md-amber"></div><span class="mb-text">Inconsistent sentences <b>deleted</b>; rest reassembled into the report</span></div>
         </div>
       </div>
     </div>
@@ -142,7 +124,7 @@
   import { initSlideController } from './tool/slide-controller.js';
   import './tool/slide-scale.js';
 
-  const steps = [['.g1'], ['.g2']];
+  const steps = [['.g2']];
 
   function updateSlide(step) {
     steps.flat().forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.remove('active')));

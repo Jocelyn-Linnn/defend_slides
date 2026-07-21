@@ -256,17 +256,9 @@
         <div class="step-num" style="background:#0b2619;border:1.5px solid #10b981;color:#34d399;">4</div>
         <div class="step-body">
           <div class="step-title" style="color:#34d399;">Embedding merge</div>
-          <div class="step-sub">SapBERT · cosine sim ≥ 0.85</div>
           <div class="step-rationale">
+            <div class="sr-item"><div class="sr-dot"></div><span class="sr-text"><b>SapBERT</b> · cosine sim ≥ 0.85</span></div>
             <div class="sr-item"><div class="sr-dot"></div><span class="sr-text">Low-freq tokens (<b>count &lt; 10</b>) merged into high-freq targets (<b>count ≥ 10</b>)</span></div>
-            <div class="sr-item"><div class="sr-dot"></div><span class="sr-text"><b>About SapBERT</b></span></div>
-            <div class="sr-item" style="margin-left:18px;"><span class="sr-text">Cambridge University, 2021</span></div>
-            <div class="sr-item" style="margin-left:18px;"><span class="sr-text">BERT-base, built on PubMedBERT</span></div>
-            <div class="sr-item" style="margin-left:18px;"><span class="sr-text">Data: UMLS synonym dictionary</span></div>
-            <div class="why-box">
-              <div class="why-line"><b>Why 10?</b> Below it, context too sparse (&lt;0.005% of reports) for reliable stats</div>
-              <div class="why-line"><b>Why 0.85?</b> Balances under- vs. over-merging</div>
-            </div>
           </div>
         </div>
       </div>

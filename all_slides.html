@@ -90,6 +90,21 @@
       display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
     }
 
+    /* ── Supplementary section divider ── */
+    .gallery-divider {
+      grid-column: 1 / -1;
+      display: flex; align-items: center; gap: 12px;
+      margin: 4px 0 2px;
+    }
+    .gallery-divider .gd-line {
+      flex: 1; height: 1px;
+      background: linear-gradient(90deg, transparent, #1a3356 15%, #1a3356 85%, transparent);
+    }
+    .gallery-divider .gd-label {
+      font-size: 0.64rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+      color: #3d5a80; white-space: nowrap;
+    }
+
     /* ── Responsive scaling: fit fixed-size canvas to any viewport ── */
     html, body {
       width: 100%;
@@ -121,7 +136,7 @@
 <script type="module">
   import { initSlideController } from './tool/slide-controller.js';
   import './tool/slide-scale.js';
-  import { slideOrder } from './tool/slide-order.js';
+  import { slideOrder, supplementarySlides } from './tool/slide-order.js';
 
   const SELF = 'all_slides.html';
   const grid = document.getElementById('galleryGrid');
@@ -134,12 +149,7 @@
       .join(' ');
   }
 
-  // Always read the manifest at load time, so inserting/reordering/removing
-  // slides in slide-order.js is reflected here automatically — no manual edits needed.
-  const others = slideOrder.filter(fn => fn !== SELF);
-  subtitle.innerHTML = `<b>${others.length}</b> slides (shown at final animation state) — click any thumbnail to jump directly`;
-
-  others.forEach((fn, i) => {
+  function makeTile(fn, numLabel) {
     const tile = document.createElement('div');
     tile.className = 'gallery-tile';
     tile.addEventListener('click', (e) => {
@@ -160,7 +170,7 @@
 
     const num = document.createElement('div');
     num.className = 'gallery-num';
-    num.textContent = String(i + 1).padStart(2, '0');
+    num.textContent = numLabel;
 
     wrap.appendChild(iframe);
     wrap.appendChild(num);
@@ -171,8 +181,29 @@
 
     tile.appendChild(wrap);
     tile.appendChild(label);
-    grid.appendChild(tile);
+    return tile;
+  }
+
+  // Always read the manifest at load time, so inserting/reordering/removing
+  // slides in slide-order.js is reflected here automatically — no manual edits needed.
+  const others = slideOrder.filter(fn => fn !== SELF);
+  const supplementary = supplementarySlides.filter(fn => fn !== SELF);
+  subtitle.innerHTML = `<b>${others.length}</b> slides (shown at final animation state) — click any thumbnail to jump directly`;
+
+  others.forEach((fn, i) => {
+    grid.appendChild(makeTile(fn, String(i + 1).padStart(2, '0')));
   });
+
+  if (supplementary.length) {
+    const divider = document.createElement('div');
+    divider.className = 'gallery-divider';
+    divider.innerHTML = `<div class="gd-line"></div><span class="gd-label">補充 / 備用投影片</span><div class="gd-line"></div>`;
+    grid.appendChild(divider);
+
+    supplementary.forEach((fn) => {
+      grid.appendChild(makeTile(fn, '補充'));
+    });
+  }
 
   // Every tile shares the same width (auto-fill grid), and the 1280x720 canvas
   // itself never actually resizes (only its outer CSS transform does) — so a

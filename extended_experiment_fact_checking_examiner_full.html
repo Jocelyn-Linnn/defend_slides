@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <title>Extended Experiment: Fact-Checking Examiner Results - Chest X-ray Report Refinement System</title>
+  <title>Extended Experiment: Fact-Checking Examiner Results (Full) - Chest X-ray Report Refinement System</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -34,9 +34,61 @@
       opacity: 0; animation: a-fade-in 0.7s ease 0.15s forwards;
     }
 
-    /* ── Table panel: the evidence ── */
+    .divider {
+      position: absolute; left: 460px; top: 110px; bottom: 36px; width: 2px;
+      background: linear-gradient(to bottom, transparent 0%, #152840 15%, #152840 85%, transparent 100%);
+    }
+
+    /* ── Left panel: what changed ── */
+    .panel-left {
+      width: 460px;
+      display: flex; flex-direction: column;
+      align-items: flex-start; justify-content: center;
+      padding: 110px 42px 36px;
+      gap: 14px;
+      opacity: 0; transform: translateY(14px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .panel-left.active { opacity: 1; transform: translateY(0); }
+
+    .rt-eyebrow {
+      font-size: 0.66rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+      color: #3b6ea5; margin-bottom: -2px;
+    }
+
+    .rt-block {
+      width: 100%; border-radius: 12px; padding: 14px 16px;
+      background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.06);
+    }
+    .rt-block-a { border-left: 3px solid #64748b; }
+    .rt-block-b { border-left: 3px solid #3b82f6; box-shadow: 0 0 30px -18px rgba(59,130,246,0.5); }
+
+    .rt-tag {
+      font-size: 0.64rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      margin-bottom: 9px;
+    }
+    .rt-block-a .rt-tag { color: #94a3b8; }
+    .rt-block-b .rt-tag { color: #60a5fa; }
+
+    .rt-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 5px; }
+    .rt-row:last-child { margin-bottom: 0; }
+    .rt-label {
+      flex-shrink: 0; width: 54px;
+      font-size: 0.64rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+      color: #4a6480;
+    }
+    .rt-val { font-size: 0.78rem; color: #cbd5e1; line-height: 1.45; }
+
+    .rt-arrow-row {
+      display: flex; align-items: center; gap: 8px; width: 100%;
+      font-size: 0.7rem; color: #3b82f6; font-style: italic;
+      padding-left: 2px;
+    }
+    .rt-arrow-row svg { flex-shrink: 0; }
+
+    /* ── Right panel: the evidence ── */
     .panel-right {
-      width: 100%;
+      flex: 1;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
       padding: 94px 44px 28px;
@@ -99,11 +151,35 @@
   </a>
 
   <div class="header">
-    <span class="h-kicker">Extended Experiment</span>
-    <span class="h-title">Fact-Checking Examiner Results</span>
+    <span class="h-kicker">Extended Experiment · Supplementary</span>
+    <span class="h-title">Fact-Checking Examiner Results (Full)</span>
+  </div>
+  <div class="divider"></div>
+
+  <!-- ── Left Panel: Retrain Examiner ── -->
+  <div class="panel-left">
+    <div class="rt-eyebrow">Retrain Examiner</div>
+
+    <div class="rt-block rt-block-a">
+      <div class="rt-tag">Original · Mahmood et al.</div>
+      <div class="rt-row"><span class="rt-label">Data</span><span class="rt-val">Indiana University — 2,557 reports</span></div>
+      <div class="rt-row"><span class="rt-label">Encoder</span><span class="rt-val">Generic CLIP ViT-B/32 joint encoder</span></div>
+    </div>
+
+    <div class="rt-arrow-row">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="6 13 12 19 18 13"/></svg>
+      retrained for this study
+    </div>
+
+    <div class="rt-block rt-block-b">
+      <div class="rt-tag">This Study · Retrained</div>
+      <div class="rt-row"><span class="rt-label">Data</span><span class="rt-val">MIMIC-CXR — 29,884 samples (60/20/20 split)</span></div>
+      <div class="rt-row"><span class="rt-label">Encoder</span><span class="rt-val">BioViL-T (image) + CXR-BERT (text)</span></div>
+    </div>
+
   </div>
 
-  <!-- ── Table Panel: the evidence ── -->
+  <!-- ── Right Panel: the evidence ── -->
   <div class="panel-right">
     <div class="ee-table-wrap">
       <div class="ee-table-title">v4 + Fact-Checking Examiner Across Removal Thresholds (MIMIC-CXR, n=500)</div>
@@ -162,7 +238,7 @@
   import { initSlideController } from './tool/slide-controller.js';
   import './tool/slide-scale.js';
 
-  const steps = [['.panel-right']];
+  const steps = [['.panel-left'], ['.panel-right']];
 
   function updateSlide(step) {
     steps.flat().forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.remove('active')));
@@ -173,8 +249,8 @@
 
   initSlideController({
     maxSteps: steps.length,
-    nextSlideUrl: 'root_cause_analysis_of_fact_checking_examiner_failure.html',
-    prevSlideUrl: 'improvement_motivation_and_design_logic.html',
+    nextSlideUrl: 'all_slides.html',
+    prevSlideUrl: 'all_slides.html',
     onUpdate: updateSlide
   });
 </script>

@@ -42,7 +42,6 @@ export const slideOrder = [
   'retrieve_preprocess.html',
   'retrieve_method_1_single_layer_expansion_with_fixed_top_k.html',
   'retrieve_method_2_two_layer_expansion_with_adaptive_per_layer_filtering.html',
-  'retrieval_design_rationale.html',
   'visual_question_answering_inference.html',
   'final_report_integration_generation.html',
   'experiment_result.html',
@@ -63,4 +62,19 @@ export const slideOrder = [
   'research_summary.html',
   'research_limitations_and_future_directions.html',
   'thank_you.html',
+];
+
+/**
+ * 補充用投影片清單 (Supplementary Slides Manifest)
+ *
+ * 這裡列出的檔案「不」計入正式簡報流程（不會出現在上一頁/下一頁的
+ * 連續播放順序中，也不計入頁碼），只在 all_slides.html 縮圖頁的分隔線
+ * 之後顯示，代表「口試備用/補充說明」用的投影片。
+ *
+ * 這些檔案本身仍可獨立開啟瀏覽，其上一頁/下一頁按鈕會使用檔案自己
+ * script 裡寫死的 nextSlideUrl / prevSlideUrl 作為備援。
+ */
+export const supplementarySlides = [
+  'retrieval_design_rationale.html',
+  'extended_experiment_fact_checking_examiner_full.html',
 ];

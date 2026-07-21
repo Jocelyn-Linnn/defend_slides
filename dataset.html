@@ -55,23 +55,26 @@
     .ds-desc { font-size: 0.85rem; color: #94a3b8; line-height: 1.6; text-align: center; max-width: 560px; }
     .ds-desc b { color: #cbd5e1; }
 
-    /* ── Step list ── */
-    .step-list { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 11px; margin-top: 4px; }
-    .step-row { display: flex; align-items: flex-start; gap: 12px; }
-    .step-badge {
-      width: 21px; height: 21px; border-radius: 6px; flex-shrink: 0; margin-top: 1px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.68rem; font-weight: 800;
-      background: rgba(59,130,246,0.12); color: #60a5fa;
+    /* ── Filtering funnel ── */
+    .funnel { display: flex; flex-direction: column; align-items: center; width: 100%; margin-top: 8px; }
+    .funnel-box {
+      box-sizing: border-box; border-radius: 10px; padding: 10px 22px; text-align: center;
+      background: rgba(59,130,246,0.05); border: 1px solid rgba(59,130,246,0.22);
     }
-    .step-text { font-size: 0.84rem; color: #94a3b8; line-height: 1.5; }
-    .step-text b { color: #cbd5e1; }
+    .funnel-box-label { font-size: 0.86rem; font-weight: 700; color: #93c5fd; }
+    .funnel-box-sub { font-size: 0.72rem; color: #5f7fa8; margin-top: 2px; }
 
-    .step-final {
-      display: flex; align-items: center; gap: 8px; margin-top: 6px;
+    .funnel-arrow { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 0; }
+    .funnel-arrow-glyph { color: #3b6ea5; font-size: 0.85rem; line-height: 1; }
+    .funnel-arrow-text { font-size: 0.75rem; color: #94a3b8; text-align: center; max-width: 440px; }
+    .funnel-arrow-text b { color: #cbd5e1; }
+
+    .funnel-final {
+      box-sizing: border-box; border-radius: 10px; padding: 11px 26px; text-align: center;
+      max-width: 460px;
+      background: rgba(96,165,250,0.1); border: 1px solid rgba(96,165,250,0.4);
     }
-    .step-final-text { font-size: 0.92rem; font-weight: 700; color: #93c5fd; }
-    .step-final-text b { color: #dbeafe; }
+    .funnel-final-text { font-size: 0.86rem; font-weight: 700; color: #dbeafe; }
 
     @keyframes a-in {
       from { opacity: 0; transform: translateY(10px); }
@@ -121,17 +124,34 @@
         <div class="ds-tag">Test Set Construction</div>
       </div>
       <div class="ds-title">MIMIC-CXR-JPG · Frontal, Single-Study Test Images</div>
-      <div class="ds-desc">~227K image–report pairs. Uses only the official <b>test split</b> — avoids overlap with MedGemma's pretraining data</div>
+      <div class="ds-desc">Uses only the official <b>test split</b> — avoids overlap with MedGemma's pretraining data</div>
 
-      <div class="step-list">
-        <div class="step-row"><div class="step-badge">1</div><span class="step-text"><b>Frontal views only</b> (正面, AP/PA，前後位/後前位)</span></div>
-        <div class="step-row"><div class="step-badge">2</div><span class="step-text">Filter out <b>comparison language</b> (e.g. "compared to prior")</span></div>
-        <div class="step-row"><div class="step-badge">3</div><span class="step-text">Random sample from the rest</span></div>
-        <div class="step-row"><div class="step-badge">4</div><span class="step-text">Extract only the <b>Findings section</b>（所見）— aligns with how generated reports are processed</span></div>
-      </div>
+      <div class="funnel">
+        <div class="funnel-box" style="width:460px;">
+          <div class="funnel-box-label">MIMIC-CXR-JPG · Official Test Split</div>
+        </div>
 
-      <div class="step-final">
-        <span class="step-final-text">→ <b>n = 500</b> test images</span>
+        <div class="funnel-arrow">
+          <span class="funnel-arrow-glyph">↓</span>
+        </div>
+        <div class="funnel-box" style="width:400px;">
+          <div class="funnel-box-label">Frontal views only (正面, AP/PA，前後位/後前位)</div>
+        </div>
+
+        <div class="funnel-arrow">
+          <span class="funnel-arrow-glyph">↓</span>
+        </div>
+        <div class="funnel-box" style="width:340px;">
+          <div class="funnel-box-label">Filter out comparison language (e.g. "compared to prior")</div>
+        </div>
+
+        <div class="funnel-arrow">
+          <span class="funnel-arrow-glyph">↓</span>
+        </div>
+
+        <div class="funnel-final">
+          <span class="funnel-final-text">Random sample from the rest, then extract only the Findings section（所見）</span>
+        </div>
       </div>
     </div>
 
