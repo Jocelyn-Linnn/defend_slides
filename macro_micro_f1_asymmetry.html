@@ -109,6 +109,7 @@
       padding: 4.5px 8px; text-align: right; font-size: 0.72rem; color: #64748b;
     }
     .f1table tbody td:first-child, .f1table tfoot td:first-child { text-align: left; color: #94a3b8; }
+    .f1-zh { font-size: 0.78rem; color: #6b8bab; }
     .f1table tbody tr { border-bottom: 1px solid #0a1828; }
     .f1table tfoot tr { border-top: 1.5px solid #152840; }
     .f1table tfoot td { font-weight: 800; color: #cbd5e1; }
@@ -188,7 +189,7 @@
   <div class="subtitle-bar">
     <div class="h-subtitle-box">
       <svg class="h-subtitle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16.5"/><circle cx="12" cy="7.5" r="0.9" fill="currentColor" stroke="none"/></svg>
-      <span class="h-subtitle">Why a <b>Macro F1</b> gain doesn't translate into an equal <b>Micro F1</b> gain</span>
+      <span class="h-subtitle">Why <b>Macro F1</b> rises more than <b>Micro F1</b></span>
     </div>
   </div>
 
@@ -204,8 +205,7 @@
             <div class="mm-pt-title">CheXBert Macro F1 <span class="mm-pt-val">0.344 → 0.362 <b style="color:#a78bfa;">+0.018</b></span></div>
             <ul class="mm-pt-list">
               <li>Equal-weighted average across 14 conditions</li>
-              <li>Highly sensitive to rare-condition detectability</li>
-              <li>Top gains: <b>Fracture</b>, <b>Enlarged Cardiomediastinum</b>, <b>Pneumonia</b> — ~85% of total gain</li>
+              <li>Easily swayed by low-prevalence conditions</li>
             </ul>
           </div>
         </div>
@@ -216,7 +216,6 @@
             <ul class="mm-pt-list">
               <li>TP / FP / FN summed globally across all conditions</li>
               <li>Dominated by high-prevalence labels</li>
-              <li><b>Support Devices</b>, <b>Cardiomegaly</b>, <b>Pleural Effusion</b> already near-saturated — little room left to improve</li>
             </ul>
           </div>
         </div>
@@ -237,20 +236,20 @@
               </tr>
             </thead>
             <tbody>
-              <tr data-cond="ecm"><td>Enlarged Cardiomediastinum</td><td>23.1%</td><td>0.000</td><td>0.074</td><td class="d-up">+0.074</td></tr>
-              <tr data-cond="pn"><td>Pneumonia</td><td>12.4%</td><td>0.125</td><td>0.194</td><td class="d-up">+0.069</td></tr>
-              <tr data-cond="fr"><td>Fracture</td><td>4.0%</td><td>0.083</td><td>0.160</td><td class="d-up">+0.077</td></tr>
-              <tr data-cond="cm"><td>Cardiomegaly</td><td>35.9%</td><td>0.682</td><td>0.678</td><td class="d-down">−0.004</td></tr>
-              <tr data-cond="pe"><td>Pleural Effusion</td><td>31.7%</td><td>0.682</td><td>0.686</td><td class="d-up">+0.004</td></tr>
-              <tr data-cond="sd"><td>Support Devices</td><td>36.7%</td><td>0.771</td><td>0.777</td><td class="d-up">+0.006</td></tr>
-              <tr><td>Lung Opacity</td><td>32.1%</td><td>0.423</td><td>0.451</td><td class="d-up">+0.028</td></tr>
-              <tr><td>Lung Lesion</td><td>7.2%</td><td>0.080</td><td>0.039</td><td class="d-down">−0.041</td></tr>
-              <tr><td>Edema</td><td>22.7%</td><td>0.587</td><td>0.593</td><td class="d-up">+0.006</td></tr>
-              <tr><td>Consolidation</td><td>9.0%</td><td>0.180</td><td>0.208</td><td class="d-up">+0.028</td></tr>
-              <tr><td>Atelectasis</td><td>28.3%</td><td>0.481</td><td>0.494</td><td class="d-up">+0.012</td></tr>
-              <tr><td>Pneumothorax</td><td>3.6%</td><td>0.240</td><td>0.240</td><td class="d-flat">±0.000</td></tr>
-              <tr><td>Pleural Other</td><td>4.0%</td><td>0.000</td><td>0.000</td><td class="d-flat">±0.000</td></tr>
-              <tr><td>No Finding</td><td>13.8%</td><td>0.479</td><td>0.479</td><td class="d-flat">±0.000</td></tr>
+              <tr data-cond="ecm"><td>Enlarged Cardiomediastinum <span class="f1-zh">縱膈擴大</span></td><td>23.1%</td><td>0.000</td><td>0.074</td><td class="d-up">+0.074</td></tr>
+              <tr data-cond="pn"><td>Pneumonia <span class="f1-zh">肺炎</span></td><td>12.4%</td><td>0.125</td><td>0.194</td><td class="d-up">+0.069</td></tr>
+              <tr data-cond="fr"><td>Fracture <span class="f1-zh">骨折</span></td><td>4.0%</td><td>0.083</td><td>0.160</td><td class="d-up">+0.077</td></tr>
+              <tr data-cond="cm"><td>Cardiomegaly <span class="f1-zh">心臟肥大</span></td><td>35.9%</td><td>0.682</td><td>0.678</td><td class="d-down">−0.004</td></tr>
+              <tr data-cond="pe"><td>Pleural Effusion <span class="f1-zh">肋膜積液</span></td><td>31.7%</td><td>0.682</td><td>0.686</td><td class="d-up">+0.004</td></tr>
+              <tr data-cond="sd"><td>Support Devices <span class="f1-zh">支持裝置</span></td><td>36.7%</td><td>0.771</td><td>0.777</td><td class="d-up">+0.006</td></tr>
+              <tr><td>Lung Opacity <span class="f1-zh">肺部陰影</span></td><td>32.1%</td><td>0.423</td><td>0.451</td><td class="d-up">+0.028</td></tr>
+              <tr><td>Lung Lesion <span class="f1-zh">肺部病灶</span></td><td>7.2%</td><td>0.080</td><td>0.039</td><td class="d-down">−0.041</td></tr>
+              <tr><td>Edema <span class="f1-zh">水腫</span></td><td>22.7%</td><td>0.587</td><td>0.593</td><td class="d-up">+0.006</td></tr>
+              <tr><td>Consolidation <span class="f1-zh">肺實變</span></td><td>9.0%</td><td>0.180</td><td>0.208</td><td class="d-up">+0.028</td></tr>
+              <tr><td>Atelectasis <span class="f1-zh">肺不張</span></td><td>28.3%</td><td>0.481</td><td>0.494</td><td class="d-up">+0.012</td></tr>
+              <tr><td>Pneumothorax <span class="f1-zh">氣胸</span></td><td>3.6%</td><td>0.240</td><td>0.240</td><td class="d-flat">±0.000</td></tr>
+              <tr><td>Pleural Other <span class="f1-zh">其他肋膜病變</span></td><td>4.0%</td><td>0.000</td><td>0.000</td><td class="d-flat">±0.000</td></tr>
+              <tr><td>No Finding <span class="f1-zh">無異常發現</span></td><td>13.8%</td><td>0.479</td><td>0.479</td><td class="d-flat">±0.000</td></tr>
             </tbody>
             <tfoot>
               <tr data-cond="macro"><td>Macro avg</td><td></td><td>0.344</td><td>0.362</td><td class="d-up">+0.018</td></tr>

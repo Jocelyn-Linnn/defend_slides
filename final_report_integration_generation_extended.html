@@ -91,10 +91,10 @@
       animation: a-zoom 0.8s cubic-bezier(.16,1,.3,1) 0.5s forwards;
     }
 
-    .g-step1, .g-step3 {
+    .g-step1, .g-step2, .g-step3 {
       opacity: 0; transition: opacity 0.5s ease;
     }
-    .g-step1.active, .g-step3.active { opacity: 1; }
+    .g-step1.active, .g-step2.active, .g-step3.active { opacity: 1; }
 
     @keyframes a-zoom { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
     /* ── Responsive scaling: fit fixed-size canvas to any viewport ── */
@@ -154,8 +154,18 @@
 
     <div class="sep" id="sep1"></div>
 
+    <div class="step" id="step2">
+      <div class="step-num" style="background:#1a1100;border:2px solid #f59e0b;color:#fbbf24;">2</div>
+      <div class="step-body">
+        <div class="step-title" style="color:#fbbf24;">Classify the Answers</div>
+        <div class="step-desc">Each answer is sorted into one of four categories (see example).</div>
+      </div>
+    </div>
+
+    <div class="sep" id="sep2"></div>
+
     <div class="step" id="step3">
-      <div class="step-num" style="background:#0b2619;border:2px solid #22c55e;color:#4ade80;">2</div>
+      <div class="step-num" style="background:#0b2619;border:2px solid #22c55e;color:#4ade80;">3</div>
       <div class="step-body">
         <div class="step-title" style="color:#4ade80;">GPT-4o Generate Final Report</div>
         <div class="step-desc">
@@ -198,7 +208,31 @@
         <text x="524" y="160" fill="#4ade80" font-size="8.5" font-weight="800" text-anchor="end">✓ KEPT</text>
       </g>
 
-      <!-- ═══════════ STEP 2 EXAMPLE: origin report + filtered QA → GPT-4o → final report ═══════════ -->
+      <!-- ═══════════ STEP 2 EXAMPLE: 4-way classification ═══════════ -->
+      <g class="g-step2" id="gStep2">
+        <rect x="20" y="16" width="540" height="76" rx="8" fill="#030d1f" stroke="#22c55e" stroke-width="1.6"/>
+        <text x="34" y="34" fill="#4ade80" font-size="9.5" font-weight="800" letter-spacing="0.1em">CONFIRMED</text>
+        <text x="34" y="55" fill="#cbd5e1" font-size="10">"Yes. There is a small pleural effusion（肋膜積液）in the left costophrenic angle（左肋膈角）."</text>
+        <text x="34" y="75" fill="#4ade80" font-size="9.5" font-style="italic">→ kept in full ✓</text>
+
+        <rect x="20" y="104" width="540" height="100" rx="8" fill="#0a0700" stroke="#f59e0b" stroke-width="1.6"/>
+        <text x="34" y="122" fill="#fbbf24" font-size="9.5" font-weight="800" letter-spacing="0.1em">MIXED</text>
+        <text x="34" y="143" fill="#cbd5e1" font-size="10">"Yes. There is patchy opacity（片狀陰影）in the lung base（肺底）. <tspan fill="#7c8aa0">This could be</tspan></text>
+        <text x="34" y="163" fill="#7c8aa0" font-size="10">due to atelectasis（肺不張）, consolidation（肺實變）, or a mass（腫塊）."</text>
+        <text x="34" y="185" fill="#fbbf24" font-size="9.5" font-style="italic">→ trimmed to the confirmed clause only</text>
+
+        <rect x="20" y="216" width="540" height="76" rx="8" fill="#0c0c0c" stroke="#4b5563" stroke-width="1.6" stroke-dasharray="4 3"/>
+        <text x="34" y="234" fill="#94a3b8" font-size="9.5" font-weight="800" letter-spacing="0.1em">DIFFERENTIAL</text>
+        <text x="34" y="255" fill="#7c8aa0" font-size="10">"Yes, this could be pneumonia（肺炎）, atelectasis（肺不張）, or aspiration（吸入性病變）."</text>
+        <text x="34" y="275" fill="#f87171" font-size="9.5" font-style="italic">→ discarded entirely ✕</text>
+
+        <rect x="20" y="304" width="540" height="76" rx="8" fill="#0c0c0c" stroke="#4b5563" stroke-width="1.6" stroke-dasharray="4 3"/>
+        <text x="34" y="322" fill="#94a3b8" font-size="9.5" font-weight="800" letter-spacing="0.1em">NORMAL</text>
+        <text x="34" y="343" fill="#7c8aa0" font-size="10">"The cardiac silhouette（心臟輪廓）appears to be within normal limits."</text>
+        <text x="34" y="363" fill="#f87171" font-size="9.5" font-style="italic">→ discarded — no added clinical value ✕</text>
+      </g>
+
+      <!-- ═══════════ STEP 3 EXAMPLE: origin report + filtered QA → GPT-4o → final report ═══════════ -->
       <g class="g-step3" id="gStep3">
 
         <rect x="20" y="14" width="540" height="112" rx="10"
@@ -249,7 +283,7 @@
   import { initSlideController } from './tool/slide-controller.js';
   import './tool/slide-scale.js';
 
-  const maxSteps = 2;
+  const maxSteps = 3;
 
   function updateSlide(step) {
     document.querySelectorAll('.active').forEach(el => el.classList.remove('active'));
@@ -260,12 +294,17 @@
     }
     if (step >= 2) {
       document.getElementById('sep1').classList.add('active');
+      document.getElementById('step2').classList.add('active');
+    }
+    if (step >= 3) {
+      document.getElementById('sep2').classList.add('active');
       document.getElementById('step3').classList.add('active');
     }
 
     // Right panel: exclusive (each step shows its own dedicated worked example)
     if (step === 1) document.getElementById('gStep1').classList.add('active');
-    if (step >= 2)  document.getElementById('gStep3').classList.add('active');
+    if (step === 2) document.getElementById('gStep2').classList.add('active');
+    if (step >= 3)  document.getElementById('gStep3').classList.add('active');
   }
 
   initSlideController({

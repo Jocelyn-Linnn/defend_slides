@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <title>Root-Cause Analysis - Chest X-ray Report Refinement System</title>
+  <title>Root-Cause Analysis (Full) - Chest X-ray Report Refinement System</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -153,7 +153,7 @@
 
 
   <div class="bg-grid"></div>
-  <div class="header"><span class="h-title">Root-Cause Analysis of Version Performance Differences</span></div>
+  <div class="header"><span class="h-title">Root-Cause Analysis of Version Performance Differences (Full)</span></div>
 
   <div class="content">
 
@@ -235,6 +235,50 @@
       </div>
     </div>
 
+    <!-- 3: Interaction effect of retrieval strategy & edge weight algorithm (v1/v2/v3 -> v4) -->
+    <div class="cause-cell c3">
+      <div class="cc-num num-blue">03</div>
+      <div class="cc-body">
+        <div class="cc-head">
+          <div class="cc-icon icon-blue">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="6" cy="6" r="2.6"/><circle cx="18" cy="6" r="2.6"/><circle cx="12" cy="18" r="2.6"/>
+              <line x1="8.2" y1="7.3" x2="10.3" y2="16"/><line x1="15.8" y1="7.3" x2="13.7" y2="16"/><line x1="8.4" y1="6" x2="15.6" y2="6"/>
+            </svg>
+          </div>
+          <div class="cc-transition">
+            <span class="vchip vc-mid">v1</span>
+            <span class="vchip vc-mid">v2</span>
+            <span class="vchip vc-mid">v3</span>
+            <span class="vt-arrow">→</span>
+            <span class="vchip vc-final">v4</span>
+          </div>
+        </div>
+        <div class="cc-title">Synergy &amp; Interaction of Two-Layer Expansion with NPMI</div>
+        <div class="cc-content">
+          <div class="cc-bullets">
+            <div class="cc-bullet">
+              <div class="cc-bdot"></div>
+              <span class="bt">Asymmetry proves synergy: CP→NPMI <b>−0.003</b> under Single Layer, <b>+0.011</b> under Two-Hop</span>
+            </div>
+            <div class="cc-bullet">
+              <div class="cc-bdot"></div>
+              <span class="bt">NPMI only pays off with Two-Hop's larger candidate pool</span>
+            </div>
+          </div>
+          <div class="cc-example ex-blue">
+            <div class="cc-ex-tag">Case C</div>
+            <table class="cc-ex-table">
+              <tr><td class="ex-key">GT</td><td>multifocal pneumonia（多發性肺炎）</td></tr>
+              <tr><td class="ex-key">v2 (Two-Hop, CP)</td><td>reaches L2 but favors high-freq nodes → misses it</td></tr>
+              <tr><td class="ex-key">v3 (Single Layer, NPMI)</td><td>limited to L1 → unreachable</td></tr>
+              <tr><td class="ex-key">v4 (Two-Hop, NPMI)</td><td>reaches L2 and ranks it top → correctly recovered</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -242,7 +286,7 @@
   import { initSlideController } from './tool/slide-controller.js';
   import './tool/slide-scale.js';
 
-  const steps = [['.c1'], ['.c2']];
+  const steps = [['.c1'], ['.c2'], ['.c3']];
 
   function updateSlide(step) {
     steps.flat().forEach(sel => document.querySelectorAll(sel).forEach(el => el.classList.remove('active')));
@@ -253,8 +297,8 @@
 
   initSlideController({
     maxSteps: steps.length,
-    nextSlideUrl: 'divergent_trends_across_the_three_metrics.html',
-    prevSlideUrl: 'discussion.html',
+    nextSlideUrl: 'all_slides.html',
+    prevSlideUrl: 'all_slides.html',
     onUpdate: updateSlide
   });
 </script>

@@ -77,4 +77,8 @@ export const slideOrder = [
 export const supplementarySlides = [
   'retrieval_design_rationale.html',
   'extended_experiment_fact_checking_examiner_full.html',
+  'build_radiology_association_graph_edge_weight_calculation_full.html',
+  'root_cause_analysis_of_version_performance_differences_full.html',
+  'final_report_integration_generation_extended.html',
+  'extended_experiment_fact_checking_examiner_results_full.html',
 ];

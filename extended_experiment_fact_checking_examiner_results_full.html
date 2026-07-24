@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <title>Extended Experiment: Fact-Checking Examiner Results - Chest X-ray Report Refinement System</title>
+  <title>Extended Experiment: Fact-Checking Examiner Results (Full) - Chest X-ray Report Refinement System</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -99,8 +99,8 @@
   </a>
 
   <div class="header">
-    <span class="h-kicker">Extended Experiment</span>
-    <span class="h-title">Fact-Checking Examiner Results</span>
+    <span class="h-kicker">Extended Experiment · Supplementary</span>
+    <span class="h-title">Fact-Checking Examiner Results (Full)</span>
   </div>
 
   <!-- ── Table Panel: the evidence ── -->
@@ -114,6 +114,8 @@
             <th>MedGemma</th>
             <th>v4</th>
             <th>+Checker&nbsp;0.3</th>
+            <th>+Checker&nbsp;0.5</th>
+            <th>+Checker&nbsp;0.8</th>
           </tr>
         </thead>
         <tbody>
@@ -122,24 +124,32 @@
             <td class="best">0.2859</td>
             <td>0.2819</td>
             <td class="decline">0.2782</td>
+            <td class="decline">0.2719</td>
+            <td class="decline">0.2298</td>
           </tr>
           <tr>
             <td>GREEN</td>
             <td class="best">0.3821</td>
             <td>0.3726</td>
             <td class="decline">0.3677</td>
+            <td class="decline">0.3640</td>
+            <td class="decline">0.3195</td>
           </tr>
           <tr>
             <td>CheXBert Macro</td>
             <td>0.3442</td>
             <td class="best">0.3535</td>
             <td class="decline">0.3317</td>
+            <td class="decline">0.2928</td>
+            <td class="decline">0.1826</td>
           </tr>
           <tr>
             <td>CheXBert Micro</td>
             <td>0.5179</td>
             <td class="best">0.5206</td>
             <td class="decline">0.5063</td>
+            <td class="decline">0.4789</td>
+            <td class="decline">0.3453</td>
           </tr>
         </tbody>
       </table>
@@ -163,8 +173,8 @@
 
   initSlideController({
     maxSteps: steps.length,
-    nextSlideUrl: 'root_cause_analysis_of_fact_checking_examiner_failure.html',
-    prevSlideUrl: 'improvement_motivation_and_design_logic.html',
+    nextSlideUrl: 'all_slides.html',
+    prevSlideUrl: 'all_slides.html',
     onUpdate: updateSlide
   });
 </script>
